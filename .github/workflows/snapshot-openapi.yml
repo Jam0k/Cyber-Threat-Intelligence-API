@@ -1,0 +1,32 @@
+name: Snapshot OpenAPI schema
+
+# Refresh openapi/openapi.json from the live API once a day so `git log -p openapi/`
+# is a changelog of the public surface. Commits only when the schema changed.
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch live schema
+        run: bash scripts/fetch_openapi.sh
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- openapi/openapi.json; then
+            echo "schema unchanged"; exit 0
+          fi
+          git config user.name "threatcluster-bot"
+          git config user.email "hello@threatcluster.io"
+          git add openapi/openapi.json
+          git commit -m "openapi: snapshot $(date -u +%Y-%m-%d)"
+          git push

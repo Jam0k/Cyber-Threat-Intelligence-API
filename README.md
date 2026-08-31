@@ -15,7 +15,8 @@ data with EPSS/KEV, and ransomware leak-site tracking — 46 endpoints under one
 | Free key | 100 req/day · last 7 days · `threats:read` `iocs:read` `entities:read` `vulns:read` `darkweb:read` |
 
 This repo holds a daily-refreshed **OpenAPI snapshot** ([`openapi/openapi.json`](openapi/openapi.json)),
-a dependency-light **Python client**, and **runnable examples** in curl, Python and Node.
+a dependency-light **Python client**, **runnable examples** in curl, Python and Node, and a
+walkthrough of **real request/response pairs** for every major endpoint — [EXAMPLES.md](EXAMPLES.md).
 It's also the issue tracker for the API — bugs, field questions, endpoint requests: open an issue.
 
 ---
@@ -178,7 +179,9 @@ of `/v1`; anything being retired is announced ahead of time and keeps working th
 ## Terms
 Free and paid plans cover your own tooling and internal use. Embedding in a product you sell, or
 redistributing API responses, needs a Business or MSSP agreement — hello@threatcluster.io.
-The public feeds are TLP:CLEAR. Code in this repository is MIT licensed (see [LICENSE](LICENSE)).
+The public feeds are TLP:CLEAR. Code in this repository is GPL-3.0 licensed (see [LICENSE](LICENSE));
+that licence covers the code and documentation here only — data returned by the ThreatCluster API is
+governed by the plan terms at https://threatcluster.io/pricing.
 
 ## Contributing
 Examples in another language, a fix to a snippet, a field that's documented wrong — PRs welcome.

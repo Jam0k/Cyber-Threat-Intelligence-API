@@ -1,0 +1,7 @@
+.env
+*.key
+__pycache__/
+*.pyc
+node_modules/
+*.csv
+!examples/**/sample*.csv
