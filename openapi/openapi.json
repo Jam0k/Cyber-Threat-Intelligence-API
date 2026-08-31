@@ -5992,16 +5992,20 @@
           "entities": {
             "anyOf": [
               {
-                "items": {
-                  "additionalProperties": true,
-                  "type": "object"
+                "additionalProperties": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array"
                 },
-                "type": "array"
+                "type": "object"
               },
               {
                 "type": "null"
               }
             ],
+            "description": "Entities extracted from the leak post, keyed by entity_type (company, country, industry, ...) \u2192 [{value, confidence}]",
             "title": "Entities"
           },
           "extracted_at": {
