@@ -10,7 +10,7 @@ import json, sys
 src = sys.argv[1]
 data = json.load(open(src))
 assert data.get("openapi", "").startswith("3."), "not an OpenAPI 3 document"
-assert len(data.get("paths", {})) > 20, "suspiciously few paths — refusing to overwrite"
+assert len(data.get("paths", {})) > 40, "suspiciously few paths — refusing to overwrite"
 with open("openapi/openapi.json", "w") as f:
     json.dump(data, f, indent=2, sort_keys=True)
     f.write("\n")

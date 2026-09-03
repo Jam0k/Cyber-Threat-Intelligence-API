@@ -5,7 +5,7 @@ Every response below was captured live from the API. Unless marked otherwise, th
 Set your key once:
 
 ```bash
-export TC_KEY=tc_live_…   # Settings → API → Generate
+export TC_KEY=tc_live_…   # Settings → API & Feeds → Generate API key
 ```
 
 Endpoint reference: [Swagger UI](https://threatcluster.io/api/public/v1/docs) · [`openapi/openapi.json`](openapi/openapi.json)

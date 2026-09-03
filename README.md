@@ -2,17 +2,17 @@
 
 Threat intelligence as a REST API: clustered threat reporting with AI summaries and scores,
 validated IOCs, entity intelligence (actors, malware, tools, companies, CVEs), vulnerability
-data with EPSS/KEV, and ransomware leak-site tracking — 46 endpoints under one base URL.
+data with EPSS/KEV, and ransomware leak-site tracking — 50 endpoints under one base URL.
 
-**Free tier included.** Every account can mint a read-only key: 100 requests a day over the last 7 days, headline rows. No card, no trial clock. Paid plans buy history, depth and budget — not access.
+**Free tier included.** Every account can mint a read-only key: 100 credits a day over the last 7 days, headline rows. No card, no trial clock. Paid plans buy history, depth and budget — not access.
 
 | | |
 |---|---|
 | Base URL | `https://threatcluster.io/api/public/v1` |
 | Auth | `X-API-Key: tc_live_…` header |
 | Docs | [Swagger UI](https://threatcluster.io/api/public/v1/docs) · [ReDoc](https://threatcluster.io/api/public/v1/redoc) · [openapi.json](https://threatcluster.io/api/public/v1/openapi.json) |
-| Overview | https://threatcluster.io/about/api |
-| Free key | 100 req/day · last 7 days · `threats:read` `iocs:read` `entities:read` `vulns:read` `darkweb:read` |
+| Quick start | https://threatcluster.io/api |
+| Free key | 100 credits/day · 30 req/min · last 7 days · `threats:read` `iocs:read` `entities:read` `vulns:read` `darkweb:read` |
 
 This repo holds a daily-refreshed **OpenAPI snapshot** ([`openapi/openapi.json`](openapi/openapi.json)),
 a dependency-light **Python client**, **runnable examples** in curl, Python and Node, and a
@@ -24,7 +24,8 @@ It's also the issue tracker for the API — bugs, field questions, endpoint requ
 ## Quickstart
 
 1. **Sign up** (free) at https://threatcluster.io
-2. **Mint a key**: Settings → API → Generate. It starts `tc_live_` and is shown once.
+2. **Mint a key**: Settings → API & Feeds → Generate API key. It starts `tc_live_`, is shown once, and carries the scopes of your plan.
+   Every cluster, entity, CVE and leak-site page on the site has an **API** button that shows the exact request for that record.
 3. **Call it**:
 
 ```bash
@@ -118,12 +119,20 @@ Full parameter and response schemas: [`openapi/openapi.json`](openapi/openapi.js
 
 ## Plans, scopes, rate limits
 
-| Plan | Budget | Scopes on a new key |
-|---|---|---|
-| **Free** | 30 / min, **100 / day** | `threats:read` `iocs:read` `entities:read` `vulns:read` `darkweb:read` |
-| Researcher | 120 / min | + `feeds:read` `feeds:write` `alerts:read` `alerts:write` |
-| Analyst | 240 / min | same as Researcher |
-| Business / MSSP | 600 / min, per-key overrides | all scopes (+ `inventory:*`, `mssp:*`, `compliance:read`) |
+| Plan | Credits | Rate | Scopes on a new key |
+|---|---|---|---|
+| **Free** | **100 / day** | 30 / min | `threats:read` `iocs:read` `entities:read` `vulns:read` `darkweb:read` |
+| Researcher ($19.99) | 1,000 / day | 120 / min | + `feeds:read` `feeds:write` `alerts:read` `alerts:write` |
+| Analyst | 1,000 / day | 240 / min | same as Researcher |
+| Business / MSSP ($399) | no daily budget | 600 / min, per-key overrides | all scopes (+ `inventory:*`, `mssp:*`, `compliance:read`) |
+
+**What a request costs.** Most calls are 1 credit. `/search` is 5; STIX bundles, the IOC feed and
+export, dark-web keyword hits and trends are 3; a fully enriched leak-site victim record is 10.
+A request that finds nothing costs nothing: empty searches and 404 lookups refund their credits.
+Every response carries `X-Request-Cost`, and keys with a daily budget also get `X-RateLimit-Limit`,
+`X-RateLimit-Remaining` and `X-RateLimit-Reset`. Past the daily budget, one-off credit packs cover
+the overage on any plan ($10 for 2,000, $50 for 12,000, never expire) — see
+https://threatcluster.io/pricing#packs.
 
 **What "free" means on the wire.** A free key sees the last **7 days**: `time_filter` is clamped to
 `7d`, `hours` to 168, `days` to 7, `weeks` to 1, and fetching an older cluster or victim by id
@@ -133,7 +142,7 @@ sub-scores, severity reasoning, article bodies or `recent_events`. Secondary lis
 co-occurring CVEs, keyword hits, breaches) cap at 10. Every free response carries `"tier": "free"`
 and `"lookback_days": 7`. Researcher and above get full records and full history.
 
-* Budgets are per key. Over budget → `429` with a `Retry-After` header. Back off and retry.
+* Budgets are per key and reset at 00:00 UTC. Over budget → `429 daily_budget_exceeded` with a `Retry-After` header; per-minute bursts → `429` too. Back off and retry.
 * Scopes are fixed when a key is minted. Upgrade, then re-mint to widen.
 * Errors are JSON: `401` bad/expired key, `403 insufficient_scope` (tells you the scope you need),
   `403 scope_not_in_tier` when minting above your plan, `404`, `429`.
@@ -164,8 +173,11 @@ bash examples/bash/quickstart.sh
 * **`tc` CLI** — `pipx install threatcluster-cli`. Same API, keyring auth, JSON output, doubles as an agent tool. https://threatcluster.io/cli
 * **Postman / Insomnia** — import `openapi/openapi.json` directly.
 * **OpenAPI generators** — `openapi-generator-cli generate -i openapi/openapi.json -g <lang>` gives you a typed client.
+* **Integration guides** — Splunk, Sentinel, Elastic, Claude, OpenAI, Cursor, Bash, curl, VS Code, Windows Terminal: https://threatcluster.io/integrations
 * **No key at all** — [public feeds](https://threatcluster.io/feeds): RSS, MISP manifest, IOC blocklist (TLP:CLEAR).
-  Snapshots live in [Jam0k/Public-Feeds-IOCs](https://github.com/Jam0k/Public-Feeds-IOCs).
+  Snapshots live in [Jam0k/Public-Feeds-IOCs](https://github.com/Jam0k/Public-Feeds-IOCs); leak-site listings in
+  [Jam0k/Ransomware-Intel](https://github.com/Jam0k/Ransomware-Intel). The site's own JSON endpoints are shaped like a
+  free key for anonymous callers, so the API is the way to get full records and history.
 
 ---
 
