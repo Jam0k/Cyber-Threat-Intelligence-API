@@ -46,7 +46,36 @@ class ThreatCluster:
             return r.json() if "json" in ctype else r.text
         raise RuntimeError("rate limited; retries exhausted")
 
+    def post(self, path: str, body: dict, retries: int = 3) -> Any:
+        """POST JSON to a path. Same retry/403 handling as get()."""
+        for attempt in range(retries + 1):
+            r = self.s.post(f"{self.base}/{path.lstrip('/')}", json=body, timeout=max(self.timeout, 90))
+            if r.status_code == 429 and attempt < retries:
+                time.sleep(int(r.headers.get("Retry-After", "5")))
+                continue
+            if r.status_code == 403:
+                raise PermissionError(r.json().get("detail", r.text))
+            r.raise_for_status()
+            return r.json()
+        raise RuntimeError("rate limited; retries exhausted")
+
     # -- convenience wrappers ------------------------------------------------
+    def ask(self, ident: str, action: str = "custom", question: str | None = None) -> dict:
+        """Ask AI about one cluster (Researcher+, 25 credits). action is one of
+        executive_summary, extract_iocs, threat_actor, related_campaigns,
+        vulnerability, recommended_actions, or custom with a question."""
+        body = {"action": action}
+        if question:
+            body["question"] = question
+        return self.post(f"threats/{ident}/ask", body)
+
+    def ask_corpus(self, query: str, history: list[dict] | None = None) -> dict:
+        """Ask AI across the whole corpus (Researcher+, 50 credits)."""
+        body: dict = {"query": query}
+        if history:
+            body["history"] = history
+        return self.post("ask", body)
+
     def search(self, q: str, limit: int = 10, include_articles: bool = False) -> dict:
         """One term across clusters, entities and the dark web."""
         return self.get("/search", q=q, limit=limit, include_articles=include_articles)

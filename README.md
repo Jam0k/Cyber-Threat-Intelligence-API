@@ -2,7 +2,7 @@
 
 Threat intelligence as a REST API: clustered threat reporting with AI summaries and scores,
 validated IOCs, entity intelligence (actors, malware, tools, companies, CVEs), vulnerability
-data with EPSS/KEV, and ransomware leak-site tracking — 50 endpoints under one base URL.
+data with EPSS/KEV, ransomware leak-site tracking, and cited Ask-AI answers — 52 endpoints under one base URL.
 
 **Free tier included.** Every account can mint a read-only key: 100 credits a day over the last 7 days, headline rows. No card, no trial clock. Paid plans buy history, depth and budget — not access.
 
@@ -104,6 +104,14 @@ Entity type slugs: `cve` `apt-group` `ransomware-group` `malware` `tool` `campai
 | `GET /vulnerabilities/{cve_id}` | One CVE with related clusters and exploit links |
 | `GET /vulnerabilities/stats` | Counts + severity breakdown |
 
+### Ask AI — `ai:read` (Researcher+)
+| Method + path | What you get |
+|---|---|
+| `POST /threats/{id}/ask` | A cited answer about one incident. `action` = `executive_summary` `extract_iocs` `threat_actor` `related_campaigns` `vulnerability` `recommended_actions`, or `custom` with a `question` (≤1,000 chars). Grounded in the cluster's own reporting; inline `[A1]` tags map to `sources`. **25 credits**; identical canned asks are cached for an hour |
+| `POST /ask` | One question across every incident, indicator, entity and leak-site record, with citations. `query` (≤500 chars), optional `history` for follow-ups. **50 credits** |
+
+A model timeout or failure refunds the credits. Both are also in the client: `tc.ask(id, "recommended_actions")`, `tc.ask_corpus("…")`.
+
 ### Your feeds & alerts — `feeds:*`, `alerts:*` (Researcher+)
 `GET /feed`, `GET /feeds`, `GET /feeds/{id}/entities`, `/alert-rules`, `/cve-alerts`, `GET /alerts`,
 `POST /alerts/{source}/{trigger_id}/disposition`.
@@ -127,12 +135,13 @@ Full parameter and response schemas: [`openapi/openapi.json`](openapi/openapi.js
 | Plan | Credits | Rate | Scopes on a new key |
 |---|---|---|---|
 | **Free** | **100 / day** | 30 / min | `threats:read` `iocs:read` `entities:read` `vulns:read` `darkweb:read` |
-| Researcher ($19.99) | 1,000 / day | 120 / min | + `feeds:read` `feeds:write` `alerts:read` `alerts:write` |
+| Researcher ($19.99) | 1,000 / day | 120 / min | + `feeds:read` `feeds:write` `alerts:read` `alerts:write` `ai:read` |
 | Analyst | 1,000 / day | 240 / min | same as Researcher |
 | Business / MSSP ($399) | no daily budget | 600 / min, per-key overrides | all scopes (+ `inventory:*`, `mssp:*`, `compliance:read`) |
 
 **What a request costs.** Most calls are 1 credit. `/search` is 5; STIX bundles, the IOC feed and
-export, dark-web keyword hits and trends are 3; a fully enriched leak-site victim record is 10.
+export, dark-web keyword hits and trends are 3; a fully enriched leak-site victim record is 10;
+Ask AI is 25 per incident and 50 across the corpus.
 A request that finds nothing costs nothing: empty searches and 404 lookups refund their credits.
 Every response carries `X-Request-Cost`, and keys with a daily budget also get `X-RateLimit-Limit`,
 `X-RateLimit-Remaining` and `X-RateLimit-Reset`. `GET /me` returns the same numbers as JSON, plus the
