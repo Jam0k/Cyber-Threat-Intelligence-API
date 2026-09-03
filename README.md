@@ -63,6 +63,11 @@ is the human page, and `.md` / `.json` variants of that URL exist for LLM contex
 
 Grouped by the scope a key needs. **free** = reachable with a free key.
 
+### Account — any key (free, costs 0)
+| Method + path | What you get |
+|---|---|
+| `GET /me` | Your tier, per-minute rate, credits used and left today, when the allowance resets, prepaid pack balance, the key's scopes, and the per-request cost table. Costs nothing, so check it before a batch instead of parsing headers off every call |
+
 ### Threats — `threats:read` (free)
 | Method + path | What you get |
 |---|---|
@@ -130,7 +135,8 @@ Full parameter and response schemas: [`openapi/openapi.json`](openapi/openapi.js
 export, dark-web keyword hits and trends are 3; a fully enriched leak-site victim record is 10.
 A request that finds nothing costs nothing: empty searches and 404 lookups refund their credits.
 Every response carries `X-Request-Cost`, and keys with a daily budget also get `X-RateLimit-Limit`,
-`X-RateLimit-Remaining` and `X-RateLimit-Reset`. Past the daily budget, one-off credit packs cover
+`X-RateLimit-Remaining` and `X-RateLimit-Reset`. `GET /me` returns the same numbers as JSON, plus the
+prepaid pack balance, at no cost. Past the daily budget, one-off credit packs cover
 the overage on any plan ($10 for 2,000, $50 for 12,000, never expire) — see
 https://threatcluster.io/pricing#packs.
 
