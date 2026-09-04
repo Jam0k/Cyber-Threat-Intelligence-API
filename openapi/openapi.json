@@ -1,6 +1,153 @@
 {
   "components": {
     "schemas": {
+      "AccountCreditsInfo": {
+        "additionalProperties": true,
+        "properties": {
+          "daily_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Credits per UTC day on this plan; null = no daily budget (Business)",
+            "title": "Daily Limit"
+          },
+          "pack_balance": {
+            "default": 0,
+            "description": "Prepaid credits, spent only after the daily allowance; never expire",
+            "title": "Pack Balance",
+            "type": "integer"
+          },
+          "remaining_today": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remaining Today"
+          },
+          "resets_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ISO-8601 UTC, when the daily allowance refills",
+            "title": "Resets At"
+          },
+          "used_today": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Credits charged to this key's bucket since 00:00 UTC; null = counter unavailable",
+            "title": "Used Today"
+          }
+        },
+        "title": "AccountCreditsInfo",
+        "type": "object"
+      },
+      "AccountKeyInfo": {
+        "additionalProperties": true,
+        "properties": {
+          "key_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "live, test, agent, org",
+            "title": "Key Class"
+          },
+          "key_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key Id"
+          },
+          "scopes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scopes",
+            "type": "array"
+          },
+          "source": {
+            "description": "api_key (X-API-Key) or bearer (tc login / agent token)",
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source"
+        ],
+        "title": "AccountKeyInfo",
+        "type": "object"
+      },
+      "AccountMeResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "credits": {
+            "$ref": "#/components/schemas/AccountCreditsInfo"
+          },
+          "docs": {
+            "default": "https://threatcluster.io/api",
+            "title": "Docs",
+            "type": "string"
+          },
+          "key": {
+            "$ref": "#/components/schemas/AccountKeyInfo"
+          },
+          "rate_limit": {
+            "description": "Per-minute burst limit for this key, e.g. 120/minute",
+            "title": "Rate Limit",
+            "type": "string"
+          },
+          "request_costs": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "Credits per request by endpoint family; everything else costs `default`",
+            "title": "Request Costs",
+            "type": "object"
+          },
+          "tier": {
+            "title": "Tier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tier",
+          "rate_limit",
+          "credits",
+          "key",
+          "request_costs"
+        ],
+        "title": "AccountMeResponse",
+        "type": "object"
+      },
       "AlertCondition": {
         "properties": {
           "entity_type": {
@@ -89,7 +236,7 @@
                 "type": "null"
               }
             ],
-            "description": "Scope this rule to one of your managed customers (MSSP). Omit for a personal rule. If set, any webhook_id must be scoped to the same customer or be unscoped.",
+            "description": "Scope this rule to one of your managed customers (Business). Omit for a personal rule. If set, any webhook_id must be scoped to the same customer or be unscoped.",
             "title": "Mssp Customer Id"
           },
           "name": {
@@ -143,6 +290,105 @@
         "title": "AlertRuleCreate",
         "type": "object"
       },
+      "AskCorpusRequest": {
+        "properties": {
+          "history": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Prior turns as [{role: user|assistant, content}], up to 20",
+            "title": "History"
+          },
+          "query": {
+            "maxLength": 500,
+            "minLength": 2,
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "AskCorpusRequest",
+        "type": "object"
+      },
+      "AskResponse": {
+        "additionalProperties": true,
+        "properties": {
+          "answer": {
+            "description": "Markdown, with inline citation tags like [A1] that map to `sources`",
+            "title": "Answer",
+            "type": "string"
+          },
+          "cached": {
+            "default": false,
+            "title": "Cached",
+            "type": "boolean"
+          },
+          "context_used": {
+            "additionalProperties": true,
+            "title": "Context Used",
+            "type": "object"
+          },
+          "cost": {
+            "description": "Credits charged for this call",
+            "title": "Cost",
+            "type": "integer"
+          },
+          "references": {
+            "description": "Clusters and articles the answer drew on: {clusters: [...], articles: [...]}",
+            "title": "References"
+          },
+          "sources": {
+            "description": "Citation tags \u2192 article/cluster they point at",
+            "items": {},
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "answer",
+          "cost"
+        ],
+        "title": "AskResponse",
+        "type": "object"
+      },
+      "AskThreatRequest": {
+        "properties": {
+          "action": {
+            "default": "custom",
+            "description": "executive_summary \u00b7 extract_iocs \u00b7 threat_actor \u00b7 related_campaigns \u00b7 vulnerability \u00b7 recommended_actions \u00b7 custom",
+            "title": "Action",
+            "type": "string"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Required when action is custom",
+            "title": "Question"
+          }
+        },
+        "title": "AskThreatRequest",
+        "type": "object"
+      },
       "Body_cancel_subscription_api_subscription_cancel_post": {
         "properties": {
           "at_period_end": {
@@ -152,45 +398,6 @@
           }
         },
         "title": "Body_cancel_subscription_api_subscription_cancel_post",
-        "type": "object"
-      },
-      "Body_community_add_file_attachment_api_community_posts__post_id__attachments_file_post": {
-        "properties": {
-          "file": {
-            "format": "binary",
-            "title": "File",
-            "type": "string"
-          },
-          "note": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Note"
-          }
-        },
-        "required": [
-          "file"
-        ],
-        "title": "Body_community_add_file_attachment_api_community_posts__post_id__attachments_file_post",
-        "type": "object"
-      },
-      "Body_community_upload_post_hero_api_community_posts__post_id__hero_post": {
-        "properties": {
-          "file": {
-            "format": "binary",
-            "title": "File",
-            "type": "string"
-          }
-        },
-        "required": [
-          "file"
-        ],
-        "title": "Body_community_upload_post_hero_api_community_posts__post_id__hero_post",
         "type": "object"
       },
       "Body_create_checkout_session_api_subscription_checkout_post": {
@@ -282,155 +489,6 @@
           "file"
         ],
         "title": "Body_upload_user_logo_api_user_logo_post",
-        "type": "object"
-      },
-      "BreachListItem": {
-        "additionalProperties": true,
-        "properties": {
-          "added_date": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Added Date"
-          },
-          "breach_date": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Breach Date"
-          },
-          "data_classes": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Data Classes"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "domain": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Domain"
-          },
-          "id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Id"
-          },
-          "is_sensitive": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Sensitive"
-          },
-          "is_verified": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Verified"
-          },
-          "logo_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Logo Url"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "pwn_count": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pwn Count"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "title": "BreachListItem",
-        "type": "object"
-      },
-      "BreachesListResponse": {
-        "additionalProperties": true,
-        "properties": {
-          "breaches": {
-            "items": {
-              "$ref": "#/components/schemas/BreachListItem"
-            },
-            "title": "Breaches",
-            "type": "array"
-          },
-          "count": {
-            "title": "Count",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "breaches",
-          "count"
-        ],
-        "title": "BreachesListResponse",
         "type": "object"
       },
       "CIExchangeBody": {
@@ -1293,7 +1351,7 @@
                 "type": "null"
               }
             ],
-            "description": "Scope this CVE rule to one of your managed customers (MSSP). Omit for a personal rule.",
+            "description": "Scope this CVE rule to one of your managed customers (Business). Omit for a personal rule.",
             "title": "Mssp Customer Id"
           },
           "name": {
@@ -1992,10 +2050,6 @@
       "DarkwebStatsResponse": {
         "additionalProperties": true,
         "properties": {
-          "breaches_known": {
-            "title": "Breaches Known",
-            "type": "integer"
-          },
           "data_source": {
             "anyOf": [
               {
@@ -2039,8 +2093,7 @@
           "ransomware_groups",
           "total_victims",
           "victims_last_7d",
-          "victims_last_30d",
-          "breaches_known"
+          "victims_last_30d"
         ],
         "title": "DarkwebStatsResponse",
         "type": "object"
@@ -3122,370 +3175,6 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
-      "InventoryComponent": {
-        "additionalProperties": true,
-        "properties": {
-          "fqdn": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Fqdn"
-          },
-          "host_id": {
-            "description": "Stable per-host identifier (Tenable asset uuid, MDE DeviceId, Falcon AID, or your own).",
-            "title": "Host Id",
-            "type": "string"
-          },
-          "hostname": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Best known hostname.",
-            "title": "Hostname"
-          },
-          "install_path": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Install Path"
-          },
-          "os_platform": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Windows | Linux | macOS",
-            "title": "Os Platform"
-          },
-          "os_version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Os Version"
-          },
-          "product": {
-            "description": "Product name as reported.",
-            "title": "Product",
-            "type": "string"
-          },
-          "vendor": {
-            "description": "Software vendor as reported by your tool.",
-            "title": "Vendor",
-            "type": "string"
-          },
-          "version": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Version string. Optional but improves CVE matching.",
-            "title": "Version"
-          }
-        },
-        "required": [
-          "host_id",
-          "vendor",
-          "product"
-        ],
-        "title": "InventoryComponent",
-        "type": "object"
-      },
-      "InventoryPushRequest": {
-        "additionalProperties": true,
-        "properties": {
-          "components": {
-            "description": "Up to 50,000 (host, software) rows per request. Re-pushes upsert by host_id.",
-            "items": {
-              "$ref": "#/components/schemas/InventoryComponent"
-            },
-            "title": "Components",
-            "type": "array"
-          },
-          "mssp_customer_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "MSSP-only. Set to push inventory for a specific managed customer. Caller must own the MSSP org that owns the customer. Omit (or null) for the caller's own org inventory \u2014 the default.",
-            "title": "Mssp Customer Id"
-          },
-          "source": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": "manual",
-            "description": "manual | tenable | mde | crowdstrike. Identifies the connector.",
-            "title": "Source"
-          }
-        },
-        "required": [
-          "components"
-        ],
-        "title": "InventoryPushRequest",
-        "type": "object"
-      },
-      "InventoryPushResponse": {
-        "additionalProperties": true,
-        "properties": {
-          "asset_count": {
-            "title": "Asset Count",
-            "type": "integer"
-          },
-          "cpe_match_rate": {
-            "title": "Cpe Match Rate",
-            "type": "number"
-          },
-          "cpe_matched": {
-            "description": "How many software rows resolved to a known CPE 2.3 vendor/product. Unmatched rows are stored but won't appear in the threats overlay until aliases are extended.",
-            "title": "Cpe Matched",
-            "type": "integer"
-          },
-          "note": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Note"
-          },
-          "software_count": {
-            "title": "Software Count",
-            "type": "integer"
-          },
-          "unmatched_samples": {
-            "description": "First 10 unmatched rows so you can spot-check the normalizer.",
-            "items": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "title": "Unmatched Samples",
-            "type": "array"
-          }
-        },
-        "required": [
-          "asset_count",
-          "software_count",
-          "cpe_matched",
-          "cpe_match_rate"
-        ],
-        "title": "InventoryPushResponse",
-        "type": "object"
-      },
-      "InventorySummary": {
-        "additionalProperties": true,
-        "properties": {
-          "asset_count": {
-            "default": 0,
-            "title": "Asset Count",
-            "type": "integer"
-          },
-          "cpe_matched": {
-            "default": 0,
-            "title": "Cpe Matched",
-            "type": "integer"
-          },
-          "crowdstrike_assets": {
-            "default": 0,
-            "title": "Crowdstrike Assets",
-            "type": "integer"
-          },
-          "direct": {
-            "default": 0,
-            "description": "Direct-exposure matches (CVEs + tightly-scoped entity hits).",
-            "title": "Direct",
-            "type": "integer"
-          },
-          "kev_count": {
-            "default": 0,
-            "description": "Of the direct matches, how many CVEs are on the CISA KEV catalog.",
-            "title": "Kev Count",
-            "type": "integer"
-          },
-          "manual_assets": {
-            "default": 0,
-            "title": "Manual Assets",
-            "type": "integer"
-          },
-          "mde_assets": {
-            "default": 0,
-            "title": "Mde Assets",
-            "type": "integer"
-          },
-          "software_count": {
-            "default": 0,
-            "title": "Software Count",
-            "type": "integer"
-          },
-          "tenable_assets": {
-            "default": 0,
-            "title": "Tenable Assets",
-            "type": "integer"
-          }
-        },
-        "title": "InventorySummary",
-        "type": "object"
-      },
-      "InventoryThreatsResponse": {
-        "additionalProperties": true,
-        "properties": {
-          "direct": {
-            "description": "High-confidence matches: CVEs against your installed software, plus product entities co-mentioned with their vendor in the same TC cluster.",
-            "items": {
-              "$ref": "#/components/schemas/ThreatMatch"
-            },
-            "title": "Direct",
-            "type": "array"
-          },
-          "related": {
-            "description": "Vendor-only and loose product-name matches. Useful situational awareness; lower confidence than direct.",
-            "items": {
-              "$ref": "#/components/schemas/ThreatMatch"
-            },
-            "title": "Related",
-            "type": "array"
-          },
-          "total": {
-            "title": "Total",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "total"
-        ],
-        "title": "InventoryThreatsResponse",
-        "type": "object"
-      },
-      "KeywordHitBreach": {
-        "additionalProperties": true,
-        "properties": {
-          "added_date": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Added Date"
-          },
-          "breach_date": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Breach Date"
-          },
-          "domain": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Domain"
-          },
-          "is_sensitive": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Sensitive"
-          },
-          "is_verified": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Is Verified"
-          },
-          "logo_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Logo Url"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "pwn_count": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pwn Count"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "title": "KeywordHitBreach",
-        "type": "object"
-      },
       "KeywordHitGroup": {
         "additionalProperties": true,
         "properties": {
@@ -3514,75 +3203,6 @@
           "victim_count"
         ],
         "title": "KeywordHitGroup",
-        "type": "object"
-      },
-      "KeywordHitMarket": {
-        "additionalProperties": true,
-        "properties": {
-          "ai_category": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ai Category"
-          },
-          "captcha_or_login_gate": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Captcha Or Login Gate"
-          },
-          "category": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Category"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "screenshot_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Screenshot Url"
-          },
-          "status": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Status"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "title": "KeywordHitMarket",
         "type": "object"
       },
       "KeywordHitVictim": {
@@ -3657,28 +3277,12 @@
       "KeywordHitsBucket": {
         "additionalProperties": true,
         "properties": {
-          "breaches": {
-            "default": [],
-            "items": {
-              "$ref": "#/components/schemas/KeywordHitBreach"
-            },
-            "title": "Breaches",
-            "type": "array"
-          },
           "groups": {
             "default": [],
             "items": {
               "$ref": "#/components/schemas/KeywordHitGroup"
             },
             "title": "Groups",
-            "type": "array"
-          },
-          "markets": {
-            "default": [],
-            "items": {
-              "$ref": "#/components/schemas/KeywordHitMarket"
-            },
-            "title": "Markets",
             "type": "array"
           },
           "victims": {
@@ -3719,209 +3323,6 @@
           "total"
         ],
         "title": "KeywordHitsResponse",
-        "type": "object"
-      },
-      "MarketDetailResponse": {
-        "additionalProperties": true,
-        "properties": {
-          "ai_category": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ai Category"
-          },
-          "ai_description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ai Description"
-          },
-          "ai_language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ai Language"
-          },
-          "ai_risk_tags": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ai Risk Tags"
-          },
-          "available": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Available"
-          },
-          "captcha_or_login_gate": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Captcha Or Login Gate"
-          },
-          "category": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Category"
-          },
-          "clearnet_urls": {
-            "default": [],
-            "items": {
-              "type": "string"
-            },
-            "title": "Clearnet Urls",
-            "type": "array"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "entities": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "items": {
-                    "type": "string"
-                  },
-                  "type": "array"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Entities observed on the market homepage, grouped by type",
-            "title": "Entities"
-          },
-          "meta": {
-            "anyOf": [
-              {},
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Meta"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "page_title": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Page Title"
-          },
-          "scrape_error": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Scrape Error"
-          },
-          "scraped_at": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Scraped At"
-          },
-          "screenshot_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Screenshot Url"
-          },
-          "status": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Status"
-          },
-          "tor_urls": {
-            "default": [],
-            "items": {
-              "type": "string"
-            },
-            "title": "Tor Urls",
-            "type": "array"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "title": "MarketDetailResponse",
         "type": "object"
       },
       "MintBearerBody": {
@@ -4167,7 +3568,7 @@
                 "type": "null"
               }
             ],
-            "description": "Set false to deactivate/offboard the customer (soft-delete; cascades to its scoped feeds/rules). Reactivation is not available via the API.",
+            "description": "Set false to deactivate/offboard the customer (soft-delete; cascades to its scoped feeds, alert rules, webhooks and digests \u2014 deactivated, not purged). Reactivation is not available via the API.",
             "title": "Is Active"
           },
           "name": {
@@ -4212,32 +3613,6 @@
           }
         },
         "title": "MsspCustomerUpdate",
-        "type": "object"
-      },
-      "MsspCustomerVendors": {
-        "description": "Body for PUT \u2026/vendors \u2014 the client's tech-stack vendors (declarative).\nSlugs are validated against cves.affected_vendors; unknown ones are dropped\nand reported. Use GET /mssp/vendors/suggest?q= to find canonical slugs.",
-        "example": {
-          "vendors": [
-            "fortinet",
-            "cisco",
-            "microsoft",
-            "ivanti"
-          ]
-        },
-        "properties": {
-          "vendors": {
-            "description": "Canonical vendor slugs (lowercase). The complete desired set; replaces the existing list.",
-            "items": {
-              "type": "string"
-            },
-            "title": "Vendors",
-            "type": "array"
-          }
-        },
-        "required": [
-          "vendors"
-        ],
-        "title": "MsspCustomerVendors",
         "type": "object"
       },
       "MsspFeedKeywords": {
@@ -5568,122 +4943,6 @@
         "title": "ThreatListItem",
         "type": "object"
       },
-      "ThreatMatch": {
-        "additionalProperties": true,
-        "properties": {
-          "asset_count": {
-            "title": "Asset Count",
-            "type": "integer"
-          },
-          "cluster_count": {
-            "default": 0,
-            "title": "Cluster Count",
-            "type": "integer"
-          },
-          "computed_at": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Computed At"
-          },
-          "cvss_score": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cvss Score"
-          },
-          "entity_type": {
-            "description": "cve | product | tool | platform | vulnerability | company",
-            "title": "Entity Type",
-            "type": "string"
-          },
-          "entity_value": {
-            "title": "Entity Value",
-            "type": "string"
-          },
-          "epss_score": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Epss Score"
-          },
-          "has_exploit": {
-            "default": false,
-            "title": "Has Exploit",
-            "type": "boolean"
-          },
-          "has_kev": {
-            "default": false,
-            "title": "Has Kev",
-            "type": "boolean"
-          },
-          "latest_cluster_at": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Latest Cluster At"
-          },
-          "match_strength": {
-            "description": "direct | related",
-            "title": "Match Strength",
-            "type": "string"
-          },
-          "matched_via": {
-            "description": "cpe | cpe_product | cpe_vendor",
-            "title": "Matched Via",
-            "type": "string"
-          },
-          "sample_software": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": true,
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sample Software"
-          },
-          "software_count": {
-            "title": "Software Count",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "entity_type",
-          "entity_value",
-          "match_strength",
-          "matched_via",
-          "asset_count",
-          "software_count"
-        ],
-        "title": "ThreatMatch",
-        "type": "object"
-      },
       "ThreatsListResponse": {
         "additionalProperties": true,
         "properties": {
@@ -6875,7 +6134,7 @@
     }
   },
   "info": {
-    "description": "\n## ThreatCluster Public API\n\nProgrammatic access to threat intelligence data.\n\n### Authentication\n\nAll endpoints require an API key passed via the `X-API-Key` header:\n\n```\nX-API-Key: tc_live_your_api_key_here\n```\n\nEvery account \u2014 including **Free** \u2014 can mint a key in [Settings \u2192 API](/settings#api).\nNo card needed. Overview, quickstart and examples: [threatcluster.io/about/api](/about/api).\nClient examples and an OpenAPI snapshot: [github.com/Jam0k/threatcluster-api](https://github.com/Jam0k/threatcluster-api).\n\n### Plans, scopes and rate limits\n\nKeys carry scopes; each endpoint declares the scope it needs (a `403 insufficient_scope`\ntells you which). Budgets are per key.\n\n| Plan | Requests | Scopes on a new key |\n|------|----------|---------------------|\n| Free | 30 / min, **100 / day** | `threats:read` `iocs:read` `entities:read` `vulns:read` `darkweb:read` |\n| Researcher | 120 / min | + `feeds:read` `feeds:write` `alerts:read` `alerts:write` |\n| Analyst | 240 / min | same as Researcher |\n| Business / MSSP | 600 / min | all scopes (+ `inventory:*`, `mssp:*`, `compliance:read`) |\n\n**Free keys see a 7-day window.** Time filters are clamped to it (`time_filter` \u2264 7d, `hours` \u2264 168,\n`days` \u2264 7, `weeks` \u2264 1), by-id lookups of older records return `403 lookback_exceeded`, and rows are\ntrimmed: the short summary (not the enhanced one), threat score + urgency (not the sub-scores or\nseverity reasoning), a 3-event timeline, source links without article bodies, and secondary lists\ncapped at 10. Responses carry `\"tier\": \"free\"` and `\"lookback_days\": 7` so you can tell. Researcher\nand above get the full record and the full history.\n\n**Start with `GET /search?q=<term>`** \u2014 one call across clusters, entities and the dark web; chain the\n`short_id` / `entity_type` + `entity_value` it returns into the detail endpoints.\n\nOver budget returns `429` with a `Retry-After` header. Per-key overrides above the plan\nceiling are available for platform integrations \u2014 contact hello@threatcluster.io.\n\n### Base URL\n\n```\nhttps://threatcluster.io/api/public/v1\n```\n        ",
+    "description": "\n## ThreatCluster Public API\n\nProgrammatic access to threat intelligence data.\n\n### Authentication\n\nAll endpoints require an API key passed via the `X-API-Key` header:\n\n```\nX-API-Key: tc_live_your_api_key_here\n```\n\nEvery account \u2014 including **Free** \u2014 can mint a key in [Settings \u2192 API](/settings#api).\nNo card needed. Overview, quickstart and examples: [threatcluster.io/about/api](/about/api).\nClient examples and an OpenAPI snapshot: [github.com/Jam0k/threatcluster-api](https://github.com/Jam0k/threatcluster-api).\n\n### Plans, scopes and rate limits\n\nKeys carry scopes; each endpoint declares the scope it needs (a `403 insufficient_scope`\ntells you which). Budgets are per key.\n\n| Plan | Requests | Scopes on a new key |\n|------|----------|---------------------|\n| Free | 30 / min, **100 credits / day** | `threats:read` `iocs:read` `entities:read` `vulns:read` `darkweb:read` |\n| Researcher | 120 / min | + `feeds:read` `feeds:write` `alerts:read` `alerts:write` |\n| Analyst | 240 / min | same as Researcher |\n| Business / MSSP | 600 / min | all scopes (+ `mssp:*`) |\n\n**Free keys see a 7-day window and spend a weighted daily budget.** Time filters are clamped to the\nwindow (`time_filter` \u2264 7d, `hours` \u2264 168, `days` \u2264 7, `weeks` \u2264 1), by-id lookups of older records return\n`403 lookback_exceeded`, list requests return at most 25 rows, and rows are trimmed: the short summary (not\nthe enhanced one), threat score + urgency (not the sub-scores or severity reasoning), a 3-event timeline,\nsource links without article bodies, secondary lists capped at 10.\n\nThe daily allowance is **100 credits**, not 100 requests. Records and lists cost 1; bulk and fan-out\nrequests (IOC feed and export, STIX bundles, dark-web keyword hits and trends) cost 3; `/search` costs 5;\na dark-web victim enrichment record costs 10. Every budgeted response\ncarries `X-Request-Cost`; free keys also get `X-RateLimit-Limit`, `X-RateLimit-Remaining` and\n`X-RateLimit-Reset` (next 00:00 UTC) so a script or an agent can pace itself. A request that finds nothing costs nothing:\nan empty `/search`, an empty keyword sweep or a 404 lookup refunds its credits and returns\n`X-Request-Cost: 0`. Exhausting the budget returns\n`429 daily_budget_exceeded` with `Retry-After`. Responses carry `\"tier\": \"free\"` and `\"lookback_days\": 7`\nso you can tell. Researcher gets the full record, the full history and 1,000 credits a day;\ncredit packs cover the overage for any budgeted tier. Business and MSSP have no daily budget.\n\n**Start with `GET /search?q=<term>`** \u2014 one call across clusters, entities and the dark web; chain the\n`short_id` / `entity_type` + `entity_value` it returns into the detail endpoints.\n\nOver budget returns `429` with a `Retry-After` header. Per-key overrides above the plan\nceiling are available for platform integrations \u2014 contact hello@threatcluster.io.\n\n### Base URL\n\n```\nhttps://threatcluster.io/api/public/v1\n```\n        ",
     "title": "ThreatCluster Public API",
     "version": "1.0.0"
   },
@@ -6883,7 +6142,7 @@
   "paths": {
     "/api/public/v1/alert-rules": {
       "post": {
-        "description": "Create a personal alert rule that fires when its conditions match a new threat\ncluster. Tier-capped conditions (5 most tiers, 50 Business). Delivery via your\nwebhook(s) and/or email. Omit `mssp_customer_id` for a personal rule, or set it\nto scope the rule to one of your managed customers (MSSP).",
+        "description": "Create a personal alert rule that fires when its conditions match a new threat\ncluster. Tier-capped conditions (5 most tiers, 50 Business). Delivery via your\nwebhook(s) and/or email. Omit `mssp_customer_id` for a personal rule, or set it\nto scope the rule to one of your managed customers (Business plan).",
         "operationId": "public_create_alert_rule_api_public_v1_alert_rules_post",
         "requestBody": {
           "content": {
@@ -6915,7 +6174,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Create an alert rule (personal or MSSP-customer scoped)",
+        "summary": "Create an alert rule (personal or managed-customer scoped)",
         "tags": [
           "alerts"
         ]
@@ -6923,7 +6182,7 @@
     },
     "/api/public/v1/alerts": {
       "get": {
-        "description": "List alert triggers (cluster + CVE) with disposition state. The raw material\nbehind the compliance attestation.\n\nEach row's `trigger_id` + `alert_source` are what you pass to\nPOST /api/public/v1/alerts/{alert_source}/{trigger_id}/disposition to record\nthat you reviewed/actioned that specific alert firing.\n\nFilters: mssp_customer_id (scope to one client), state (incl. 'open' for\nundispositioned), alert_source (cluster|cve), since (ISO timestamp on\ntriggered_at). Rows are normalised across both alert systems.",
+        "description": "List alert triggers (cluster + CVE) with disposition state. The raw material\nbehind the compliance attestation.\n\nEach row's `trigger_id` + `alert_source` are what you pass to\nthat you reviewed/actioned that specific alert firing.\n\nFilters: mssp_customer_id (scope to one client), state (incl. 'open' for\nundispositioned), alert_source (cluster|cve), since (ISO timestamp on\ntriggered_at). Rows are normalised across both alert systems.",
         "operationId": "public_list_alerts_api_public_v1_alerts_get",
         "parameters": [
           {
@@ -7037,41 +6296,15 @@
         ]
       }
     },
-    "/api/public/v1/alerts/{alert_source}/{trigger_id}/disposition": {
+    "/api/public/v1/ask": {
       "post": {
-        "description": "Disposition an alert trigger. This is the write that makes the compliance\nevidence real \u2014 configuration proves a tool runs; a disposition proves the\nintelligence was reviewed and acted upon (what an ISO 27001 A.5.7 auditor\nactually checks).\n\nA \"trigger\" is one recorded instance of an alert rule firing on a specific\nthreat. Discover triggers (and their `trigger_id` + `alert_source`) via\n**GET /api/public/v1/alerts**, then disposition the one you actioned here.\n\nBody: { \"state\": one of acknowledged|actioned|escalated|dismissed|false_positive,\n        \"note\": optional free text }",
-        "operationId": "public_set_alert_disposition_api_public_v1_alerts__alert_source___trigger_id__disposition_post",
-        "parameters": [
-          {
-            "description": "Which alert system the trigger came from: 'cluster' (news-cluster match) or 'cve' (vulnerability match). It's the `alert_source` field of a row from GET /api/public/v1/alerts.",
-            "in": "path",
-            "name": "alert_source",
-            "required": true,
-            "schema": {
-              "description": "Which alert system the trigger came from: 'cluster' (news-cluster match) or 'cve' (vulnerability match). It's the `alert_source` field of a row from GET /api/public/v1/alerts.",
-              "title": "Alert Source",
-              "type": "string"
-            }
-          },
-          {
-            "description": "The id of a specific alert firing \u2014 one row from GET /api/public/v1/alerts (its `trigger_id` field). NOT the rule id or the CVE/cluster id: a single rule produces many triggers, one per threat it matches. Disposition the individual firing you reviewed.",
-            "in": "path",
-            "name": "trigger_id",
-            "required": true,
-            "schema": {
-              "description": "The id of a specific alert firing \u2014 one row from GET /api/public/v1/alerts (its `trigger_id` field). NOT the rule id or the CVE/cluster id: a single rule produces many triggers, one per threat it matches. Disposition the individual firing you reviewed.",
-              "title": "Trigger Id",
-              "type": "integer"
-            }
-          }
-        ],
+        "description": "One question across every incident, indicator, entity and leak-site\nrecord, answered with citations. 50 credits.\n\nThe context is assembled by searching the corpus for the question,\ninlining the matching clusters' reporting and enriching the CVEs and\nactors it finds. Pass `history` for a follow-up turn. Model failures\nrefund the credits.",
+        "operationId": "public_ask_corpus_api_public_v1_ask_post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": true,
-                "title": "Body",
-                "type": "object"
+                "$ref": "#/components/schemas/AskCorpusRequest"
               }
             }
           },
@@ -7081,7 +6314,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/AskResponse"
+                }
               }
             },
             "description": "Successful Response"
@@ -7097,99 +6332,9 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Record a disposition on an alert (evidence of review/action)",
+        "summary": "Ask AI across the whole corpus",
         "tags": [
-          "compliance"
-        ]
-      }
-    },
-    "/api/public/v1/compliance/evidence": {
-      "get": {
-        "description": "The evidence product. Returns a machine-readable attestation that the\nthreat-intelligence capability was OPERATING for a tenant over a period:\ncollection (config in force), reception (alerts generated), analysis\n(dispositions recorded), production (reports delivered) \u2014 stamped against a\nnamed control. JSON now; a rendered PDF is a fast-follow.\n\nframework \u2208 {iso27001, nistcsf, dora, nis2, soc2}.",
-        "operationId": "public_compliance_evidence_api_public_v1_compliance_evidence_get",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "framework",
-            "required": false,
-            "schema": {
-              "default": "iso27001",
-              "title": "Framework",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "mssp_customer_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Mssp Customer Id"
-            }
-          },
-          {
-            "in": "query",
-            "name": "period_start",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Period Start"
-            }
-          },
-          {
-            "in": "query",
-            "name": "period_end",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Period End"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Capability-to-control attestation for a tenant + period",
-        "tags": [
-          "compliance"
+          "ai"
         ]
       }
     },
@@ -7227,78 +6372,15 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Create a CVE alert rule (personal or MSSP-customer scoped)",
+        "summary": "Create a CVE alert rule (personal or managed-customer scoped)",
         "tags": [
           "alerts"
         ]
       }
     },
-    "/api/public/v1/darkweb/breaches": {
-      "get": {
-        "description": "Get data breaches.\n\nQuery parameters:\n- limit: Maximum results (default: 50, max: 100)\n- offset: Pagination offset (default: 0)\n- search: Search term for breach name (optional)\n\nReturns list of known data breaches with record counts.",
-        "operationId": "public_get_breaches_api_public_v1_darkweb_breaches_get",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "default": 50,
-              "title": "Limit",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "offset",
-            "required": false,
-            "schema": {
-              "default": 0,
-              "title": "Offset",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "search",
-            "required": false,
-            "schema": {
-              "title": "Search",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BreachesListResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "List HIBP breaches",
-        "tags": [
-          "darkweb"
-        ]
-      }
-    },
     "/api/public/v1/darkweb/keyword-hits": {
       "get": {
-        "description": "Match one or more keywords against victim names, ransomware group\nnames, market names, and breach names/domains. Case-insensitive\nsubstring match \u2014 ideal for supply-chain / brand monitoring.\n\nQuery parameters:\n- keywords: Comma-separated list (required). Caller-provided; this\n  endpoint does NOT use the org's stored keywords list.\n- per_bucket_limit: Max hits per bucket (default 25, max 100).\n\nReturns: { keywords, hits: {victims, groups, markets, breaches}, total }",
+        "description": "Match one or more keywords against ransomware victim names and group\nnames. Case-insensitive\nsubstring match \u2014 ideal for supply-chain / brand monitoring.\n\nQuery parameters:\n- keywords: Comma-separated list (required). Caller-provided; this\n  endpoint does NOT use the org's stored keywords list.\n- per_bucket_limit: Max hits per bucket (default 25, max 100).\n\nReturns: { keywords, hits: {victims, groups}, total }",
         "operationId": "public_get_keyword_hits_api_public_v1_darkweb_keyword_hits_get",
         "parameters": [
           {
@@ -7343,50 +6425,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Keyword match across victims, groups, markets, breaches",
-        "tags": [
-          "darkweb"
-        ]
-      }
-    },
-    "/api/public/v1/darkweb/market/{market_name}": {
-      "get": {
-        "description": "Market detail: basic metadata + tor/clearnet URLs + scrape enrichment\n(screenshot_url, ai_description, ai_category, ai_risk_tags,\ncaptcha_or_login_gate, observed entities).\n\nPath parameters:\n- market_name: Market name (case-insensitive)\n\nReturns 404 if the market is not tracked.",
-        "operationId": "public_get_market_detail_api_public_v1_darkweb_market__market_name__get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "market_name",
-            "required": true,
-            "schema": {
-              "title": "Market Name",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MarketDetailResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Market detail",
+        "summary": "Keyword match across ransomware victims and groups",
         "tags": [
           "darkweb"
         ]
@@ -7649,7 +6688,7 @@
     },
     "/api/public/v1/darkweb/stats": {
       "get": {
-        "description": "Get dark web monitoring statistics.\n\nReturns ransomware group counts, victim counts, and known breaches.",
+        "description": "Get dark web monitoring statistics.\n\nReturns ransomware group counts and victim counts.",
         "operationId": "public_get_darkweb_stats_api_public_v1_darkweb_stats_get",
         "responses": {
           "200": {
@@ -8240,7 +7279,7 @@
     },
     "/api/public/v1/feeds": {
       "get": {
-        "description": "List your custom feeds in the requested slice (defaults to personal).\n\nPass `?mssp_customer_id=N` to scope the read to a specific MSSP customer.",
+        "description": "List your custom feeds in the requested slice (defaults to personal).\n\nPass `?mssp_customer_id=N` to scope the read to a specific managed customer.",
         "operationId": "public_list_feeds_api_public_v1_feeds_get",
         "parameters": [
           {
@@ -8288,7 +7327,7 @@
         ]
       },
       "post": {
-        "description": "Create a personal custom feed seeded with keywords. Returns the feed_id you\nread back via GET /feeds. (MSSP partners: use /mssp/customers/{id}/feed.)",
+        "description": "Create a personal custom feed seeded with keywords. Returns the feed_id you\nread back via GET /feeds. (For a managed customer: use /mssp/customers/{id}/feed.)",
         "operationId": "public_create_feed_api_public_v1_feeds_post",
         "requestBody": {
           "content": {
@@ -8382,194 +7421,6 @@
         "summary": "Entities tracked by a feed",
         "tags": [
           "feeds"
-        ]
-      }
-    },
-    "/api/public/v1/inventory": {
-      "post": {
-        "description": "Push asset + installed-software inventory for your organization.\n\nEach row = one piece of software seen on one host. Re-pushes upsert by\n(org, source, host_id) \u2014 safe to call repeatedly. The threat overlay\n(`GET /api/public/v1/inventory/threats`) is recomputed asynchronously\nin the background and ready within a few seconds.\n\nAuth:\n  X-API-Key: tc_live_...   (scope: inventory:write)\n\nBody:\n  {\n    \"source\": \"manual\",   # manual | tenable | mde | crowdstrike\n    \"components\": [\n      {\n        \"host_id\":     \"laptop-jdoe-01\",                # required\n        \"hostname\":    \"laptop-jdoe-01.corp\",           # optional\n        \"os_platform\": \"Windows\",                       # optional\n        \"os_version\":  \"11 24H2\",                       # optional\n        \"vendor\":      \"Microsoft Corporation\",         # required\n        \"product\":     \"Microsoft Office\",              # required\n        \"version\":     \"16.0.18827\"                     # optional but improves matching\n      }\n    ]\n  }\n\nReturns asset/software counts plus a sample of unmatched rows so you\ncan spot-check the CPE normalizer.",
-        "operationId": "public_push_inventory_api_public_v1_inventory_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InventoryPushRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InventoryPushResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Push asset inventory",
-        "tags": [
-          "inventory"
-        ]
-      }
-    },
-    "/api/public/v1/inventory/summary": {
-      "get": {
-        "description": "Asset / software / CVE-exposure counts for one slice of your inventory.\n\nDefault = your own org's rows. MSSP analysts can pass\n`mssp_customer_id=N` to scope to one customer, or `all_customers=true`\nfor a roll-up across every managed customer.",
-        "operationId": "public_get_inventory_summary_api_public_v1_inventory_summary_get",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "mssp_customer_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Mssp Customer Id"
-            }
-          },
-          {
-            "in": "query",
-            "name": "all_customers",
-            "required": false,
-            "schema": {
-              "default": false,
-              "title": "All Customers",
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InventorySummary"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Inventory summary",
-        "tags": [
-          "inventory"
-        ]
-      }
-    },
-    "/api/public/v1/inventory/threats": {
-      "get": {
-        "description": "Tiered \"Your Threats\" overlay against your pushed inventory.\n\nQuery:\n    strength:         'direct' | 'related' (omit for both)\n    limit:            max rows (default 200, max 500)\n    mssp_customer_id: scope to one MSSP-managed customer (analyst only)\n    all_customers:    true to roll-up across every MSSP customer (analyst only)\n\nSorting: KEV CVEs first, then CVSS, then cluster volume, then recency.\nRender `direct` and `related` in two sections.",
-        "operationId": "public_get_inventory_threats_api_public_v1_inventory_threats_get",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "strength",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Strength"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "default": 200,
-              "title": "Limit",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "mssp_customer_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Mssp Customer Id"
-            }
-          },
-          {
-            "in": "query",
-            "name": "all_customers",
-            "required": false,
-            "schema": {
-              "default": false,
-              "title": "All Customers",
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InventoryThreatsResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Your Threats \u2014 tiered exposure overlay",
-        "tags": [
-          "inventory"
         ]
       }
     },
@@ -8747,9 +7598,31 @@
         ]
       }
     },
+    "/api/public/v1/me": {
+      "get": {
+        "description": "What this key can do and how much budget is left, in one call.\n\nCosts nothing (weight 0), so an agent or a cron job can check before a\nbatch instead of parsing headers off every response. Reads the same\nper-key bucket that every request is charged against, so `used_today`\nmatches the `X-RateLimit-Remaining` header on your last call.\nWorks with an API key or a bearer minted from one.",
+        "operationId": "public_get_me_api_public_v1_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountMeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Your plan, credits left and key",
+        "tags": [
+          "account"
+        ]
+      }
+    },
     "/api/public/v1/mssp/customers": {
       "get": {
-        "description": "List the managed customers under your MSSP organisation. The `id` field is the\nvalue to pass as `mssp_customer_id` on the feeds, alerts, inventory and\ncompliance endpoints.",
+        "description": "List the managed customers under your account (Business plan). The `id` field is the\nvalue to pass as `mssp_customer_id` on the feeds, alerts, inventory and\ncompliance endpoints.",
         "operationId": "public_list_mssp_customers_api_public_v1_mssp_customers_get",
         "parameters": [
           {
@@ -8809,13 +7682,13 @@
             "description": "Validation Error"
           }
         },
-        "summary": "List your MSSP managed customers (to discover mssp_customer_id)",
+        "summary": "List your managed customers (to discover mssp_customer_id)",
         "tags": [
           "mssp"
         ]
       },
       "post": {
-        "description": "Create a managed customer under your MSSP organisation. The returned `id` is\nthe `mssp_customer_id` you pass to the feeds / alerts / inventory / compliance\nendpoints. This is the write path that lets a platform sync its client roster\nwithout manual UI setup.",
+        "description": "Create a managed customer under your account (Business plan). Managed\ncustomers are enabled per account: the number of active customers you may\nhold is set for your account after a short call, and a 403 with\n`error: managed_customers_not_enabled` or `managed_customer_limit_reached`\n(plus `limit` and `contact_url`) tells you when to talk to us. The returned\n`id` is the `mssp_customer_id` you pass to the feeds / alerts / inventory /\ncompliance endpoints. This is the write path that lets a platform sync its\nclient roster without manual UI setup.",
         "operationId": "public_create_mssp_customer_api_public_v1_mssp_customers_post",
         "requestBody": {
           "content": {
@@ -8855,7 +7728,7 @@
     },
     "/api/public/v1/mssp/customers/{customer_id}": {
       "patch": {
-        "description": "Update a managed customer (name / domain / contact_email / notes) or deactivate\nit (`\"is_active\": false`) for offboarding. `customer_id` is the integer id from\nthe customers list. Ownership is validated against your MSSP org. Send only the\nfields you want to change.",
+        "description": "Update a managed customer (name / domain / contact_email / notes) or deactivate\nit (`\"is_active\": false`) for offboarding. `customer_id` is the integer id from\nthe customers list. Ownership is validated against your account. Send only the\nfields you want to change.",
         "operationId": "public_update_mssp_customer_api_public_v1_mssp_customers__customer_id__patch",
         "parameters": [
           {
@@ -9118,178 +7991,6 @@
           }
         },
         "summary": "Set a customer feed's keywords (declarative sync)",
-        "tags": [
-          "mssp"
-        ]
-      }
-    },
-    "/api/public/v1/mssp/customers/{customer_id}/risk": {
-      "get": {
-        "description": "The client's threat-exposure score \u2014 a deterministic 0-100 index of how much\nlive, severity-weighted threat activity bears on their world (sector + country\n+ tech-stack vendors), computed from the cluster entity graph + CVE catalog.\n\nThis is the FAIR Loss-Event-Frequency / exposure component \u2014 NOT a breach\nprobability, NOT a dollar figure. CVE weighting uses the NIST composite\nmax(EPSS, KEV). Every score carries `evidence` (the driving threats) and a\n`confidence` (from profile completeness). Set the profile via\nPATCH /mssp/customers/{id} (sector, country) + PUT \u2026/vendors.\n\nReturns: { score, subscores{sector_pressure, geographic, stack_exposure},\n           confidence, evidence, methodology, profile }",
-        "operationId": "public_get_customer_risk_api_public_v1_mssp_customers__customer_id__risk_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "customer_id",
-            "required": true,
-            "schema": {
-              "title": "Customer Id",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Client threat-exposure score (tc-risk-v1)",
-        "tags": [
-          "mssp"
-        ]
-      }
-    },
-    "/api/public/v1/mssp/customers/{customer_id}/vendors": {
-      "get": {
-        "description": "The vendor slugs pinned for this customer (their attack surface for the\nstack-exposure part of the risk score).",
-        "operationId": "public_get_customer_vendors_api_public_v1_mssp_customers__customer_id__vendors_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "customer_id",
-            "required": true,
-            "schema": {
-              "title": "Customer Id",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "List a customer's tech-stack vendors",
-        "tags": [
-          "mssp"
-        ]
-      },
-      "put": {
-        "description": "Declaratively set the customer's vendor list to EXACTLY the provided slugs.\nSlugs are validated against the CVE vendor catalog; unknown slugs are dropped\nand returned in `rejected` (use /mssp/vendors/suggest to find canonical names).\nThese vendors drive the stack-exposure modifier of the client risk score.",
-        "operationId": "public_set_customer_vendors_api_public_v1_mssp_customers__customer_id__vendors_put",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "customer_id",
-            "required": true,
-            "schema": {
-              "title": "Customer Id",
-              "type": "integer"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MsspCustomerVendors"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Set a customer's tech-stack vendors (declarative)",
-        "tags": [
-          "mssp"
-        ]
-      }
-    },
-    "/api/public/v1/mssp/vendors/suggest": {
-      "get": {
-        "description": "Find the canonical vendor slugs (as used in CVE data) matching `q`, so you\ncan map a client's tech stack to slugs the risk score can match against CVEs.",
-        "operationId": "public_suggest_vendor_slugs_api_public_v1_mssp_vendors_suggest_get",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "q",
-            "required": true,
-            "schema": {
-              "title": "Q",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Autocomplete canonical vendor slugs",
         "tags": [
           "mssp"
         ]
@@ -9577,6 +8278,59 @@
         "summary": "Threat cluster detail",
         "tags": [
           "threats"
+        ]
+      }
+    },
+    "/api/public/v1/threats/{identifier}/ask": {
+      "post": {
+        "description": "A grounded, cited answer about one cluster. 25 credits.\n\n`action` picks a canned analysis (executive_summary, extract_iocs,\nthreat_actor, related_campaigns, vulnerability, recommended_actions) or\n`custom` with your own `question`. The context is the cluster's own\nreporting: article bodies, sub-articles, IOCs, enriched CVEs and actors,\nrelated clusters. Answers cite sources with inline tags that map to\n`sources`. Identical canned asks are cached for an hour and cost the\nsame either way; model failures refund the credits.",
+        "operationId": "public_ask_threat_api_public_v1_threats__identifier__ask_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "title": "Identifier",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskThreatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask AI about one incident",
+        "tags": [
+          "ai"
         ]
       }
     },
