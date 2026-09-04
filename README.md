@@ -2,7 +2,7 @@
 
 Threat intelligence as a REST API: clustered threat reporting with AI summaries and scores,
 validated IOCs, entity intelligence (actors, malware, tools, companies, CVEs), vulnerability
-data with EPSS/KEV, ransomware leak-site tracking, and cited Ask-AI answers — 52 endpoints under one base URL.
+data with EPSS/KEV, ransomware leak-site tracking, and cited Ask-AI answers — 42 endpoints under one base URL.
 
 **Free tier included.** Every account can mint a read-only key: 100 credits a day over the last 7 days, headline rows. No card, no trial clock. Paid plans buy history, depth and budget — not access.
 
