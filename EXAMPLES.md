@@ -806,3 +806,559 @@ curl -s -H "X-API-Key: $TC_KEY" \
 
 **Not found** — `404` for an identifier that doesn't exist (distinct from the window `403` above).
 
+---
+
+# Feeds, alerts and webhooks (Researcher+, added 2026-09-06)
+
+Every object below has list, get, update (`PATCH`), delete and test endpoints; only the create and read calls are shown. Ids are from a test account and were deleted afterwards.
+
+## Build a feed from your stack (typed entities)
+
+`entities[]` carry an `entity_type` so they match the entity graph, not free text. Keywords are stored lower-cased.
+
+```http
+POST /feeds
+Content-Type: application/json
+
+{"name": "Our stack", "entities": [{"keyword": "FortiOS", "entity_type": "platform"}, {"keyword": "Okta", "entity_type": "company"}, {"keyword": "Ivanti", "entity_type": "company"}]}
+```
+
+`200`
+
+```json
+{
+  "feed_id": "17ae839a-a413-4c6b-91a5-b2b830f09699",
+  "name": "Our stack",
+  "mssp_customer_id": null,
+  "keywords_added": 3
+}
+```
+
+## Add an entity to the feed
+
+Duplicates are reported in `skipped`, never doubled. `limit` is your plan's cap per feed.
+
+```http
+POST /feeds/17ae839a-a413-4c6b-91a5-b2b830f09699/entities
+Content-Type: application/json
+
+{"keyword": "Snowflake", "entity_type": "company"}
+```
+
+`200`
+
+```json
+{
+  "feed_id": "17ae839a-a413-4c6b-91a5-b2b830f09699",
+  "added": [
+    {
+      "keyword": "snowflake",
+      "entity_type": "company",
+      "is_custom": false
+    }
+  ],
+  "skipped": [],
+  "count": 4,
+  "limit": 75
+}
+```
+
+## Read the feed
+
+```http
+GET /feed?feed_type=custom&feed_id=17ae839a-a413-4c6b-91a5-b2b830f09699&time_filter=30d&limit=3
+```
+
+`200`
+
+```json
+{
+  "items": [
+    {
+      "cluster_id": "15e5588e-5ec9-44e7-a292-9de007cce8c9",
+      "title": "An AI broke Snowflake's code. Then another AI agent exploited it",
+      "ai_title": "AI-Driven Command Injection Vulnerability Exposes Snowflake Jira Credentials",
+      "ai_summary": "A critical command injection vulnerability was discovered in Snowflake's GitHub Actions workflow, allowing unauthenticated attackers to execute arbitrary comman…",
+      "timeline": [
+        {
+          "date": "2026-06-18",
+          "event": "Vulnerability introduced by AI assistant",
+          "detail": "GitHub Copilot Autofix altered the workflow code, creating a command injection vector.",
+          "source": "News.Ycombinator",
+          "source_url": "https://www.wiz.io/blog/red-agent-snowflake-copilot-cicd-bug"
+        },
+        {
+          "date": "2026-06-23",
+          "event": "Vulnerability discovered and disclosed",
+          "detail": "Wiz Research's Red Agent identified the flaw and reported it to Snowflake via HackerOne.",
+          "source": "Rescana",
+          "source_url": "https://www.rescana.com/post/critical-command-injection-vulnerability-in-snowflake-snowflake-connector-net-github-actions-exposes-jira-credentials"
+        },
+        "…"
+      ],
+      "article_count": 12,
+      "threat_score": 67.5,
+      "recency_score": 0.0,
+      "coverage_score": 63.11,
+      "severity_score": 80.0,
+      "sentiment_score": 70.0,
+      "geopolitical_score": 0.0,
+      "actionability_score": 60.0,
+      "severity_reason": "The vulnerability was critical due to its potential for exploitation, but it was quickly remediated.",
+      "credibility_score": 0.0,
+      "urgency_level": "medium",
+      "ranking_score": 0.0,
+      "keywords": [
+        "snowflake",
+        "another",
+        "…"
+      ],
+      "sources": [
+        "Theregister",
+        "News.Ycombinator"
+      ],
+      "severity_indicators": [
+        "ot"
+      ],
+      "date_range_earliest": "2026-08-17T14:18:38+00:00",
+      "date_range_latest": "2026-08-17T16:36:21+00:00",
+      "created_at": "2026-08-17T17:31:58.339730+00:00",
+      "updated_at": "2026-09-05T11:28:06.165066+00:00",
+      "recent_article_count_12h": 0,
+      "recent_article_count_6h": 0,
+      "insights_count": 0,
+      "articles": [
+        {
+          "uuid": "d28b0a87-ff5b-7219-bc56-206f3cb9fe78",
+          "title": "AI-Generated GitHub Copilot \"Autofix\" Allowed Compromise of Snowflake's Jira",
+          "content": "<p>As part of ongoing security research conducted through Snowflake’s HackerOne vulnerability disclosure program, Wiz Research’s \"Red Agent\"—an autonomous, AI-p…",
+  …
+}
+```
+
+## Poll for what is new (`since`)
+
+`since` is applied in SQL on `/threats`, so `limit` counts new rows. Invalid timestamps return `400 invalid_since`.
+
+```http
+GET /threats?since=2026-09-06T00:04:14Z&sort_by=new&limit=3
+```
+
+`200`
+
+```json
+{
+  "threats": [
+    {
+      "cluster_id": "a421faa9-01c2-45f0-862f-5fd7e1322f03",
+      "title": "Germany plans anti-drone shield after Leipzig attack: report",
+      "ai_title": "Germany Accuses Russia of Drone Attack Amid Rising Hybrid Warfare Threats",
+      "ai_summary": "On August 4, 2026, Germany accused Russia of orchestrating a drone attack on Leipzig-Halle Airport, marking a significant escalation in hybrid warfare tactics. …",
+      "timeline": [
+        {
+          "date": "2026-08-04",
+          "event": "Drone attack on Leipzig-Halle Airport",
+          "detail": "Three drones targeted the airport; one struck a parked plane and another collided with an inbound cargo jet.",
+          "source": "Rte.Ie",
+          "source_url": "https://www.rte.ie/news/2026/0905/1590402-russia-eu-hybrid-attacks/"
+        },
+        {
+          "date": "2026-09-05",
+          "event": "Germany accuses Russia of involvement",
+          "detail": "German Interior Minister Dobrindt stated that the drone attack reflects a new reality of hybrid threats from Russia.",
+          "source": "Rte.Ie",
+          "source_url": "https://www.rte.ie/news/2026/0905/1590402-russia-eu-hybrid-attacks/"
+        },
+        "…"
+      ],
+      "article_count": 2,
+      "threat_score": 62.85,
+      "recency_score": 0.0,
+      "coverage_score": 63.11,
+      "severity_score": 61.0,
+      "sentiment_score": 80.0,
+      "geopolitical_score": 81.0,
+      "actionability_score": 41.0,
+      "severity_reason": "The incident represents a significant escalation in hybrid warfare tactics attributed to state-sponsored actions.",
+      "credibility_score": 0.0,
+      "urgency_level": "medium",
+      "ranking_score": 0.0,
+      "keywords": [
+        "germany",
+        "shield",
+        "…"
+      ],
+      "sources": [
+        "Dw",
+        "Rte.Ie"
+      ],
+      "severity_indicators": [
+        "pla"
+      ],
+      "date_range_earliest": "2026-09-05T06:54:54+00:00",
+      "date_range_latest": "2026-09-06T10:46:40+00:00",
+      "created_at": "2026-09-06T11:44:17.169223+00:00",
+      "updated_at": "2026-09-06T11:46:20.876248+00:00",
+      "recent_article_count_12h": 1,
+      "recent_article_count_6h": 1,
+      "insights_count": 0,
+      "articles": [
+        {
+          "uuid": "b46e4478-070b-ac2d-b3d5-8941149de984",
+          "title": "Is Russia's alleged hybrid war on EU a genuine threat?",
+          "content": "<p>This week Germany accused Russia of involvement in a drone attack on Leipzig-Halle Airport, marking a new low in relations between the two countries since Mo…",
+  …
+}
+```
+
+## Create a webhook
+
+HTTPS on port 443 to a public host; internal and private addresses are rejected with `400 invalid_webhook`. The secret is never returned (`has_secret`).
+
+```http
+POST /webhooks
+Content-Type: application/json
+
+{"webhook_url": "https://httpbin.org/post", "webhook_type": "json", "name": "SOAR intake", "secret_key": "change-me"}
+```
+
+`201`
+
+```json
+{
+  "webhook": {
+    "id": 24,
+    "name": "SOAR intake",
+    "webhook_url": "https://httpbin.org/post",
+    "webhook_type": "json",
+    "is_active": true,
+    "mssp_customer_id": null,
+    "created_at": "2026-09-06T12:04:15.167373+00:00",
+    "has_secret": true,
+    "scope": "personal"
+  }
+}
+```
+
+## An alert rule delivered to that webhook
+
+```http
+POST /alert-rules
+Content-Type: application/json
+
+{"name": "Stack vendors", "logic_operator": "OR", "conditions": [{"entity_type": "platform", "entity_value": "FortiOS"}, {"entity_type": "company", "entity_value": "Okta"}], "notify_webhook": true, "webhook_id": 24}
+```
+
+`200`
+
+```json
+{
+  "success": true,
+  "rule": {
+    "id": 52,
+    "uuid": "9c165faf-a99c-49a8-8970-aa95a7e1e985",
+    "name": "Stack vendors",
+    "description": null,
+    "logic_operator": "OR",
+    "is_active": true,
+    "notify_webhook": true,
+    "notify_email": false,
+    "notify_inapp": true,
+    "notify_email_address": null,
+    "webhook_id": 24,
+    "mssp_customer_id": null,
+    "created_at": "2026-09-06T12:04:15.861142+00:00",
+    "conditions": [
+      {
+        "id": 459,
+        "entity_type": "platform",
+        "entity_value": "FortiOS",
+        "match_type": "exact",
+        "created_at": "2026-09-06T12:04:15.861142+00:00"
+      },
+      {
+        "id": 460,
+        "entity_type": "company",
+        "entity_value": "Okta",
+        "match_type": "exact",
+        "created_at": "2026-09-06T12:04:15.861142+00:00"
+      }
+    ]
+  }
+}
+```
+
+## A CVE alert rule on your products
+
+```http
+POST /cve-alerts
+Content-Type: application/json
+
+{"name": "Fortinet KEV", "vendors": ["Fortinet"], "severity": ["CRITICAL", "HIGH"], "require_kev": true, "notify_webhook": true, "webhook_id": 24}
+```
+
+`200`
+
+```json
+{
+  "success": true,
+  "rule": {
+    "id": 22,
+    "uuid": "dd2259f4-3d7c-4d58-b36c-4fb7949ac3dd",
+    "name": "Fortinet KEV",
+    "description": null,
+    "is_active": true,
+    "match_logic": "AND",
+    "vendors": [
+      "Fortinet"
+    ],
+    "products": null,
+    "cwe_ids": null,
+    "severity": [
+      "CRITICAL",
+      "HIGH"
+    ],
+    "cvss_min": null,
+    "cvss_max": null,
+    "epss_min": null,
+    "epss_percentile_min": null,
+    "require_kev": true,
+    "require_exploit": null,
+    "ransomware_use": null,
+    "keywords": null,
+    "notify_email": false,
+    "notify_webhook": true,
+    "notify_inapp": true,
+    "webhook_id": 24,
+    "mssp_customer_id": null,
+    "created_at": "2026-09-06T12:04:16.856241+00:00",
+    "updated_at": "2026-09-06T12:04:16.856241+00:00"
+  }
+}
+```
+
+## Dry-run a rule against the last 7 days
+
+Sends nothing. `POST …/send-test` fires the rule's webhooks with a test payload.
+
+```http
+POST /alert-rules/9c165faf-a99c-49a8-8970-aa95a7e1e985/test
+```
+
+`200`
+
+```json
+{
+  "rule_uuid": "9c165faf-a99c-49a8-8970-aa95a7e1e985",
+  "rule_name": "Stack vendors",
+  "logic_operator": "OR",
+  "conditions_count": 2,
+  "window_days": 7,
+  "matching_clusters": [
+    {
+      "cluster_id": "e057d32f-1ed6-4558-8f9a-15cd4e5deb78",
+      "title": "AI Infrastructure Under Siege: Session Hijacking and Exploits Surge",
+      "threat_score": 73.25,
+      "created_at": "2026-09-05T18:17:26.363704+00:00"
+    }
+  ],
+  "total_matches": 1
+}
+```
+
+## What fired
+
+```http
+GET /alerts?since=2026-09-06T00:04:14Z&limit=3
+```
+
+`200`
+
+```json
+{
+  "count": 2,
+  "limit": 3,
+  "offset": 0,
+  "alerts": [
+    {
+      "alert_source": "cluster",
+      "trigger_id": 3484,
+      "mssp_customer_id": null,
+      "rule_name": "Alerts: CNI Sector Threats Feed",
+      "entity_ref": "5505b25f",
+      "triggered_at": "2026-09-06T11:46:22.832877+00:00",
+      "disposition": "open",
+      "disposition_note": null,
+      "disposed_by": null,
+      "disposed_at": null
+    },
+    {
+      "alert_source": "cve",
+      "trigger_id": 48600,
+      "mssp_customer_id": null,
+      "rule_name": "CVEs",
+      "entity_ref": "CVE-2026-78362",
+      "triggered_at": "2026-09-06T11:45:13.371441+00:00",
+      "disposition": "open",
+      "disposition_note": null,
+      "disposed_by": null,
+      "disposed_at": null
+    }
+  ]
+}
+```
+
+
+---
+
+# Enrichment (stored results)
+
+## A company's leak-site history
+
+Researcher+ keys get `victim_domain`, `description` and `screenshot_url` on each sighting; free keys get the 7-day window.
+
+```http
+GET /entities/company/Foxconn/darkweb-profile
+```
+
+`200`
+
+```json
+{
+  "name": "Foxconn",
+  "normalised": "foxconn",
+  "authed": true,
+  "hero": {
+    "multi_claim_actors": [],
+    "multi_claim": false,
+    "total_articles": 39,
+    "total_clusters": 7,
+    "total_leak_sights": 1,
+    "first_seen": "2025-12-08T18:16:52.019925+00:00",
+    "last_seen": "2026-07-15T14:02:24+00:00"
+  },
+  "leak_sites": [
+    {
+      "actor": "incransom",
+      "category": "ransomware_leak",
+      "published_at": "2025-12-08T18:16:52.019925+00:00",
+      "first_seen_at": "2025-12-08T18:16:52.019925+00:00",
+      "country": "TW",
+      "industry": "Technology",
+      "victim_id": "984ba3676d3e8e22",
+      "victim_domain": "",
+      "description": "Foxconn Interconnect Technology Limited (FIT) focuses on the development, manufacturing, and marketing of electronic and optoelectronic connectors, antennas, ac…",
+      "screenshot_url": "https://images.ransomware.live/victims/5fd3a0ead34dbf09d83c0d040aa3209c.png"
+    }
+  ],
+  "news_clusters": [
+    {
+      "cluster_id": "528dc1d6-689f-458a-b971-4c342fab9361",
+      "ai_title": "Foxconn Cyberattack: Nitrogen Ransomware Claims 8TB of Data Theft",
+      "article_count": 54,
+      "threat_score": 71.0,
+      "date_range_latest": "2026-05-12T22:04:33.683254+00:00",
+      "og_image_url": null,
+      "mentions": 24
+    },
+    {
+      "cluster_id": "cfa725bf-e481-4682-b0eb-4693cdddd0f1",
+      "ai_title": "Tata Electronics Cyber Breach Exposes Apple and Tesla Trade Secrets",
+      "article_count": 217,
+      "threat_score": 67.75,
+      "date_range_latest": "2026-06-22T17:15:08+00:00",
+      "og_image_url": null,
+      "mentions": 6
+    },
+    "…"
+  ],
+  "articles": [
+    {
+      "uuid": "b6a90175-b0e8-ded7-5c36-500f2c992758",
+      "title": "Independent Testing Shows Which Business Security Products Actually Hold Up When It Matters",
+      "source": "Prnewswire",
+      "url": "https://www.prnewswire.co.uk/news-releases/independent-testing-shows-which-business-security-products-actually-hold-up-when-it-matters-302825114.html",
+      "pub_date": "2026-07-15T14:02:24+00:00",
+      "og_image_url": "https://mmx.prnewswire.com/media/MS1882555/PM_Business_H1_2026_AVC.jpg?id=OA2762342&p=facebook"
+    },
+    {
+      "uuid": "268242b7-2d36-a393-b44f-f5b40e89940e",
+      "title": "Independent Testing Shows Which Business Security Products Actually Hold Up When It Matters",
+  …
+}
+```
+
+## The attack flow behind an incident
+
+Researcher+, 3 credits. `404 not_generated` (credit refunded) until the cluster page has generated one.
+
+```http
+GET /threats/545ca28d/attack-flow
+```
+
+`200`
+
+```json
+{
+  "cluster_id": "a2e5969c-ad0f-4028-bfda-67e7545ca28d",
+  "flow": {
+    "nodes": [
+      {
+        "id": "n1",
+        "type": "initial_access",
+        "label": "Vulnerable Public-Facing Systems",
+        "tactic": "TA0001",
+        "evidence": "QTFY exploits vulnerabilities in internet-facing applications like Ivanti, BeyondTrust, and Check Point devices.",
+        "technique": "T1190",
+        "entity_ref": null
+      },
+      {
+        "id": "n2",
+        "type": "execution",
+        "label": "Exploit Vulnerabilities",
+        "tactic": "TA0002",
+        "evidence": "QTFY uses advanced exploits such as CVE-2024-8190, CVE-2024-8963, CVE-2024-9380, and others to gain initial access.",
+        "technique": "T1068",
+        "entity_ref": null
+      },
+      "…"
+    ],
+    "edges": [
+      {
+        "to": "n2",
+        "from": "n1",
+        "label": "exploits vulnerabilities"
+      },
+      {
+        "to": "n3",
+        "from": "n2",
+        "label": "establishes persistence"
+      },
+      "…"
+    ],
+    "notes": "Attack chain synthesizes multiple exploit and lateral movement steps, emphasizing the use of IoT proxies and web shells for persistence and exfiltration. Nodes …",
+    "confidence": 0.9
+  },
+  "stix": {
+    "id": "bundle--3af530c3-e1ca-42d0-bfa6-1ce834536718",
+    "type": "bundle",
+    "objects": [
+      {
+        "id": "identity--a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+        "name": "ThreatCluster",
+        "type": "identity",
+        "created": "2026-09-02T23:32:24.000Z",
+        "modified": "2026-09-02T23:32:24.000Z",
+        "spec_version": "2.1",
+        "identity_class": "organization"
+      },
+      {
+        "id": "attack-flow--03cf3be3-d451-5523-b295-c4e2f015a2fa",
+        "name": "China-Linked QTFY Group Targets Critical Infrastructure with Advanced Exploits",
+        "type": "attack-flow",
+        "scope": "incident",
+        "created": "2026-09-02T23:32:24.000Z",
+        "modified": "2026-09-02T23:32:24.000Z",
+  …
+}
+```

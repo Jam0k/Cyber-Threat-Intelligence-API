@@ -59,6 +59,60 @@ class ThreatCluster:
             return r.json()
         raise RuntimeError("rate limited; retries exhausted")
 
+    def request(self, method: str, path: str, body: dict | None = None, retries: int = 3, **params: Any) -> Any:
+        """Any method with JSON body/params. Same retry/403 handling as get()."""
+        for attempt in range(retries + 1):
+            r = self.s.request(method, f"{self.base}/{path.lstrip('/')}", json=body, params=params or None,
+                               timeout=max(self.timeout, 60))
+            if r.status_code == 429 and attempt < retries:
+                time.sleep(int(r.headers.get("Retry-After", "5")))
+                continue
+            if r.status_code == 403:
+                raise PermissionError(r.json().get("detail", r.text))
+            r.raise_for_status()
+            return r.json() if "json" in r.headers.get("content-type", "") else r.text
+        raise RuntimeError("rate limited; retries exhausted")
+
+    def patch(self, path: str, body: dict) -> Any:
+        return self.request("PATCH", path, body)
+
+    def delete(self, path: str, **params: Any) -> Any:
+        return self.request("DELETE", path, **params)
+
+    # -- feeds, alerts, webhooks, monitoring (Researcher+) --------------------
+    def create_feed(self, name: str, entities: list[dict] | None = None, keywords: list[str] | None = None,
+                    description: str | None = None) -> dict:
+        """entities: [{"keyword": "FortiOS", "entity_type": "platform"}, ...]"""
+        return self.post("feeds", {"name": name, "entities": entities or [], "keywords": keywords or [],
+                                   "description": description})
+
+    def add_feed_entities(self, feed_id: str, entities: list[dict]) -> dict:
+        return self.post(f"feeds/{feed_id}/entities", {"entities": entities})
+
+    def feed(self, feed_id: str, since: str | None = None, **params: Any) -> dict:
+        return self.get("feed", feed_type="custom", feed_id=feed_id, since=since, **params)
+
+    def delete_feed(self, feed_id: str) -> dict:
+        return self.delete(f"feeds/{feed_id}")
+
+    def create_webhook(self, url: str, name: str | None = None, webhook_type: str = "json",
+                       secret_key: str | None = None) -> dict:
+        return self.post("webhooks", {"webhook_url": url, "name": name, "webhook_type": webhook_type,
+                                      "secret_key": secret_key})
+
+    def create_alert_rule(self, name: str, conditions: list[dict], logic: str = "OR",
+                          webhook_id: int | None = None) -> dict:
+        return self.post("alert-rules", {"name": name, "logic_operator": logic, "conditions": conditions,
+                                         "notify_webhook": webhook_id is not None, "webhook_id": webhook_id})
+
+    def create_cve_rule(self, name: str, webhook_id: int | None = None, **filters: Any) -> dict:
+        """filters: vendors=[...], products=[...], severity=[...], cvss_min=9.0, require_kev=True, ..."""
+        return self.post("cve-alerts", {"name": name, "notify_webhook": webhook_id is not None,
+                                        "webhook_id": webhook_id, **filters})
+
+    def alerts(self, since: str | None = None, **params: Any) -> dict:
+        return self.get("alerts", since=since, **params)
+
     # -- convenience wrappers ------------------------------------------------
     def ask(self, ident: str, action: str = "custom", question: str | None = None) -> dict:
         """Ask AI about one cluster (Researcher+, 25 credits). action is one of

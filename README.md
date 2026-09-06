@@ -2,7 +2,7 @@
 
 Threat intelligence as a REST API: clustered threat reporting with AI summaries and scores,
 validated IOCs, entity intelligence (actors, malware, tools, companies, CVEs), vulnerability
-data with EPSS/KEV, ransomware leak-site tracking, and cited Ask-AI answers — 42 endpoints under one base URL.
+data with EPSS/KEV, ransomware leak-site tracking, and cited Ask-AI answers, plus the feeds, alert rules and webhooks you run through it — 70+ endpoints under one base URL.
 
 **Free tier included.** Every account can mint a read-only key: 100 credits a day over the last 7 days, headline rows. No card, no trial clock. Paid plans buy history, depth and budget — not access.
 
@@ -112,18 +112,40 @@ Entity type slugs: `cve` `apt-group` `ransomware-group` `malware` `tool` `campai
 
 A model timeout or failure refunds the credits. Both are also in the client: `tc.ask(id, "recommended_actions")`, `tc.ask_corpus("…")`.
 
-### Your feeds & alerts — `feeds:*`, `alerts:*` (Researcher+)
-`GET /feed`, `GET /feeds`, `GET /feeds/{id}/entities`, `/alert-rules`, `/cve-alerts`, `GET /alerts`,
-`POST /alerts/{source}/{trigger_id}/disposition`.
+### Your feeds, alerts, webhooks and monitoring — `feeds:*`, `alerts:*` (Researcher+)
+Build a feed from your stack and run your monitoring through the API. Every object has a full lifecycle
+(create, list, get, update, delete, test), so nothing needs the web UI.
+
+- **Feeds** — `POST /feeds` (typed `entities[]`: `{"keyword":"FortiOS","entity_type":"platform"}`), `GET /feeds`,
+  `PATCH|DELETE /feeds/{id}`, `GET|POST /feeds/{id}/entities`, `DELETE /feeds/{id}/entities/{keyword}`,
+  `GET /feed?feed_type=custom&feed_id=…`
+- **Personal feed keywords** — `GET|POST /keywords`, `DELETE /keywords/{keyword}` (behind `feed_type=my_feed`)
+- **Webhooks** — `GET|POST /webhooks`, `PATCH|DELETE /webhooks/{id}`, `POST /webhooks/{id}/test`
+  (HTTPS on 443, public host; `json|slack|discord|teams`; optional HMAC-SHA256 secret → `X-ThreatCluster-Signature`)
+- **Alert rules** — `GET|POST /alert-rules`, `GET|PATCH|DELETE /alert-rules/{uuid}`, `POST …/test` (dry run, last 7 days),
+  `POST …/send-test` (fires the rule's webhooks)
+- **CVE alert rules** — `GET|POST /cve-alerts`, `GET|PATCH|DELETE /cve-alerts/{uuid}`, `POST …/test` (30-day preview)
+- **What fired** — `GET /alerts?since=…&state=open`
+- **Company / domain monitoring** (Analyst+) — `GET|PUT /monitoring/company`, `GET /monitoring/company/threats`
+- **Incremental polling** — `since=<ISO-8601>` on `/threats` (applied in SQL), `/feed` and `/alerts`
+
+### Enrichment — stored results, read-only
+`GET /threats/{id}/attack-flow`, `GET /vulnerabilities/{cve}/attack-flow` (Researcher+, 3 credits),
+`GET /d3fend/{id}`, `GET /vulnerabilities/{cve}/exploits`, `GET /entities/{type}/{value}/summary`,
+`GET /entities/company/{name}/darkweb-profile` (3 credits). A `404 not_generated` means the page-side
+generator has not run for that record yet; it refunds the credit.
 
 ### Dark web — `darkweb:read` (free)
 `/darkweb/ransomware/victims` (+ `/facets`), `/darkweb/ransomware/groups`, `/darkweb/ransomware/group/{name}`,
-`/darkweb/ransomware/victim/{id}`, `/darkweb/breaches`, `/darkweb/market/{name}`, `/darkweb/keyword-hits`,
+`/darkweb/ransomware/victim/{id}`, `/darkweb/keyword-hits`,
 `/darkweb/trends`, `/darkweb/stats`.
 
-### Inventory, MSSP, compliance — `inventory:*`, `mssp:*`, `compliance:read` (Business / MSSP)
-`POST /inventory`, `GET /inventory/threats`, `GET /inventory/summary`, `/mssp/customers…`,
-`GET /mssp/customers/{id}/risk`, `GET /compliance/evidence`.
+### Managed customers — `mssp:*` (Business / MSSP)
+`/mssp/customers…` (customers, per-customer feeds and keywords). Every feed, rule, webhook and keyword
+endpoint above also takes `mssp_customer_id` to act on one managed customer.
+
+Removed (return `410 Gone`): `/darkweb/breaches`, `/darkweb/market/{name}`, the inventory, risk-scoring,
+compliance-evidence and alert-disposition endpoints. Dark-web coverage is ransomware leak sites.
 
 Full parameter and response schemas: [`openapi/openapi.json`](openapi/openapi.json) or the live
 [Swagger UI](https://threatcluster.io/api/public/v1/docs).
@@ -174,6 +196,8 @@ and `"lookback_days": 7`. Researcher and above get full records and full history
 | [`examples/python/siem_lookup_table.py`](examples/python/siem_lookup_table.py) | Write a CSV lookup table of confirmed IOCs for Splunk / Sentinel / Elastic (7-day window on a free key) |
 | [`examples/python/kev_watch.py`](examples/python/kev_watch.py) | KEV-listed CVEs with public exploits against your vendor list |
 | [`examples/node/quickstart.mjs`](examples/node/quickstart.mjs) | Node 18+ `fetch`, no dependencies |
+| [`examples/python/stack_feed.py`](examples/python/stack_feed.py) | Run your monitoring through the API: typed feed from your stack → webhook → alert + CVE rules → dry run → poll `since` (Researcher+) |
+| [`examples/bash/stack_feed.sh`](examples/bash/stack_feed.sh) | The same loop in curl + jq |
 
 All examples read the key from `TC_KEY`.
 
