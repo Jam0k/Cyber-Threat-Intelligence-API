@@ -290,6 +290,133 @@
         "title": "AlertRuleCreate",
         "type": "object"
       },
+      "AlertRuleUpdate": {
+        "description": "Body for PATCH /alert-rules/{rule_uuid}. Only sent fields change; `conditions` replaces the whole set.",
+        "properties": {
+          "conditions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AlertCondition"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditions"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "logic_operator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "'AND' or 'OR'.",
+            "title": "Logic Operator"
+          },
+          "mssp_customer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The managed customer the rule belongs to, if not personal.",
+            "title": "Mssp Customer Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "notify_email": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notify Email"
+          },
+          "notify_email_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Empty string clears it.",
+            "title": "Notify Email Address"
+          },
+          "notify_webhook": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notify Webhook"
+          },
+          "webhook_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "0 clears it.",
+            "title": "Webhook Id"
+          }
+        },
+        "title": "AlertRuleUpdate",
+        "type": "object"
+      },
       "AskCorpusRequest": {
         "properties": {
           "history": {
@@ -489,6 +616,34 @@
           "file"
         ],
         "title": "Body_upload_user_logo_api_user_logo_post",
+        "type": "object"
+      },
+      "BrandDraftIn": {
+        "properties": {
+          "n": {
+            "default": 2,
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "N",
+            "type": "integer"
+          },
+          "short_id": {
+            "maxLength": 12,
+            "minLength": 6,
+            "title": "Short Id",
+            "type": "string"
+          },
+          "surface": {
+            "default": "post",
+            "pattern": "^(post|analysis|thread_hook|lead)$",
+            "title": "Surface",
+            "type": "string"
+          }
+        },
+        "required": [
+          "short_id"
+        ],
+        "title": "BrandDraftIn",
         "type": "object"
       },
       "CIExchangeBody": {
@@ -1010,6 +1165,47 @@
         "title": "CVEAlertRuleUpdate",
         "type": "object"
       },
+      "CompanyMonitoringUpdate": {
+        "description": "Body for PUT /monitoring/company.",
+        "example": {
+          "company_name": "Acme Corp",
+          "domains": [
+            "acme.com",
+            "acme-supplier.io"
+          ]
+        },
+        "properties": {
+          "company_name": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name"
+          },
+          "domains": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Domains to watch on ransomware leak sites. Organisation accounts may list several (up to their cap); personal accounts one.",
+            "title": "Domains"
+          }
+        },
+        "title": "CompanyMonitoringUpdate",
+        "type": "object"
+      },
       "CooccurringCveItem": {
         "additionalProperties": true,
         "properties": {
@@ -1472,6 +1668,253 @@
           "name"
         ],
         "title": "CveAlertRuleCreate",
+        "type": "object"
+      },
+      "CveAlertRuleUpdate": {
+        "description": "Body for PATCH /cve-alerts/{rule_uuid}. Only sent fields change.",
+        "properties": {
+          "cvss_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cvss Max"
+          },
+          "cvss_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cvss Min"
+          },
+          "cwe_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cwe Ids"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "epss_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Epss Min"
+          },
+          "epss_percentile_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Epss Percentile Min"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "keywords": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keywords"
+          },
+          "match_logic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Match Logic"
+          },
+          "mssp_customer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mssp Customer Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "notify_email": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notify Email"
+          },
+          "notify_webhook": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notify Webhook"
+          },
+          "products": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Products"
+          },
+          "ransomware_use": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ransomware Use"
+          },
+          "require_exploit": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Require Exploit"
+          },
+          "require_kev": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Require Kev"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
+          },
+          "vendors": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vendors"
+          },
+          "webhook_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webhook Id"
+          }
+        },
+        "title": "CveAlertRuleUpdate",
         "type": "object"
       },
       "CveDetail": {
@@ -2525,6 +2968,21 @@
             "description": "Optional feed description.",
             "title": "Description"
           },
+          "entities": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/FeedEntityInput"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Typed entities to seed the feed, e.g. {\"keyword\": \"FortiOS\", \"entity_type\": \"platform\"}. Use this for a stack or supply-chain feed.",
+            "title": "Entities"
+          },
           "keywords": {
             "anyOf": [
               {
@@ -2537,8 +2995,20 @@
                 "type": "null"
               }
             ],
-            "description": "Keywords to seed the feed \u2014 vendors, products, actors, sectors. Matched against news clusters.",
+            "description": "Untyped keywords to seed the feed \u2014 matched against the entity values extracted from articles.",
             "title": "Keywords"
+          },
+          "mssp_customer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Create the feed on one of your managed customers (MSSP). Omit for a personal feed.",
+            "title": "Mssp Customer Id"
           },
           "name": {
             "description": "Feed name (required).",
@@ -2552,6 +3022,79 @@
           "name"
         ],
         "title": "FeedCreate",
+        "type": "object"
+      },
+      "FeedEntitiesAdd": {
+        "description": "Body for POST /feeds/{feed_id}/entities. Send `entities` (batch) or a single `keyword`.",
+        "example": {
+          "entities": [
+            {
+              "entity_type": "platform",
+              "keyword": "FortiOS"
+            },
+            {
+              "entity_type": "company",
+              "keyword": "Okta"
+            }
+          ]
+        },
+        "properties": {
+          "entities": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/FeedEntityInput"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entities"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type"
+          },
+          "is_custom": {
+            "default": false,
+            "title": "Is Custom",
+            "type": "boolean"
+          },
+          "keyword": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Shorthand for a single entity.",
+            "title": "Keyword"
+          },
+          "mssp_customer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mssp Customer Id"
+          }
+        },
+        "title": "FeedEntitiesAdd",
         "type": "object"
       },
       "FeedEntitiesResponse": {
@@ -2615,6 +3158,41 @@
           "keyword"
         ],
         "title": "FeedEntity",
+        "type": "object"
+      },
+      "FeedEntityInput": {
+        "description": "One entity to add to a feed.",
+        "properties": {
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Type hint: company, platform, product, apt_group, ransomware_group, malware, cve, country, industry, attack_type. Omit for a plain keyword.",
+            "title": "Entity Type"
+          },
+          "is_custom": {
+            "default": false,
+            "description": "True for a free-text keyword that is not a known entity.",
+            "title": "Is Custom",
+            "type": "boolean"
+          },
+          "keyword": {
+            "description": "The value to match: a vendor, product, company, actor, malware, CVE\u2026",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Keyword",
+            "type": "string"
+          }
+        },
+        "required": [
+          "keyword"
+        ],
+        "title": "FeedEntityInput",
         "type": "object"
       },
       "FeedResponse": {
@@ -2796,6 +3374,50 @@
         "title": "FeedSummary",
         "type": "object"
       },
+      "FeedUpdate": {
+        "description": "Body for PATCH /feeds/{feed_id}.",
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "mssp_customer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The managed customer the feed belongs to, if not personal.",
+            "title": "Mssp Customer Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "title": "FeedUpdate",
+        "type": "object"
+      },
       "FeedsListResponse": {
         "additionalProperties": true,
         "properties": {
@@ -2816,6 +3438,52 @@
           "count"
         ],
         "title": "FeedsListResponse",
+        "type": "object"
+      },
+      "FounderPostIn": {
+        "properties": {
+          "kind": {
+            "pattern": "^(data|first|progress|take|brief)$",
+            "title": "Kind",
+            "type": "string"
+          },
+          "note": {
+            "default": "",
+            "maxLength": 4000,
+            "title": "Note",
+            "type": "string"
+          },
+          "surface": {
+            "default": "linkedin",
+            "pattern": "^(linkedin|post|threads)$",
+            "title": "Surface",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "FounderPostIn",
+        "type": "object"
+      },
+      "FounderReplyIn": {
+        "properties": {
+          "note": {
+            "default": "",
+            "maxLength": 1000,
+            "title": "Note",
+            "type": "string"
+          },
+          "url": {
+            "maxLength": 300,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "FounderReplyIn",
         "type": "object"
       },
       "GroupDetailResponse": {
@@ -3175,6 +3843,49 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "KeywordCreate": {
+        "description": "Body for POST /keywords (the entities behind feed_type=my_feed).",
+        "properties": {
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type"
+          },
+          "is_custom": {
+            "default": false,
+            "title": "Is Custom",
+            "type": "boolean"
+          },
+          "keyword": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Keyword",
+            "type": "string"
+          },
+          "mssp_customer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mssp Customer Id"
+          }
+        },
+        "required": [
+          "keyword"
+        ],
+        "title": "KeywordCreate",
+        "type": "object"
+      },
       "KeywordHitGroup": {
         "additionalProperties": true,
         "properties": {
@@ -3323,6 +4034,32 @@
           "total"
         ],
         "title": "KeywordHitsResponse",
+        "type": "object"
+      },
+      "LintIn": {
+        "properties": {
+          "surface": {
+            "default": "post",
+            "pattern": "^(post|reply|linkedin|thread|analysis|threads)$",
+            "title": "Surface",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 8000,
+            "title": "Text",
+            "type": "string"
+          },
+          "voice": {
+            "default": "brand",
+            "pattern": "^(brand|founder)$",
+            "title": "Voice",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "LintIn",
         "type": "object"
       },
       "MintBearerBody": {
@@ -6031,6 +6768,70 @@
         "title": "WebhookCreate",
         "type": "object"
       },
+      "WebhookCreatePublic": {
+        "description": "Body for POST /webhooks.",
+        "example": {
+          "name": "SOAR intake",
+          "webhook_type": "json",
+          "webhook_url": "https://hooks.example.com/threatcluster"
+        },
+        "properties": {
+          "mssp_customer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mssp Customer Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "secret_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional HMAC-SHA256 secret; json deliveries carry X-ThreatCluster-Signature.",
+            "title": "Secret Key"
+          },
+          "webhook_type": {
+            "default": "json",
+            "description": "json | slack | discord | teams",
+            "title": "Webhook Type",
+            "type": "string"
+          },
+          "webhook_url": {
+            "description": "HTTPS URL on port 443; internal and private hosts are rejected.",
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Webhook Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "webhook_url"
+        ],
+        "title": "WebhookCreatePublic",
+        "type": "object"
+      },
       "WebhookUpdate": {
         "description": "Validation model for webhook updates.",
         "properties": {
@@ -6103,6 +6904,83 @@
         "title": "WebhookUpdate",
         "type": "object"
       },
+      "WebhookUpdatePublic": {
+        "description": "Body for PATCH /webhooks/{id}. Only sent fields change.",
+        "properties": {
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "mssp_customer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mssp Customer Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "secret_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secret Key"
+          },
+          "webhook_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webhook Type"
+          },
+          "webhook_url": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "minLength": 10,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Webhook Url"
+          }
+        },
+        "title": "WebhookUpdatePublic",
+        "type": "object"
+      },
       "WeeklyVictimPoint": {
         "additionalProperties": true,
         "properties": {
@@ -6141,6 +7019,51 @@
   "openapi": "3.1.0",
   "paths": {
     "/api/public/v1/alert-rules": {
+      "get": {
+        "operationId": "public_list_alert_rules_api_public_v1_alert_rules_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List your alert rules",
+        "tags": [
+          "alerts"
+        ]
+      },
       "post": {
         "description": "Create a personal alert rule that fires when its conditions match a new threat\ncluster. Tier-capped conditions (5 most tiers, 50 Business). Delivery via your\nwebhook(s) and/or email. Omit `mssp_customer_id` for a personal rule, or set it\nto scope the rule to one of your managed customers (Business plan).",
         "operationId": "public_create_alert_rule_api_public_v1_alert_rules_post",
@@ -6175,6 +7098,276 @@
           }
         },
         "summary": "Create an alert rule (personal or managed-customer scoped)",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/alert-rules/{rule_uuid}": {
+      "delete": {
+        "operationId": "public_delete_alert_rule_api_public_v1_alert_rules__rule_uuid__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete an alert rule",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "get": {
+        "operationId": "public_get_alert_rule_api_public_v1_alert_rules__rule_uuid__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get one alert rule",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "patch": {
+        "operationId": "public_update_alert_rule_api_public_v1_alert_rules__rule_uuid__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertRuleUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update an alert rule",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/alert-rules/{rule_uuid}/send-test": {
+      "post": {
+        "operationId": "public_send_test_alert_rule_api_public_v1_alert_rules__rule_uuid__send_test_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Fire a test notification to the rule's webhooks",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/alert-rules/{rule_uuid}/test": {
+      "post": {
+        "operationId": "public_test_alert_rule_api_public_v1_alert_rules__rule_uuid__test_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dry-run a rule against the last 7 days (sends nothing)",
         "tags": [
           "alerts"
         ]
@@ -6339,6 +7532,51 @@
       }
     },
     "/api/public/v1/cve-alerts": {
+      "get": {
+        "operationId": "public_list_cve_alert_rules_api_public_v1_cve_alerts_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List your CVE alert rules",
+        "tags": [
+          "alerts"
+        ]
+      },
       "post": {
         "description": "Create a personal CVE alert rule. Fires when a CVE matches the filters\n(vendor/product/CWE/severity/CVSS/EPSS/KEV/exploit/ransomware/keywords),\ncombined by match_logic. Shares the alert-rule tier quota.",
         "operationId": "public_create_cve_alert_rule_api_public_v1_cve_alerts_post",
@@ -6375,6 +7613,260 @@
         "summary": "Create a CVE alert rule (personal or managed-customer scoped)",
         "tags": [
           "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/cve-alerts/{rule_uuid}": {
+      "delete": {
+        "operationId": "public_delete_cve_alert_rule_api_public_v1_cve_alerts__rule_uuid__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete a CVE alert rule",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "get": {
+        "operationId": "public_get_cve_alert_rule_api_public_v1_cve_alerts__rule_uuid__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get one CVE alert rule",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "patch": {
+        "operationId": "public_update_cve_alert_rule_api_public_v1_cve_alerts__rule_uuid__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CveAlertRuleUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update a CVE alert rule",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/cve-alerts/{rule_uuid}/test": {
+      "post": {
+        "operationId": "public_test_cve_alert_rule_api_public_v1_cve_alerts__rule_uuid__test_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preview which CVEs from the last 30 days a rule matches",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/d3fend/{d3fend_id}": {
+      "get": {
+        "operationId": "public_d3fend_api_public_v1_d3fend__d3fend_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "d3fend_id",
+            "required": true,
+            "schema": {
+              "title": "D3Fend Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "D3FEND countermeasure detail",
+        "tags": [
+          "threats"
         ]
       }
     },
@@ -6563,7 +8055,7 @@
     },
     "/api/public/v1/darkweb/ransomware/victims": {
       "get": {
-        "description": "Get ransomware victims.\n\nQuery parameters:\n- days: Filter to victims from last N days (default: 30, max: 90)\n- group: Filter by ransomware group name (optional)\n- country: Filter by country code (optional)\n- sector: Filter by victim sector/industry (optional). Use the values from\n  the /darkweb/ransomware/victims/facets endpoint. Turns this into a\n  per-client sector view for platform reports.\n- limit: Maximum results (default: 100, max: 500)\n\nReturns list of ransomware victims with group, date, and country info.",
+        "description": "Get ransomware victims.\n\nQuery parameters:\n- days: Filter to victims from last N days (default: 30, max: 90)\n- group: Filter by ransomware group name (optional)\n- country: Filter by country code (optional)\n- sector: Filter by victim sector/industry (optional). Use the values from\n  the /darkweb/ransomware/victims/facets endpoint. Turns this into a\n  per-client sector view for platform reports.\n- limit: Maximum results (default: 100, max: 500)\n- since: ISO-8601 timestamp; only listings first observed after it. Pass the\n  newest `discovered` you saw last run to poll incrementally.\n\nReturns list of ransomware victims with group, date, and country info.",
         "operationId": "public_get_ransomware_victims_api_public_v1_darkweb_ransomware_victims_get",
         "parameters": [
           {
@@ -6611,6 +8103,15 @@
               "default": 100,
               "title": "Limit",
               "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "title": "Since",
+              "type": "string"
             }
           }
         ],
@@ -6807,6 +8308,46 @@
         ]
       }
     },
+    "/api/public/v1/entities/company/{name}/darkweb-profile": {
+      "get": {
+        "operationId": "public_company_darkweb_profile_api_public_v1_entities_company__name__darkweb_profile_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Leak-site sightings, clusters and articles for one company",
+        "tags": [
+          "darkweb"
+        ]
+      }
+    },
     "/api/public/v1/entities/search": {
       "get": {
         "description": "Search entities.\n\nQuery parameters:\n- q: Search query\n- entity_type: Filter by type (optional)\n- limit: Max results (default: 20, max: 100)\n- offset: Skip N results for pagination (default: 0)\n- with_cve_count: Include a `cve_count` per entity (distinct CVEs co-occurring\n  with it). Adds a correlated subquery, so it's opt-in \u2014 leave off for\n  autocomplete/typeahead where latency matters.\n\nReturns matching entities with frequency data + pagination metadata\n(total, limit, offset) so consumers can page beyond the first 100.",
@@ -6991,6 +8532,55 @@
           }
         },
         "summary": "Entity detail",
+        "tags": [
+          "entities"
+        ]
+      }
+    },
+    "/api/public/v1/entities/{category}/{entity_value}/summary": {
+      "get": {
+        "operationId": "public_entity_summary_api_public_v1_entities__category___entity_value__summary_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "category",
+            "required": true,
+            "schema": {
+              "title": "Category",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "entity_value",
+            "required": true,
+            "schema": {
+              "title": "Entity Value",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "AI overview of an entity (stored)",
         "tags": [
           "entities"
         ]
@@ -7247,6 +8837,15 @@
               ],
               "title": "Mssp Customer Id"
             }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "title": "Since",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -7365,6 +8964,110 @@
         ]
       }
     },
+    "/api/public/v1/feeds/{feed_id}": {
+      "delete": {
+        "operationId": "public_delete_feed_api_public_v1_feeds__feed_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "feed_id",
+            "required": true,
+            "schema": {
+              "title": "Feed Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete a feed",
+        "tags": [
+          "feeds"
+        ]
+      },
+      "patch": {
+        "operationId": "public_update_feed_api_public_v1_feeds__feed_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "feed_id",
+            "required": true,
+            "schema": {
+              "title": "Feed Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Rename or describe a feed",
+        "tags": [
+          "feeds"
+        ]
+      }
+    },
     "/api/public/v1/feeds/{feed_id}/entities": {
       "get": {
         "description": "Get entities tracked in a custom feed.\n\nPass `?mssp_customer_id=N` to read a customer-scoped feed (default: personal).",
@@ -7419,6 +9122,119 @@
           }
         },
         "summary": "Entities tracked by a feed",
+        "tags": [
+          "feeds"
+        ]
+      },
+      "post": {
+        "operationId": "public_add_feed_entities_api_public_v1_feeds__feed_id__entities_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "feed_id",
+            "required": true,
+            "schema": {
+              "title": "Feed Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedEntitiesAdd"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add typed entities or keywords to a feed",
+        "tags": [
+          "feeds"
+        ]
+      }
+    },
+    "/api/public/v1/feeds/{feed_id}/entities/{keyword}": {
+      "delete": {
+        "operationId": "public_remove_feed_entity_api_public_v1_feeds__feed_id__entities__keyword__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "feed_id",
+            "required": true,
+            "schema": {
+              "title": "Feed Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "keyword",
+            "required": true,
+            "schema": {
+              "title": "Keyword",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove an entity or keyword from a feed",
         "tags": [
           "feeds"
         ]
@@ -7598,6 +9414,146 @@
         ]
       }
     },
+    "/api/public/v1/keywords": {
+      "get": {
+        "operationId": "public_list_keywords_api_public_v1_keywords_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List the keywords behind your personal feed",
+        "tags": [
+          "feeds"
+        ]
+      },
+      "post": {
+        "operationId": "public_add_keyword_api_public_v1_keywords_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KeywordCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Track a keyword or entity on your personal feed",
+        "tags": [
+          "feeds"
+        ]
+      }
+    },
+    "/api/public/v1/keywords/{keyword}": {
+      "delete": {
+        "operationId": "public_remove_keyword_api_public_v1_keywords__keyword__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "keyword",
+            "required": true,
+            "schema": {
+              "title": "Keyword",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stop tracking a keyword",
+        "tags": [
+          "feeds"
+        ]
+      }
+    },
     "/api/public/v1/me": {
       "get": {
         "description": "What this key can do and how much budget is left, in one call.\n\nCosts nothing (weight 0), so an agent or a cron job can check before a\nbatch instead of parsing headers off every response. Reads the same\nper-key bucket that every request is charged against, so `used_today`\nmatches the `X-RateLimit-Remaining` header on your last call.\nWorks with an API key or a bearer minted from one.",
@@ -7617,6 +9573,81 @@
         "summary": "Your plan, credits left and key",
         "tags": [
           "account"
+        ]
+      }
+    },
+    "/api/public/v1/monitoring/company": {
+      "get": {
+        "operationId": "public_get_company_monitoring_api_public_v1_monitoring_company_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Your monitored company name and domains",
+        "tags": [
+          "monitoring"
+        ]
+      },
+      "put": {
+        "operationId": "public_set_company_monitoring_api_public_v1_monitoring_company_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyMonitoringUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set the company name and domains to watch on leak sites",
+        "tags": [
+          "monitoring"
+        ]
+      }
+    },
+    "/api/public/v1/monitoring/company/threats": {
+      "get": {
+        "operationId": "public_company_threats_api_public_v1_monitoring_company_threats_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Leak-site victim postings naming your company or domains",
+        "tags": [
+          "monitoring"
         ]
       }
     },
@@ -8157,7 +10188,7 @@
     },
     "/api/public/v1/threats": {
       "get": {
-        "description": "Get threat clusters.\n\nQuery parameters:\n- limit: Max results (default: 50, max: 100)\n- offset: Pagination offset\n- time_filter: 1h, 24h, 7d, 30d (default: 7d)\n- sort_by: trending, new (default: trending)\n- keyword: Optional keyword filter\n\nReturns list of threat clusters with entities.",
+        "description": "Get threat clusters.\n\nQuery parameters:\n- limit: Max results (default: 50, max: 100)\n- offset: Pagination offset\n- time_filter: 1h, 24h, 7d, 30d (default: 7d)\n- sort_by: trending, new (default: trending)\n- keyword: Optional keyword filter\n- since: ISO-8601 timestamp; return only clusters with reporting newer than\n  this. Intended for pollers: ask for a window that comfortably covers your\n  interval, pass the newest timestamp you saw last run, and you are billed\n  for one call instead of re-reading the whole window.\n\nReturns list of threat clusters with entities.",
         "operationId": "public_get_threats_api_public_v1_threats_get",
         "parameters": [
           {
@@ -8206,6 +10237,15 @@
             "required": false,
             "schema": {
               "title": "Keyword",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "title": "Since",
               "type": "string"
             }
           }
@@ -8334,6 +10374,46 @@
         ]
       }
     },
+    "/api/public/v1/threats/{identifier}/attack-flow": {
+      "get": {
+        "operationId": "public_cluster_attack_flow_api_public_v1_threats__identifier__attack_flow_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "identifier",
+            "required": true,
+            "schema": {
+              "title": "Identifier",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stored attack flow (CTID Attack Flow) for a cluster",
+        "tags": [
+          "threats"
+        ]
+      }
+    },
     "/api/public/v1/threats/{identifier}/iocs": {
       "get": {
         "description": "Export IOCs from a threat cluster.\n\nPath parameters:\n- identifier: Cluster ID or short ID\n\nQuery parameters:\n- types: Comma-separated (ip, domain, url, hash, email, all) - default: all\n- format: json, csv, txt (default: json)\n\nReturns IOCs in requested format.",
@@ -8450,7 +10530,7 @@
     },
     "/api/public/v1/vulnerabilities": {
       "get": {
-        "description": "Get CVE/vulnerability feed.\n\nQuery parameters:\n- days: CVEs from last N days (default: 30, max: 730). Ignored if published_after is set.\n- published_after / published_before: ISO-8601 date bounds (absolute range; alternative to days).\n- severity: Filter by severity (CRITICAL, HIGH, MEDIUM, LOW) - comma-separated\n- kev_only: Only CISA KEV entries (default: false)\n- has_exploit: Only CVEs with known exploits (default: false)\n- vendor: Filter by affected vendor (matches affected_vendors)\n- product: Filter by affected product (matches affected_products)\n- page: Page number (default: 1)\n- limit: Results per page (default: 50, max: 100)\n\nReturns paginated CVE list with CVSS scores and exploit status.",
+        "description": "Get CVE/vulnerability feed.\n\nQuery parameters:\n- days: CVEs from last N days (default: 30, max: 730). Ignored if published_after is set.\n- published_after / published_before: ISO-8601 date bounds (absolute range; alternative to days).\n  `published_after` is also the incremental-polling parameter for this endpoint: pass the newest\n  `published_date` you saw last run instead of re-reading the whole window.\n- severity: Filter by severity (CRITICAL, HIGH, MEDIUM, LOW) - comma-separated\n- kev_only: Only CISA KEV entries (default: false)\n- has_exploit: Only CVEs with known exploits (default: false)\n- vendor: Filter by affected vendor (matches affected_vendors)\n- product: Filter by affected product (matches affected_products)\n- page: Page number (default: 1)\n- limit: Results per page (default: 50, max: 100)\n\nReturns paginated CVE list with CVSS scores and exploit status.",
         "operationId": "public_get_vulnerabilities_api_public_v1_vulnerabilities_get",
         "parameters": [
           {
@@ -8639,6 +10719,330 @@
         "summary": "CVE detail",
         "tags": [
           "vulnerabilities"
+        ]
+      }
+    },
+    "/api/public/v1/vulnerabilities/{cve_id}/attack-flow": {
+      "get": {
+        "operationId": "public_cve_attack_flow_api_public_v1_vulnerabilities__cve_id__attack_flow_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cve_id",
+            "required": true,
+            "schema": {
+              "title": "Cve Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Stored attack flow for a CVE",
+        "tags": [
+          "vulnerabilities"
+        ]
+      }
+    },
+    "/api/public/v1/vulnerabilities/{cve_id}/exploits": {
+      "get": {
+        "operationId": "public_cve_exploits_api_public_v1_vulnerabilities__cve_id__exploits_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "cve_id",
+            "required": true,
+            "schema": {
+              "title": "Cve Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Public exploit intelligence for a CVE",
+        "tags": [
+          "vulnerabilities"
+        ]
+      }
+    },
+    "/api/public/v1/webhooks": {
+      "get": {
+        "operationId": "public_list_webhooks_api_public_v1_webhooks_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List your webhooks",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "post": {
+        "operationId": "public_create_webhook_api_public_v1_webhooks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookCreatePublic"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create a webhook (HTTPS, port 443, public host)",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/webhooks/{webhook_id}": {
+      "delete": {
+        "operationId": "public_delete_webhook_api_public_v1_webhooks__webhook_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "title": "Webhook Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete a webhook",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "patch": {
+        "operationId": "public_update_webhook_api_public_v1_webhooks__webhook_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "title": "Webhook Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookUpdatePublic"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update a webhook",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/webhooks/{webhook_id}/test": {
+      "post": {
+        "operationId": "public_test_webhook_api_public_v1_webhooks__webhook_id__test_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "webhook_id",
+            "required": true,
+            "schema": {
+              "title": "Webhook Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Send a test payload to a webhook",
+        "tags": [
+          "alerts"
         ]
       }
     }
