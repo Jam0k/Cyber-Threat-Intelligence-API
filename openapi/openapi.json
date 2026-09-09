@@ -516,6 +516,24 @@
         "title": "AskThreatRequest",
         "type": "object"
       },
+      "BlockIn": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "title": "BlockIn",
+        "type": "object"
+      },
       "Body_cancel_subscription_api_subscription_cancel_post": {
         "properties": {
           "at_period_end": {
@@ -2541,6 +2559,46 @@
         "title": "DarkwebStatsResponse",
         "type": "object"
       },
+      "DomainIn": {
+        "properties": {
+          "domain": {
+            "maxLength": 253,
+            "minLength": 3,
+            "title": "Domain",
+            "type": "string"
+          }
+        },
+        "required": [
+          "domain"
+        ],
+        "title": "DomainIn",
+        "type": "object"
+      },
+      "EnableIn": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "title": "EnableIn",
+        "type": "object"
+      },
       "EntitiesSearchResponse": {
         "additionalProperties": true,
         "properties": {
@@ -2923,6 +2981,19 @@
           "timeline"
         ],
         "title": "EntityTimelineResponse",
+        "type": "object"
+      },
+      "ExemptIn": {
+        "properties": {
+          "exempt": {
+            "title": "Exempt",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "exempt"
+        ],
+        "title": "ExemptIn",
         "type": "object"
       },
       "FacetValue": {
