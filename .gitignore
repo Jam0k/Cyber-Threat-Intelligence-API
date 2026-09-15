@@ -5,3 +5,5 @@ __pycache__/
 node_modules/
 *.csv
 !examples/**/sample*.csv
+# captured recipe validation runs (stdout/status/urls) - local only
+examples/recipes/_validation/
