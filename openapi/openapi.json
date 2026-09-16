@@ -1340,6 +1340,17 @@
             ],
             "title": "Epss Score"
           },
+          "exploit_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exploit Count"
+          },
           "has_exploit": {
             "anyOf": [
               {
@@ -1362,6 +1373,28 @@
             ],
             "title": "In Kev"
           },
+          "kev_added_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kev Added Date"
+          },
+          "kev_due_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kev Due Date"
+          },
           "last_modified": {
             "anyOf": [
               {
@@ -1383,6 +1416,17 @@
               }
             ],
             "title": "Published Date"
+          },
+          "ransomware_use": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ransomware Use"
           }
         },
         "required": [
@@ -2320,6 +2364,17 @@
             ],
             "title": "Epss Score"
           },
+          "exploit_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exploit Count"
+          },
           "has_exploit": {
             "anyOf": [
               {
@@ -2342,6 +2397,28 @@
             ],
             "title": "In Kev"
           },
+          "kev_added_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kev Added Date"
+          },
+          "kev_due_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kev Due Date"
+          },
           "last_modified": {
             "anyOf": [
               {
@@ -2363,6 +2440,17 @@
               }
             ],
             "title": "Published Date"
+          },
+          "ransomware_use": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ransomware Use"
           }
         },
         "required": [
