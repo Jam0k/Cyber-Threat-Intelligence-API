@@ -8031,7 +8031,7 @@
     },
     "/api/public/v1/darkweb/keyword-hits": {
       "get": {
-        "description": "Match one or more keywords against ransomware victim names and group\nnames. Case-insensitive\nsubstring match \u2014 ideal for supply-chain / brand monitoring.\n\nQuery parameters:\n- keywords: Comma-separated list (required). Caller-provided; this\n  endpoint does NOT use the org's stored keywords list.\n- per_bucket_limit: Max hits per bucket (default 25, max 100).\n\nReturns: { keywords, hits: {victims, groups}, total }",
+        "description": "Match one or more keywords against ransomware victim names and group\nnames. Case-insensitive\nsubstring match \u2014 ideal for supply-chain / brand monitoring.\n\nQuery parameters:\n- keywords: Comma-separated list (required). Caller-provided; this\n  endpoint does NOT use the org's stored keywords list.\n- per_bucket_limit: Max hits per bucket (default 25, max 100).\n\nReturns: { keywords, hits: {victims, groups}, total }\n\nStarter and up (2026-09-20): brand / supply-chain monitoring across leak\nsites is the paid feature; a free key's FIRST call here starts its 7-day\nStarter trial and is served, later free calls get 403 upgrade_required.",
         "operationId": "public_get_keyword_hits_api_public_v1_darkweb_keyword_hits_get",
         "parameters": [
           {
