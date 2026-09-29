@@ -38,8 +38,8 @@
         "commands": "python3 agent-tool.py \"citrix netscaler\"",
         "image": {
           "src": "/images/build/agent-tool/run.webp",
-          "w": 1280,
-          "h": 78,
+          "w": 1042,
+          "h": 753,
           "alt": "A terminal running the tool with the query citrix netscaler and printing JSON with an answer line and the first incident, including its title, score of 80 and summary",
           "caption": "Run on 29 September 2026. Five incidents matched. The answer line names the highest-scoring one."
         }
@@ -608,8 +608,8 @@
         "commands": "python3 weekly-exec-brief.py",
         "image": {
           "src": "/images/build/weekly-exec-brief/run.webp",
-          "w": 1280,
-          "h": 325,
+          "w": 1042,
+          "h": 497,
           "alt": "A terminal running the script, which reports it wrote brief.md and prints the start of the brief: a title and the first incident with its score and summary",
           "caption": "Run on 29 September 2026. The top incident that week was the F5 and Check Point zero-days, scored 83."
         }
