@@ -10,7 +10,7 @@ What it does
 Endpoints
   GET /entities/search?q=<ioc>              (1 credit)  resolve the indicator to an entity
   GET /entities/{type}/{value}              (1 credit)  clusters + co-occurring entities
-  GET /threats/{slug}                       (1 credit)  full entity set of the top cluster
+  GET /threats/{slug}/iocs                  (1 credit)  validated indicators of the top cluster
 
 Cost: up to 3 credits per IOC. Works on the free tier (7-day window).
 
@@ -68,8 +68,9 @@ def cluster_url(cluster):
 
 def report_credits():
     # Stderr, so it never pollutes piped output (brief.md, blocklists, JSON).
-    remaining = _credits["remaining"] if _credits["remaining"] is not None else "n/a"
-    sys.stderr.write("[threatcluster] credits used this run: %d, remaining today: %s\n" % (_credits["used"], remaining))
+    # Keys without a daily cap send no remaining-credits header.
+    left = ", remaining today: %s" % _credits["remaining"] if _credits["remaining"] is not None else ""
+    sys.stderr.write("[threatcluster] credits used this run: %d%s\n" % (_credits["used"], left))
 
 INDICATOR_TYPES = ("domain", "ipv4", "ipv6", "url", "md5", "sha1", "sha256", "email")
 CONTEXT_TYPES = ("apt_group", "ransomware_group", "malware", "tool", "campaign", "cve", "attack_type", "platform")
@@ -116,14 +117,16 @@ def enrich(ioc):
         print()
         return
     time.sleep(PACE_SECONDS)
-    top = api_get("/threats/" + (clusters[0].get("slug") or clusters[0].get("cluster_id"))).json()
-    ents = top.get("entities") or {}
-    print("   Related indicators (from the top cluster):")
+    # /iocs returns validated indicators only. The `entities` block on the
+    # cluster itself lists every hostname the article mentions, including the
+    # publisher's and the victim's, so it is not a list of indicators.
+    top = api_get("/threats/%s/iocs" % (clusters[0].get("slug") or clusters[0].get("cluster_id"))).json()
+    print("   Related indicators (validated, from the top cluster):")
     shown = 0
     for t in INDICATOR_TYPES:
-        for v in ents.get(t, []) or []:
-            if str(v).lower() != ioc.lower():
-                print("     %-8s %s" % (t, v))
+        for row in top.get("iocs") or []:
+            if row.get("type") == t and str(row.get("value")).lower() != ioc.lower():
+                print("     %-8s %-44s %s" % (t, row.get("value"), row.get("confidence") or ""))
                 shown += 1
     if not shown:
         print("     (none beyond the queried indicator)")

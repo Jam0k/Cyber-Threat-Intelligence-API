@@ -65,8 +65,9 @@ def cluster_url(cluster):
 
 def report_credits():
     # Stderr, so it never pollutes piped output (brief.md, blocklists, JSON).
-    remaining = _credits["remaining"] if _credits["remaining"] is not None else "n/a"
-    sys.stderr.write("[threatcluster] credits used this run: %d, remaining today: %s\n" % (_credits["used"], remaining))
+    # Keys without a daily cap send no remaining-credits header.
+    left = ", remaining today: %s" % _credits["remaining"] if _credits["remaining"] is not None else ""
+    sys.stderr.write("[threatcluster] credits used this run: %d%s\n" % (_credits["used"], left))
 
 DEFAULT_KEYWORDS = ["bank", "hospital", "school"]
 
@@ -85,7 +86,8 @@ def main():
     data = api_get("/darkweb/keyword-hits", keywords=",".join(args.keywords), per_bucket_limit=args.per_bucket).json()
     hits = data.get("hits", {})
     print("Keywords: %s" % ", ".join(data.get("keywords", args.keywords)))
-    print("Total hits: %s (window: last %s days)\n" % (data.get("total", 0), data.get("lookback_days", "?")))
+    days = data.get("lookback_days")
+    print("Total hits: %s%s\n" % (data.get("total", 0), " (window: last %s days)" % days if days else ""))
 
     for v in hits.get("victims", []):
         print("VICTIM   %s  %-14s %-32s %s  %s"

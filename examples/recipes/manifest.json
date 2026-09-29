@@ -1,175 +1,635 @@
 [
- {
-  "slug": "agent-tool",
-  "title": "A lookup tool for LLM agents",
-  "one_liner": "A tool-calling function `threatcluster_lookup(query)` for LLM agents.",
-  "what_you_get": "Wraps the unified search endpoint as a plain Python function that returns a compact, JSON-serialisable answer: a one-line summary, the matching clusters with scores, the matching entities and dark-web groups, and a `citations` list of ThreatCluster URLs the model can quote. No LLM client is needed to run it; see TOOL_SCHEMA for registration.",
-  "endpoints": [
-   "/search"
-  ],
-  "credits_per_run": 5,
-  "free_tier_ok": true,
-  "python_file": "agent-tool.py",
-  "shell_file": "agent-tool.sh",
-  "sample_output": "[threatcluster] credits used this run: 5, remaining today: 55\n{\n  \"query\": \"lockbit\",\n  \"window_days\": 7,\n  \"answer\": \"No incident clusters in the last 7 days match 'lockbit'.\",\n  \"clusters\": [],\n  \"entities\": [\n    {\n      \"type\": \"ransomware_group\",\n      \"value\": \"Lockbit\",\n      \"clusters\": 89,\n      \"url\": \"https://threatcluster.io/entities/ransomware-group/Lockbit\"\n    },\n    {\n      \"type\": \"ransomware_group\",\n      \"value\": \"Lockbit 3.0\",\n      \"clusters\": 7,\n      \"url\": \"https://threatcluster.io/entities/ransomware-group/Lockbit 3.0\"\n    },\n    {\n      \"type\": \"ransomware_group\",\n      \"value\": \"LockBit3.0\",\n      \"clusters\": 2,\n      \"url\": \"https://threatcluster.io/entities/ransomware-group/LockBit3.0\"\n    },\n    {\n      \"type\": \"ransomware_group\",\n      \"value\": \"LockBit Black\",\n      \"clusters\": 1,\n      \"url\": \"https://threatcluster.io/entities/ransomware-group/LockBit Black\"\n    },\n    {\n      \"type\": \"ransomware_group\",\n      \"value\": \"LockBit5\",\n      \"clusters\": 1,\n      \"url\": \"https://threatcluster.io/entities/ransomware-group/LockBit5\"\n    }\n  ],\n  \"darkweb\": [\n…",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Agents",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- },
- {
-  "slug": "brand-domain-monitor",
-  "title": "Brand and domain dark-web monitor",
-  "one_liner": "Are my brands or domains showing up on the dark web?",
-  "what_you_get": "Matches a list of keywords (brand names, domains, subsidiaries) against ransomware leak-site victims and ransomware groups in one call, and prints the hits per bucket with dates and links.",
-  "endpoints": [
-   "/darkweb/keyword-hits"
-  ],
-  "credits_per_run": 3,
-  "free_tier_ok": true,
-  "python_file": "brand-domain-monitor.py",
-  "shell_file": "brand-domain-monitor.sh",
-  "sample_output": "[threatcluster] credits used this run: 3, remaining today: 62\nKeywords: bank, hospital, school\nTotal hits: 5 (window: last 7 days)\n\nVICTIM   2026-09-02  incransom      Westfield Public School District US  Education\n         matched: school  https://threatcluster.io/dark-web/victim/37604ebc815f79f6\nVICTIM   2026-09-02  incransom      Policlinico Triestino            IT  Healthcare\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/8fcff03fdbfe25d0\nVICTIM   2026-09-02  incransom      specialtytextile.com             US  Manufacturing\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/6d5099d925516372\nVICTIM   2026-09-02  aurora         Chip 1 Exchange                  US  Technology\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/9490ece3ed4cb8e3\nVICTIM   2026-09-01  thegentlemen   Nutex Health                     US  Healthcare\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/dff02778ccad0dc8\n\nNo hits in: groups, markets, breaches",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Alerting",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- },
- {
-  "slug": "cve-triage",
-  "title": "CVE triage: KEV and EPSS filter",
-  "one_liner": "From a list of CVE ids, keep only the ones that matter right now.",
-  "what_you_get": "Reads CVE ids from a file (or stdin), looks each one up, and prints only those that are in CISA's Known Exploited Vulnerabilities catalog OR have an EPSS score at or above a cut-off, with CVSS severity, EPSS, a known-public-exploit flag and the ThreatCluster page. Ids the API does not know (404) are listed at the end so nothing silently disappears.",
-  "endpoints": [
-   "/vulnerabilities/{cve_id}"
-  ],
-  "credits_per_run": 10,
-  "free_tier_ok": true,
-  "python_file": "cve-triage.py",
-  "shell_file": "cve-triage.sh",
-  "sample_output": "[threatcluster] credits used this run: 10, remaining today: 78\nCVE              severity   CVSS    EPSS  KEV  PoC   ThreatCluster page\nCVE-2026-82329   CRITICAL    9.8   0.012  yes  no    https://threatcluster.io/entities/cve/CVE-2026-82329\nCVE-2026-82078   CRITICAL    9.1   0.009  yes  no    https://threatcluster.io/entities/cve/CVE-2026-82078\nCVE-2026-83549   HIGH        7.8   0.009  yes  no    https://threatcluster.io/entities/cve/CVE-2026-83549\nCVE-2026-81578   CRITICAL    9.8   0.008  yes  yes   https://threatcluster.io/entities/cve/CVE-2026-81578\nCVE-2026-83548   CRITICAL   10.0   0.003  yes  no    https://threatcluster.io/entities/cve/CVE-2026-83548\n\n5 of 10 need attention (KEV or EPSS >= 0.1).\nBelow the bar: CVE-2026-84888, CVE-2026-84887, CVE-2026-84886, CVE-2026-84885, CVE-2026-84851",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Triage",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- },
- {
-  "slug": "exploited-this-week",
-  "title": "Exploited this week",
-  "one_liner": "CVEs from the last 7 days that are in KEV or have a public exploit.",
-  "what_you_get": "Combines two views of the last 7 days of CVEs, the ones CISA added to the Known Exploited Vulnerabilities catalog and the ones with a known public exploit, into one table sorted by CVSS, with a link to each CVE's ThreatCluster page.",
-  "endpoints": [
-   "/vulnerabilities"
-  ],
-  "credits_per_run": 2,
-  "free_tier_ok": true,
-  "python_file": "exploited-this-week.py",
-  "shell_file": "exploited-this-week.sh",
-  "sample_output": "[threatcluster] credits used this run: 2, remaining today: 43\nLast 7 days: 5 CVE(s) in KEV, 8 with a public exploit (showing up to 25 of each)\n\nCVE               CVSS severity  KEV  PoC  published   ThreatCluster page\nCVE-2026-83548    10.0 CRITICAL  yes  no   2026-09-01  https://threatcluster.io/entities/cve/CVE-2026-83548\nCVE-2026-26897     9.8 CRITICAL  no   yes  2026-08-27  https://threatcluster.io/entities/cve/CVE-2026-26897\nCVE-2026-37071     9.8 CRITICAL  no   yes  2026-08-27  https://threatcluster.io/entities/cve/CVE-2026-37071\nCVE-2026-37072     9.8 CRITICAL  no   yes  2026-08-27  https://threatcluster.io/entities/cve/CVE-2026-37072\nCVE-2026-81578     9.8 CRITICAL  yes  yes  2026-08-28  https://threatcluster.io/entities/cve/CVE-2026-81578\nCVE-2026-82329     9.8 CRITICAL  yes  no   2026-08-28  https://threatcluster.io/entities/cve/CVE-2026-82329\nCVE-2026-37065     9.1 CRITICAL  no   yes  2026-08-27  https://threatcluster.io/entities/cve/CVE-2026-37065\nCVE-2026-55511     9.1 CRITICAL  no   yes  2026-08-28  https://threatcluster.io/entities/cve/CVE-2026-55511\nCVE-2026-82078     9.1 CRITICAL  yes  no   2026-08-28  https://threatcluster.io/entities/cve/CVE-2026-82078\nCVE-2026-82539     9.1 CRITICAL  no   yes  2026-08-30  https://threatcluster.io/entities/cve/CVE-2026-82539\nCVE-2026-75604     9.0 CRITICAL  no   yes  2026-09-01  https://threatcluster.io/entities/cve/CVE-2026-75604\nCVE-2026-83549     7.8 HIGH      yes  no   2026-09-01  https://threatcluster.io/entities/cve/CVE-2026-83549\n\n12 unique CVE(s).",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Triage",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- },
- {
-  "slug": "ioc-blocklist-export",
-  "title": "IOC blocklist export",
-  "one_liner": "Validated malicious domains and IPs as plain blocklists.",
-  "what_you_get": "Pulls the confirmed indicators extracted from the last N hours of reporting and writes two plain files, one indicator per line and nothing else, ready for a firewall object group or a Pi-hole adlist: blocklist-domains.txt and blocklist-ips.txt. Counts and the number of indicators still pending validation are printed.",
-  "endpoints": [
-   "/iocs/export"
-  ],
-  "credits_per_run": 3,
-  "free_tier_ok": true,
-  "python_file": "ioc-blocklist-export.py",
-  "shell_file": "ioc-blocklist-export.sh",
-  "sample_output": "[threatcluster] credits used this run: 0, remaining today: n/a\nWindow: last 168 hours, confidence filter: confirmed\nIndicators returned: 94 (high=78, medium=16)\nStill pending validation (not exported): 7\ndomains                   78  ->  _validation/blocklist/blocklist-domains.txt\nips                       14  ->  _validation/blocklist/blocklist-ips.txt\nfirst domains: advancedplacyncement.vu, api.datalayerservice.com, api.technodatabase.net, arandasoftzfdware.vu, avisoretentiunionllc.vu\nfirst ips:     103.45.66.18, 144.31.53.78, 176.65.148.184, 178.16.54.253, 185.254.222.105",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Enrichment",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- },
- {
-  "slug": "sector-ransomware-watch",
-  "title": "Sector ransomware watch for Slack",
-  "one_liner": "New dark-web ransomware victims for a sector/country, as a Slack message.",
-  "what_you_get": "Lists leak-site victims posted in the last N days (free tier: up to 7), optionally filtered to one sector and/or country, and formats them as a Slack mrkdwn message with the week's most active groups underneath. If SLACK_WEBHOOK_URL is set the message is posted; otherwise it is printed so you can see exactly what would go out.",
-  "endpoints": [
-   "/darkweb/ransomware/victims",
-   "/darkweb/ransomware/victims/facets"
-  ],
-  "credits_per_run": 2,
-  "free_tier_ok": true,
-  "python_file": "sector-ransomware-watch.py",
-  "shell_file": "sector-ransomware-watch.sh",
-  "sample_output": "[threatcluster] credits used this run: 2, remaining today: 97\n*ThreatCluster ransomware watch: Healthcare, last 7 days*\n25 new leak-site victims (showing the first 25)\n• 2026-09-03  settra  →  <https://threatcluster.io/dark-web/victim/60e0a7362481f352|int.diasorin.com>  (IT)\n• 2026-09-03  settra  →  <https://threatcluster.io/dark-web/victim/85a7b364e8c30823|medevolve.com>  (US)\n• 2026-09-03  settra  →  <https://threatcluster.io/dark-web/victim/ecd2cfa1607e6d88|neolife.com>  (US)\n• 2026-09-03  storm  →  <https://threatcluster.io/dark-web/victim/c940e69fe18a26df|SITES Medical>  (US)\n• 2026-09-02  incransom  →  <https://threatcluster.io/dark-web/victim/8fcff03fdbfe25d0|Policlinico Triestino>  (IT)\n• 2026-09-02  payoutsking  →  <https://threatcluster.io/dark-web/victim/8cd7ef9f7109f3b3|Proliance Surgeons>  (US)\n• 2026-09-01  thegentlemen  →  <https://threatcluster.io/dark-web/victim/dff02778ccad0dc8|Nutex Health>  (US)\n• 2026-09-01  krybit  →  <https://threatcluster.io/dark-web/victim/f471acfa69878ee8|seashellhospital.com>  (IN)\n• 2026-08-31  braincipher  →  <https://threatcluster.io/dark-web/victim/135e5b7846f65462|ccsperfusion.com>  (US)\n• 2026-08-31  incransom  →  <https://threatcluster.io/dark-web/victim/a035a0f486a4da6b|New Century Ophthalmology Group>  (US)\n• 2026-08-31  insomnia  →  <https://threatcluster.io/dark-web/victim/08151cba63805baf|Metro Tulsa Foot>  (US)\n• 2026-08-31  wallstreet  →  <https://threatcluster.io/dark-web/victim/5e2f5aaa38063d47|Cedar County Memorial Hospital>  (US)\n• 2026-08-30  direwolf  →  <https://threatcluster.io/dark-web/victim/f827b27c8ac177f9|Erdem Hospital>  (TR)\n• 2026-08-30  direwolf  →  <https://threatcluster.io/dark-web/victim/f5af021f3dad9da2|Hospital Clnico Universidad de Chile>  (CL)\n• 2026-08-30  falcon  →  <https://threatcluster.io/dark-web/victim/34d3a761a1383ae6|Globus Medical>  (US)\n• 2026-08-30  qilin  →  <https://threatcluster.io/dark-web/victim/a46070661b084216|Crystalpharmatech>  (--)\n• 2026-08-30  thegentlemen  →  <https://threatcluster.io/dark-web/victim/c84ad630dbd10feb|Exacta Optech Labcenter>  (BR)\n• 2026-08-29  qilin  →  <https://threatcluster.io/dark-web/victim/6e4927ba5de567b6|CareClinics>  (MY)\n• 2026-08-28  shinyhunters  →  <https://threatcluster.io/dark-web/victim/b1761241d32a7d39|McKesson Corporation>  (US)\n• 2026-08-28  shinyhunters  →  <https://threatcluster.io/dark-web/victim/eea9d5570fb5a8f9|Elekta AB>  (SE)\n• 2026-08-28  rhysida  →  <https://threatcluster.io/dark-web/victim/9f5ef6e2a6c5e5c7|Valley Health Team>  (--)\n• 2026-08-28  global  →  <https://threatcluster.io/dark-web/victim/6fff16c8fc8794ac|Hangzhou Qihan Biotech Co., Ltd.>  (CN)\n• 2026-08-28  moneymessage  →  <https://threatcluster.io/dark-web/victim/a951b49148ededb8|ProCare>  (US)\n• 2026-08-28  lockbit5  →  <https://threatcluster.io/dark-web/victim/c710acc49c839ad0|tnmed.org>  (TN)\n• 2026-08-28  anubis  →  <https://threatcluster.io/dark-web/victim/52c2ba03868a43be|Caduceus Medical Group>  (--)\n_Most active groups this window: qilin 27, thegentlemen 23, zawoo 19, incransom 17, settra 16_\n_Most hit sectors this window: Manufacturing 41, Technology 37, Not Found 30, Professional Services 28, Healthcare 26_\nSource: https://threatcluster.io/dark-web/victims",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Alerting",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- },
- {
-  "slug": "siem-ioc-enrichment",
-  "title": "SIEM indicator enrichment",
-  "one_liner": "What does ThreatCluster know about this indicator?",
-  "what_you_get": "For each IOC (domain, IPv4 or MD5/SHA1/SHA256 hash) it finds the matching entity, then prints the incident context: the clusters it appears in (title, score, link), the actors / malware / tools seen alongside it, and the other indicators from the top cluster, so an analyst can pivot straight from a SIEM alert.",
-  "endpoints": [
-   "/entities/search",
-   "/entities/{type}/{value}",
-   "/threats/{slug}"
-  ],
-  "credits_per_run": 6,
-  "free_tier_ok": true,
-  "python_file": "siem-ioc-enrichment.py",
-  "shell_file": null,
-  "sample_output": "[threatcluster] credits used this run: 6, remaining today: 70\n== api.datalayerservice.com\n   type domain; 1 cluster(s), 2 article(s); page https://threatcluster.io/entities/domain/api.datalayerservice.com\n   Clusters:\n      66.5  -        Node.js Exploitation in Ransomware Attacks Grows\n            https://threatcluster.io/cluster/nodejs-exploited-in-ransomware-attacks-targeting-multiple-se-12fc57f7\n   ransomware_group: Interlock, Qilin, Rhysida, 8Base, Akira, Black Basta\n   malware:          Backdoor.Mistic, C2Looper, Cobalt Strike, Embargo, LooperC2, ModeloRAT\n   tool:             AdaptixC2, Cobalt Strike Beacon, Node.js, PowerShell\n   attack_type:      Ransomware, Malware\n   platform:         Windows\n   Related indicators (from the top cluster):\n     domain   api.technodatabase.net\n     domain   authorized-logins.net\n     domain   b6w9m2z5x8q1v3k.top\n     domain   carrolc.com\n     domain   challenge-refernow.com\n     domain   chat.devminelimited.com\n     domain   chat.doctecsolutions.com\n     domain   cj06y9v4xab.com\n     domain   csa-humanchecknow.com\n     ipv4     142.93.242.144\n     ipv4     144.31.53.78\n     ipv4     178.16.54.253\n     ipv4     178.16.55.232\n     ipv4     185.205.211.217\n     ipv4     193.58.122.42\n     ipv4     198.13.159.44\n     ipv4     199.91.221.42\n     ipv4     45.158.196.23\n     sha256   1d09357b6a096fdc35cd5c873eed15665d6b3c879d20c8cf01e6bca0005512cf\n     sha256   1e41c7bfaa6aa3b93b6cc024274a10e33f3e12fe7c98c1db387ef8927f9d1984\n     sha256   1fc515870c681bf3e1b7947e2248bbcfe9918db2978117e91134de20bd42fd6a\n     sha256   210615866cd2923cc0840f196eb12c00feee113e43850376803c8e024f7e63ce\n     sha256   2cd88d5280a61714836f5f07a16df190911c5b952af2998dbbcda910b3b1c494\n     sha256   34d798a6c55e57ed0932b6499f4fbcb5454bdfca903307be101a0594b0ac07bc\n     sha256   3f797a639bc855bc6d5471f327924b62d10900ddec49b970eca6604142bbb4be\n     sha256   59e3c4cb06331b4f2d78a9a0592f3747e573bd01c5a7650c26361d1e25520712\n     sha256   72db2ea09c8d4e09ef99e1342b42491a6aebf6008a1e5337131c8bde06b2ea22\n…",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Enrichment",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- },
- {
-  "slug": "trending-actors",
-  "title": "Trending threat actors",
-  "one_liner": "Which threat actors, ransomware crews and malware families are rising this week?",
-  "what_you_get": "Prints the trending APT groups, ransomware groups and malware families of the last 7 days: how many clusters mention them, the change versus the previous window, whether they are new to the corpus, and the ThreatCluster entity page for each.",
-  "endpoints": [
-   "/entities/trending"
-  ],
-  "credits_per_run": 1,
-  "free_tier_ok": true,
-  "python_file": "trending-actors.py",
-  "shell_file": "trending-actors.sh",
-  "sample_output": "[threatcluster] credits used this run: 1, remaining today: 47\n== apt_group (last 7d) ==\n   entity                       mentions   change  page\n   TeamPCP                             4    +300%  https://threatcluster.io/entities/apt-group/TeamPCP\n   ShinyHunters                        5     +67%  https://threatcluster.io/entities/apt-group/ShinyHunters\n   Apt28                               4    +100%  https://threatcluster.io/entities/apt-group/Apt28\n   Apt29                               5     +25%  https://threatcluster.io/entities/apt-group/Apt29\n   MuddyWater                          2    +100%  https://threatcluster.io/entities/apt-group/MuddyWater\n   Smoke Sandstorm                     2    +100%  https://threatcluster.io/entities/apt-group/Smoke%20Sandstorm\n   Silver Fox                          5      NEW  https://threatcluster.io/entities/apt-group/Silver%20Fox\n   Lazarus Group                       4      NEW  https://threatcluster.io/entities/apt-group/Lazarus%20Group\n   Sandworm                            3      NEW  https://threatcluster.io/entities/apt-group/Sandworm\n   Stardust Chollima                   2      NEW  https://threatcluster.io/entities/apt-group/Stardust%20Chollima\n\n== ransomware_group (last 7d) ==\n   entity                       mentions   change  page\n   Ryuk                                4    +300%  https://threatcluster.io/entities/ransomware-group/Ryuk\n   8Base                               2    +100%  https://threatcluster.io/entities/ransomware-group/8Base\n   Rhysida                            10      NEW  https://threatcluster.io/entities/ransomware-group/Rhysida\n   Aur0ra                              4      NEW  https://threatcluster.io/entities/ransomware-group/Aur0ra\n   Interlock                           4      NEW  https://threatcluster.io/entities/ransomware-group/Interlock\n   WannaCry                            4      NEW  https://threatcluster.io/entities/ransomware-group/WannaCry\n   The Gentlemen                       3      NEW  https://threatcluster.io/entities/ransomware-group/The%20Gentlemen\n   Krybit                              3      NEW  https://threatcluster.io/entities/ransomware-group/Krybit\n   Jadepuffer                          3      NEW  https://threatcluster.io/entities/ransomware-group/Jadepuffer\n   INC                                 2      NEW  https://threatcluster.io/entities/ransomware-group/INC\n\n== malware (last 7d) ==\n   entity                       mentions   change  page\n   Vidar                              24    +500%  https://threatcluster.io/entities/malware/Vidar\n   LummaC2                            19    +850%  https://threatcluster.io/entities/malware/LummaC2\n   Pegasus                             7    +600%  https://threatcluster.io/entities/malware/Pegasus\n   AMOS                                8    +167%  https://threatcluster.io/entities/malware/AMOS\n   GoCaracal                           3    +200%  https://threatcluster.io/entities/malware/GoCaracal\n   Shai-hulud                          3    +200%  https://threatcluster.io/entities/malware/Shai-hulud\n   Bandook                             3    +200%  https://threatcluster.io/entities/malware/Bandook\n   Predator                            4     +33%  https://threatcluster.io/entities/malware/Predator\n   SecTopRAT                           2    +100%  https://threatcluster.io/entities/malware/SecTopRAT\n   Hookedge                            2    +100%  https://threatcluster.io/entities/malware/Hookedge",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Reporting",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- },
- {
-  "slug": "vendor-in-the-news",
-  "title": "Vendor in the news",
-  "one_liner": "Which of my vendors/products are in incident reporting this week?",
-  "what_you_get": "For each vendor or product name you give it, pulls the highest-scoring threat clusters of the last 7 days whose title, summary or keywords mention that name, keeps those at or above a threat-score threshold, and prints one line per hit with a link to the ThreatCluster cluster page.",
-  "endpoints": [
-   "/threats"
-  ],
-  "credits_per_run": 5,
-  "free_tier_ok": true,
-  "python_file": "vendor-in-the-news.py",
-  "shell_file": "vendor-in-the-news.sh",
-  "sample_output": "[threatcluster] credits used this run: 5, remaining today: 90\nMicrosoft: 13 cluster(s) >= 60 in the last 7 days\n   75.0  medium   Malware Campaign Disables Windows Update in Corporate China\n         https://threatcluster.io/cluster/malware-campaign-disables-windows-update-in-corporate-china-ce79d3b5\n   72.5  medium   BlueDelta Espionage Campaign Using HOOKEDGE Targets European Governments\n         https://threatcluster.io/cluster/bluedelta-espionage-campaign-using-hookedge-targets-european-172e0e04\n   72.0  medium   Critical CVE-2026-62911 Exposes 22,000 Exchange Servers to Remote Code Execution\n         https://threatcluster.io/cluster/critical-rce-vulnerability-in-microsoft-exchange-server-disc-34b82887\n   69.5  medium   Multiple CVEs Disclosed for Windows Vulnerabilities\n         https://threatcluster.io/cluster/multiple-cves-disclosed-for-microsoft-products-in-august-202-9eaa8d51\n   69.0  medium   Cyber Campaign Targets Cambodia with Spark RAT via BYOVD Technique\n         https://threatcluster.io/cluster/cyber-campaign-targets-cambodia-with-spark-rat-via-byovd-tec-53284768\n   68.2  medium   Knight Office Phishing Kit Targets Microsoft 365 Accounts via Session Hijacking\n         https://threatcluster.io/cluster/knight-office-phishing-kit-targets-microsoft-365-accounts-vi-713a0a04\n   68.0  medium   Trojanized Exodus Wallet Installer Deploys Remote Access Trojan\n         https://threatcluster.io/cluster/tampered-exodus-wallet-installer-distributes-remote-access-t-af67cbc6\n   67.5  medium   RevStealer Malware Distributed via Fake Claude Opus 5 App\n         https://threatcluster.io/cluster/revstealer-malware-targets-users-via-fake-ai-application-6960a5d2\n   67.5  medium   Spring Ring: Coordinated Vishing Campaign Exploits Microsoft Teams\n         https://threatcluster.io/cluster/spring-ring-voice-phishing-campaigns-target-microsoft-teams--bffd328e\n   64.5  medium   AI-Powered Malware Targets Crypto Workers via Compromised Chat Links\n         https://threatcluster.io/cluster/ai-powered-malware-targets-crypto-workers-via-compromised-ch-c94becaf\n   63.5  medium   Phishing and Authentication Abuse Surge in Cybersecurity Incidents\n         https://threatcluster.io/cluster/phishing-and-authentication-abuse-surge-in-cybersecurity-inc-e9a17724\n   61.6  medium   NCSA and Microsoft Promote Zero Trust Amid Rising Cyber Threats in Thailand\n         https://threatcluster.io/cluster/ncsa-and-microsoft-promote-zero-trust-amid-rising-cyber-thre-48335c23\n   60.9  medium   Texas Launches Project Watershed 250 to Enhance Water Cybersecurity\n         https://threatcluster.io/cluster/texas-launches-project-watershed-250-to-enhance-water-cybers-188b126a\nCisco: 1 cluster(s) >= 60 in the last 7 days\n   77.8  medium   Fire Ant Threat Actor Targets Trusted Infrastructure in 2026\n         https://threatcluster.io/cluster/china-nexus-threat-actor-fire-ant-targets-critical-infrastru-98a55c29\nFortinet: 0 cluster(s) >= 60 in the last 7 days\nIvanti: 1 cluster(s) >= 60 in the last 7 days\n   80.8  medium   China-Linked QTFY Group Targets Critical Infrastructure with Advanced Exploits\n         https://threatcluster.io/cluster/china-linked-qtfy-group-targets-critical-infrastructure-with-545ca28d\nCitrix: 0 cluster(s) >= 60 in the last 7 days\n\n15 cluster(s) across 5 vendor name(s).",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Alerting",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- },
- {
-  "slug": "weekly-exec-brief",
-  "title": "Weekly executive brief",
-  "one_liner": "The week's top 10 threat clusters as a Markdown brief.",
-  "what_you_get": "Pulls the ten highest-scoring threat clusters of the last 7 days and renders a Markdown brief: rank, title, score and urgency, a one-sentence summary, entity chips (actors, malware, CVEs, platforms...) and a link to each cluster. Saved to brief.md and printed.",
-  "endpoints": [
-   "/threats"
-  ],
-  "credits_per_run": 1,
-  "free_tier_ok": true,
-  "python_file": "weekly-exec-brief.py",
-  "shell_file": null,
-  "sample_output": "[weekly-exec-brief] wrote _validation/brief.md\n[threatcluster] credits used this run: 1, remaining today: 67\n# ThreatCluster weekly executive brief: week ending 2026-09-03\n\nTop 10 threat clusters of the last 7 days, ranked by ThreatCluster threat score.\n\n## 1. China-Linked QTFY Group Targets Critical Infrastructure with Advanced Exploits\n**Score 81** · medium urgency · 5 article(s) · latest activity 2026-09-02\n\nThe Joint Cybersecurity Advisory JCSA-20260826-01, released on August 26, 2026, details ongoing activities by the China-linked hacking group QTFY, attributed to Nanjing Xinjiuwei Network Technology Co.\n\n`apt_group: Apt41` `ransomware_group: Bl00dy` `malware: PlugX` `campaign: Salt Typhoon` `cve: CVE-2018-13379` `platform: Alibaba Cloud`\n[Read the cluster](https://threatcluster.io/cluster/china-linked-qtfy-group-targets-critical-infrastructure-with-545ca28d)\n\n## 2. SonicWall SMA1000 Faces Third Zero-Day Exploitation in 2026\n**Score 81** · medium urgency · 23 article(s) · latest activity 2026-09-02\n\nSonicWall's SMA1000 VPN appliances are under active exploitation due to two newly discovered zero-day vulnerabilities, CVE-2026-83548 and CVE-2026-83549, which were confirmed on September 1, 2026.\n\n`ransomware_group: INC` `malware: Knuckleball` `cve: CVE-2024-1708` `platform: CouchDB` `company: Sonicwall` `country: Australia`\n[Read the cluster](https://threatcluster.io/cluster/sonicwall-sma1000-zero-day-vulnerabilities-under-active-expl-72cbcfdd)\n\n## 3. Chinese Operator Breaches Philippine Nuclear and Naval Entities\n**Score 81** · medium urgency · 5 article(s) · latest activity 2026-08-31\n\nA suspected Chinese-speaking operator has compromised a Philippine nuclear research body and a marine engineering company supporting the Philippine Navy by exploiting known vulnerabilities.\n\n`malware: Mettle` `campaign: Operation CameraSwarm` `cve: CVE-2023-49105` `platform: LiteSpeed Cache` `company: CGI Global Limited` `country: Philippines`\n[Read the cluster](https://threatcluster.io/cluster/chinese-speaking-actor-breaches-philippine-nuclear-and-naval-93fb80f8)\n\n## 4. Critical Exploitation of Sangoma Switchvox Vulnerabilities Underway\n**Score 79** · medium urgency · 7 article(s) · latest activity 2026-09-02\n\nSangoma Switchvox SMB Edition 8.3 is facing active exploitation of multiple vulnerabilities, particularly CVE-2026-9586, which allows unauthenticated SQL injection leading to remote code execution.\n\n`cve: CVE-2026-9585` `platform: Apache` `company: Sangoma` `country: United States` `cve: CVE-2026-9586` `cve: CVE-2026-9587`\n[Read the cluster](https://threatcluster.io/cluster/critical-vulnerabilities-in-sangoma-switchvox-exploited-for--884616e9)\n\n## 5. Mirage Kitten Targets Aviation and FinTech with New Cross-Platform Malware\n…",
-  "validated_at": "2026-09-03T13:11:38Z",
-  "theme": "Reporting",
-  "notes": "Validated twice against the live API on 2026-09-03; every printed URL resolved (200, or 301 to a 200). The output shown is verbatim from the first run."
- }
+  {
+    "slug": "agent-tool",
+    "title": "A lookup tool for LLM agents",
+    "one_liner": "A tool-calling function `threatcluster_lookup(query)` for LLM agents.",
+    "what_you_get": "Wraps the unified search endpoint as a plain Python function that returns a compact, JSON-serialisable answer: a one-line summary, the matching clusters with scores, the matching entities and dark-web groups, and a `citations` list of ThreatCluster URLs the model can quote. No LLM client is needed to run it; see TOOL_SCHEMA for registration.",
+    "endpoints": [
+      "/search"
+    ],
+    "credits_per_run": 5,
+    "free_tier_ok": true,
+    "python_file": "agent-tool.py",
+    "shell_file": "agent-tool.sh",
+    "sample_output": "{\n  \"query\": \"citrix netscaler\",\n  \"window_days\": 3650,\n  \"answer\": \"5 incident cluster(s) in the last 3650 days match 'citrix netscaler'; highest-scoring: 'Critical Zero-Day Exploits in Citrix NetScaler Confirmed by CISA' (score 80.0, 2026-09-29).\",\n  \"clusters\": [\n    {\n      \"title\": \"Critical Zero-Day Exploits in Citrix NetScaler Confirmed by CISA\",\n      \"threat_score\": 80.0,\n      \"urgency\": \"medium\",\n      \"latest_activity\": \"2026-09-29\",\n      \"summary\": \"On September 26, 2026, CISA confirmed the active exploitation of two critical zero-day vulnerabilities in Citrix NetScaler, identified as CVE-2026-88771 and CVE-2026-88772, both with a CVSS score of 9.5. These vulnerabilities allow remote code execution and affect all default configurations of NetScaler ADC and Gateway. Reports indicated that administrators were advised to disconnect their systems without prior explanation, signaling ongoing exploitation. Citrix released security updates on September 27, 2026, but the vulnerabilities had already been exploited before patches were available. The vulnerabilities stem from improper input validation and a buffer overflow, impacting numerous organizations worldwide. The National Cybersecurity Centre of the Netherlands alerted local organizations based on information from a European CERT. The situation underscores the urgency for affected organizations to apply the patches immediately.\\n\\nKey Points:\\n\\u2022 CISA confirmed active exploitation of two critical zero-day vulnerabilities in Citrix NetScaler.\\n\\u2022 Vulnerabilities CVE-2026-88771 and CVE-2026-88772 allow remote code execution with a CVSS score of 9.5.\\n\\u2022 Administrators were urged to disconnect systems before official patch release, indicating ongoing attacks.\",\n      \"url\": \"https://threatcluster.io/cluster/critical-zero-day-exploits-in-citrix-netscaler-confirmed-by--5b100c3f\"\n    },\n    {\n      \"title\": \"Critical Zero-Day Vulnerabilities in Citrix NetScaler Under Active Exploitation\",\n      \"threat_score\": 82.25,\n      \"urgency\": \"medium\",\n      \"latest_activity\": \"2026-09-29\",\n      \"summary\": \"Citrix has disclosed multiple critical vulnerabilities in its NetScaler ADC and Gateway products, with two zero-day vulnerabilities (CVE-2026-88771 and CVE-2026-88772) actively exploited in the wild. These vulnerabilities allow unauthenticated remote code execution and denial of service, affecting all default configurations. Citrix released patches on September 27, 2026, and cybersecurity agencies, including CISA, have urged immediate updates. The vulnerabilities have been added to CISA's Known Exploited Vulnerabilities Catalog. Other vulnerabilities disclosed include CVE-2026-88773 through CVE-2026-88778, with CVSS scores ranging from 7 to 9.5. Organizations are advised to check for signs of compromise before applying updates, as exploitation is confirmed globally. The situation is critical, with significant implications for organizations using Citrix products.\\n\\nKey Points:\\n\\u2022 Two critical zero-day vulnerabilities (CVE-2026-88771, CVE-2026-88772) are actively exploited.\\n\\u2022 Citrix has released urgent patches for eight vulnerabilities affecting NetScaler ADC and Gateway.\\n\\u2022 CISA has added the vulnerabilities to its Known Exploited Vulnerabilities Catalog.\",\n      \"url\": \"https://threatcluster.io/cluster/critical-zero-day-vulnerabilities-in-citrix-netscaler-under--16a7b04e\"\n    },\n    {\n      \"title\": \"Citrix NetScaler Zero-Days Exploited: Urgent Patches Released\",\n      \"threat_score\": 74.75,\n      \"urgency\": \"medium\",\n      \"latest_activity\": \"2026-09-29\",\n      \"summary\": \"Citrix confirmed active exploitation of two critical zero-day vulnerabilities in its NetScaler products, CVE-2026-88771 and CVE-2026-88772, on September 27, 2026. These vulnerabilities, rated 9.5 on the CVSS scale, allow remote code execution and affect all NetScaler appliances in default configurations. The earliest known exploitation attempt occurred on September 24, 2026, when GreyNoise detected a malicious cyber actor attempting to exploit a Citrix NetScaler Gateway. Citrix's delayed communication left customers relying on unofficial channels for threat information. As of September 29, 2026, over 50,000 instances of Citrix NetScaler devices were identified as potentially vulnerable. Citrix has released patches and provided indicators of compromise to assist customers. Attribution for the attacks remains under investigation, with concerns about financially motivated cybercriminals and state-sponsored groups targeting these vulnerabilities.\\n\\nKey Points:\\n\\u2022 Citrix confirmed active exploitation of two critical zero-days in NetScaler products.\\n\\u2022 Patches were released on September 27, 2026, after a significant communication delay.\\n\\u2022 Over 50,000 Citrix NetScaler instances are potentially vulnerable to these exploits.\",\n      \"url\": \"https://threatcluster.io/cluster/citrix-netscaler-zero-days-exploited-urgent-patches-released-10cc0704\"\n    },\n    {\n      \"title\": null,\n      \"threat_score\": 62.13,\n      \"urgency\": \"medium\",\n      \"latest_activity\": \"2026-09-28\",\n      \"summary\": null,\n      \"url\": \"https://threatcluster.io/cluster/086b5e0b\"\n    },\n    {\n      \"title\": \"Critical Zero-Day Exploits Target Citrix and Other Major Platforms\",\n…",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Agents",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/agent-tool.py\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "Run from the command line, the script prints the JSON a model would receive from the tool: a one-line answer, the matching incidents, and a list of citation links.",
+        "commands": "python3 agent-tool.py \"citrix netscaler\"",
+        "image": {
+          "src": "/images/build/agent-tool/run.webp",
+          "w": 1280,
+          "h": 78,
+          "alt": "A terminal running the tool with the query citrix netscaler and printing JSON with an answer line and the first incident, including its title, score of 80 and summary",
+          "caption": "Run on 29 September 2026. Five incidents matched. The answer line names the highest-scoring one."
+        }
+      },
+      {
+        "title": "Follow a citation",
+        "text": "Every incident in the result carries its link, so the model can cite what it used and a person can check it.",
+        "image": {
+          "src": "/images/build/agent-tool/web.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster incident page for the Citrix NetScaler zero-days confirmed by CISA, with key points, the summary and 13 extracted entities",
+          "caption": "The first citation from the run above."
+        }
+      },
+      {
+        "title": "Register it with a model",
+        "text": "Import the function and its schema from the file. The same schema works for OpenAI and for Claude, which names the field input_schema.",
+        "commands": "# OpenAI\ntools=[{\"type\": \"function\", \"function\": TOOL_SCHEMA}]\n\n# Claude\ntools=[{\"name\": TOOL_SCHEMA[\"name\"], \"description\": TOOL_SCHEMA[\"description\"],\n        \"input_schema\": TOOL_SCHEMA[\"parameters\"]}]\n\n# either: on a tool call, return this as the tool result\njson.dumps(threatcluster_lookup(**args))"
+      }
+    ]
+  },
+  {
+    "slug": "brand-domain-monitor",
+    "title": "Brand and domain dark-web monitor",
+    "one_liner": "Are my brands or domains showing up on the dark web?",
+    "what_you_get": "Matches a list of keywords (brand names, domains, subsidiaries) against ransomware leak-site victims and ransomware groups in one call, and prints the hits per bucket with dates and links.",
+    "endpoints": [
+      "/darkweb/keyword-hits"
+    ],
+    "credits_per_run": 3,
+    "free_tier_ok": true,
+    "python_file": "brand-domain-monitor.py",
+    "shell_file": "brand-domain-monitor.sh",
+    "sample_output": "Keywords: bank, hospital, school\nTotal hits: 13\n\nVICTIM   2026-09-29  m3rx           iccsi.com                        --  Professional Services\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/9f13930fa0e4eae8\nVICTIM   2026-09-29  n0n            Precision Facades Ltd            GB  Manufacturing\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/d0b4b33891a0fcf7\nVICTIM   2026-09-28  threeam        stjames.wa.edu.au                AU  Education\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/d595441cb91890bc\nVICTIM   2026-09-28  akira          Knit                             --  Technology\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/ffc38f0ed1157bec\nVICTIM   2026-09-28  safepay        fedelmundo.com.ph                PH  Other\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/060bd72001aed1df\nVICTIM   2026-09-28  incransom      nsbsd.org                        US  Government & Defense\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/cdeba3747de9ffaa\nVICTIM   2026-09-27  storm          First Secure Bank Group          US  Financial Services\n         matched: bank  https://threatcluster.io/dark-web/victim/6540f7c91c56d6a7\nVICTIM   2026-09-26  thegentlemen   ANP Health                       BR  Healthcare\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/08178a531633ff94\nVICTIM   2026-09-25  metaencryptor  Platinum Healthcare Staffing     US  Healthcare\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/f2b116f8b7ff0f0c\nVICTIM   2026-09-24  rhysida        NEAD Pro                         --  Not Found\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/4f0f4bab598e5c5d\nVICTIM   2026-09-23  clop           COLUMBIABANK.COM(UMPQUABANK.COM) US  Financial Services\n         matched: bank  https://threatcluster.io/dark-web/victim/73a418dfa92a6708\nVICTIM   2026-09-22  kairos         Krapf Group                      US  Manufacturing\n         matched: (matched on other fields)  https://threatcluster.io/dark-web/victim/086822b45b7ac36c\nVICTIM   2026-09-22  booba project  Tulare Western High School       US  Education\n         matched: school  https://threatcluster.io/dark-web/victim/eec5f3f07068bbfe\n\nNo hits in: groups\n[threatcluster] credits used this run: 3",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Alerting",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/brand-domain-monitor.py\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "Run without arguments, the script searches for three generic words so there is something to see. It looks across leak-site listings, ransomware groups and incidents.",
+        "commands": "python3 brand-domain-monitor.py",
+        "image": {
+          "src": "/images/build/brand-domain-monitor/run.webp",
+          "w": 970,
+          "h": 497,
+          "alt": "A terminal running the script with the default keywords bank, hospital and school, printing matching leak-site listings with date, group, name, country, sector and link",
+          "caption": "Run on 29 September 2026. 13 hits for the three default words. A listing is the group's claim, not a confirmed breach."
+        }
+      },
+      {
+        "title": "See the wider picture",
+        "text": "The dark web page shows every tracked group and listing, by country, sector and time.",
+        "image": {
+          "src": "/images/build/brand-domain-monitor/web.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster dark web page showing 161 ransomware groups, 853 victims in 30 days and a world map of listings by country",
+          "caption": "The tracker the hits above come from."
+        }
+      },
+      {
+        "title": "Watch your own names",
+        "text": "Pass your brand names, your domains and your subsidiaries. No output means no match. The run costs 3 credits.",
+        "commands": "python3 brand-domain-monitor.py acme acme-corp.example \"Acme Holdings\""
+      }
+    ]
+  },
+  {
+    "slug": "cve-triage",
+    "title": "CVE triage: KEV and EPSS filter",
+    "one_liner": "From a list of CVE ids, keep only the ones that matter right now.",
+    "what_you_get": "Reads CVE ids from a file (or stdin), looks each one up, and prints only those that are in CISA's Known Exploited Vulnerabilities catalog OR have an EPSS score at or above a cut-off, with CVSS severity, EPSS, a known-public-exploit flag and the ThreatCluster page. Ids the API does not know (404) are listed at the end so nothing silently disappears.",
+    "endpoints": [
+      "/vulnerabilities/{cve_id}"
+    ],
+    "credits_per_run": 10,
+    "free_tier_ok": true,
+    "python_file": "cve-triage.py",
+    "shell_file": "cve-triage.sh",
+    "sample_output": "CVE              severity   CVSS    EPSS  KEV  PoC   ThreatCluster page\nCVE-2026-87902   HIGH        8.1   0.225  yes  yes   https://threatcluster.io/entities/cve/CVE-2026-87902\nCVE-2026-93616   CRITICAL    9.8   0.197  yes  yes   https://threatcluster.io/entities/cve/CVE-2026-93616\nCVE-2026-94127   CRITICAL    9.8   0.022  yes  no    https://threatcluster.io/entities/cve/CVE-2026-94127\nCVE-2026-88772   HIGH        8.1   0.012  yes  no    https://threatcluster.io/entities/cve/CVE-2026-88772\nCVE-2026-88771   CRITICAL    9.8   0.010  yes  no    https://threatcluster.io/entities/cve/CVE-2026-88771\n\n5 of 10 need attention (KEV or EPSS >= 0.1).\nBelow the bar: CVE-2026-96423, CVE-2026-96422, CVE-2026-96421, CVE-2026-96419, CVE-2026-95395\n[threatcluster] credits used this run: 10",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Triage",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file. The sample file is a list of ten CVE ids to try it with.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/cve-triage.py\ncurl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/cve-triage.sample.txt\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "Point it at any file with CVE ids in it. It picks the ids out with a regular expression, so a scanner export or a pasted ticket both work.",
+        "commands": "python3 cve-triage.py cve-triage.sample.txt",
+        "image": {
+          "src": "/images/build/cve-triage/run.webp",
+          "w": 997,
+          "h": 334,
+          "alt": "A terminal running the script on ten CVE ids and printing the five that are in CISA KEV, with severity, CVSS, EPSS, KEV and public-exploit columns",
+          "caption": "Run on 29 September 2026. Ten ids in, five kept. The top row is rated HIGH at 8.1 and sits above three rated 9.8, because it is exploited, has public exploit code and the highest EPSS score."
+        }
+      },
+      {
+        "title": "Open a CVE",
+        "text": "Every row ends with a link to the CVE's page, which has the description, the exploitation status and the number of public exploits.",
+        "image": {
+          "src": "/images/build/cve-triage/web.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster page for CVE-2026-87902 showing it is exploited in the wild, has 14 public exploits and a CVSS score of 8.1",
+          "caption": "The page for the top row of the run above."
+        }
+      },
+      {
+        "title": "Use your own scanner export",
+        "text": "Read from standard input with a dash, and move the EPSS bar to let more or fewer rows through. Each CVE costs one credit, so a free key triages 100 a day.",
+        "commands": "cat nessus-export.csv | python3 cve-triage.py - --epss 0.05"
+      }
+    ]
+  },
+  {
+    "slug": "exploited-this-week",
+    "title": "Exploited this week",
+    "one_liner": "CVEs from the last 7 days that are in KEV or have a public exploit.",
+    "what_you_get": "Combines two views of the last 7 days of CVEs, the ones CISA added to the Known Exploited Vulnerabilities catalog and the ones with a known public exploit, into one table sorted by CVSS, with a link to each CVE's ThreatCluster page.",
+    "endpoints": [
+      "/vulnerabilities"
+    ],
+    "credits_per_run": 2,
+    "free_tier_ok": true,
+    "python_file": "exploited-this-week.py",
+    "shell_file": "exploited-this-week.sh",
+    "sample_output": "Last 7 days: 4 CVE(s) in KEV, 8 with a public exploit (showing up to 25 of each)\n\nCVE               CVSS severity  KEV  PoC  published   ThreatCluster page\nCVE-2026-12227     9.8 CRITICAL  no   yes  2026-09-24  https://threatcluster.io/entities/cve/CVE-2026-12227\nCVE-2026-14281     9.8 CRITICAL  no   yes  2026-09-25  https://threatcluster.io/entities/cve/CVE-2026-14281\nCVE-2026-18143     9.8 CRITICAL  no   yes  2026-09-26  https://threatcluster.io/entities/cve/CVE-2026-18143\nCVE-2026-82384     9.8 CRITICAL  no   yes  2026-09-28  https://threatcluster.io/entities/cve/CVE-2026-82384\nCVE-2026-88771     9.8 CRITICAL  yes  no   2026-09-27  https://threatcluster.io/entities/cve/CVE-2026-88771\nCVE-2026-94127     9.8 CRITICAL  yes  no   2026-09-22  https://threatcluster.io/entities/cve/CVE-2026-94127\nCVE-2026-84388     9.6 CRITICAL  no   yes  2026-09-22  https://threatcluster.io/entities/cve/CVE-2026-84388\nCVE-2026-89055     9.1 CRITICAL  no   yes  2026-09-25  https://threatcluster.io/entities/cve/CVE-2026-89055\nCVE-2026-93399     9.1 CRITICAL  no   yes  2026-09-25  https://threatcluster.io/entities/cve/CVE-2026-93399\nCVE-2026-87902     8.1 HIGH      yes  yes  2026-09-22  https://threatcluster.io/entities/cve/CVE-2026-87902\nCVE-2026-88772     8.1 HIGH      yes  no   2026-09-27  https://threatcluster.io/entities/cve/CVE-2026-88772\n\n11 unique CVE(s).\n[threatcluster] credits used this run: 2",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Triage",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/exploited-this-week.py\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "No arguments. The script lists CVEs published in the last 7 days that are in CISA KEV or have a public exploit, highest CVSS first.",
+        "commands": "python3 exploited-this-week.py",
+        "image": {
+          "src": "/images/build/exploited-this-week/run.webp",
+          "w": 1015,
+          "h": 497,
+          "alt": "A terminal running the script and printing a table of CVEs with CVSS, severity, KEV and public-exploit flags, publication date and a link",
+          "caption": "Run on 29 September 2026. 4 CVEs from that week were in KEV and 8 had a public exploit."
+        }
+      },
+      {
+        "title": "Open a CVE",
+        "text": "Each row links to the CVE's page.",
+        "image": {
+          "src": "/images/build/exploited-this-week/web.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster page for CVE-2026-93616, a Check Point vulnerability, showing it is exploited in the wild with a critical CVSS score",
+          "caption": "A Check Point CVE that was both in KEV and had a public exploit that week."
+        }
+      },
+      {
+        "title": "Post it to the team on Mondays",
+        "text": "The output is plain text, so it pipes into mail or any chat webhook. The run costs 2 credits.",
+        "commands": "python3 exploited-this-week.py | mail -s \"Exploited this week\" secops@yourcompany.example"
+      }
+    ]
+  },
+  {
+    "slug": "ioc-blocklist-export",
+    "title": "IOC blocklist export",
+    "one_liner": "Validated malicious domains and IPs as plain blocklists.",
+    "what_you_get": "Pulls the confirmed indicators extracted from the last N hours of reporting and writes two plain files, one indicator per line and nothing else, ready for a firewall object group or a Pi-hole adlist: blocklist-domains.txt and blocklist-ips.txt. Counts and the number of indicators still pending validation are printed.",
+    "endpoints": [
+      "/iocs/export"
+    ],
+    "credits_per_run": 3,
+    "free_tier_ok": true,
+    "python_file": "ioc-blocklist-export.py",
+    "shell_file": "ioc-blocklist-export.sh",
+    "sample_output": "Window: last 168 hours, confidence filter: confirmed\nIndicators returned: 84 (high=75, medium=9)\nStill pending validation (not exported): 0\ndomains                   72  ->  ./blocklist-domains.txt\nips                       11  ->  ./blocklist-ips.txt\nfirst domains: 0b48fafd6fbe.skyleen.fr, 10729e014d0e.skyleen.fr, 1cvvts.cyou, 266297c6df27.skyleen.fr, 2nftgz.cyou\nfirst ips:     103.101.85.123, 104.219.234.138, 134.122.155.135, 172.94.9.194, 193.178.158.61\n[threatcluster] credits used this run: 0",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Enrichment",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/ioc-blocklist-export.py\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "The script pulls the last 7 days of confirmed indicators and writes two plain lists, one for domains and one for IP addresses. Indicators still waiting for validation are counted and left out.",
+        "commands": "python3 ioc-blocklist-export.py",
+        "image": {
+          "src": "/images/build/ioc-blocklist-export/run.webp",
+          "w": 1078,
+          "h": 288,
+          "alt": "A terminal running the export: 84 indicators returned, none pending, 72 domains and 11 IP addresses written to two files",
+          "caption": "Run on 29 September 2026. 84 confirmed indicators, none pending."
+        }
+      },
+      {
+        "title": "Check the files",
+        "text": "One value per line, no header, no comments. That is the format firewalls, Pi-hole and most DNS filters read.",
+        "image": {
+          "src": "/images/build/ioc-blocklist-export/files.webp",
+          "w": 771,
+          "h": 311,
+          "alt": "A terminal counting the lines in both files, 72 and 11, and printing the first six domains",
+          "caption": "The two files from the run above."
+        }
+      },
+      {
+        "title": "Feed a firewall or Pi-hole",
+        "text": "Write straight into the folder your tool reads, on a schedule. A pull costs 3 credits, so every 4 hours spends 18 of the free key's 100 a day.",
+        "commands": "python3 ioc-blocklist-export.py --hours 24 --out-dir /etc/pihole/lists\n\n# crontab -e, every 4 hours\n0 */4 * * * THREATCLUSTER_API_KEY=... /usr/bin/python3 /opt/tc/ioc-blocklist-export.py --out-dir /etc/pihole/lists"
+      }
+    ]
+  },
+  {
+    "slug": "sector-ransomware-watch",
+    "title": "Sector ransomware watch for Slack",
+    "one_liner": "New dark-web ransomware victims for a sector/country, as a Slack message.",
+    "what_you_get": "Lists leak-site victims posted in the last N days (free tier: up to 7), optionally filtered to one sector and/or country, and formats them as a Slack mrkdwn message with the week's most active groups underneath. If SLACK_WEBHOOK_URL is set the message is posted; otherwise it is printed so you can see exactly what would go out.",
+    "endpoints": [
+      "/darkweb/ransomware/victims",
+      "/darkweb/ransomware/victims/facets"
+    ],
+    "credits_per_run": 2,
+    "free_tier_ok": true,
+    "python_file": "sector-ransomware-watch.py",
+    "shell_file": "sector-ransomware-watch.sh",
+    "sample_output": "*ThreatCluster ransomware watch: Healthcare, last 7 days*\n22 new leak-site victims\n• 2026-09-29  chaos  →  <https://threatcluster.io/dark-web/victim/1afc831517e1ddb8|carolinaasthma.com>  (US)\n• 2026-09-28  threeam  →  <https://threatcluster.io/dark-web/victim/f372319927cb9c35|coosalud.com>  (CO)\n• 2026-09-28  play  →  <https://threatcluster.io/dark-web/victim/db685052c5c55bf5|Ever Ready First Aid>  (US)\n• 2026-09-28  qilin  →  <https://threatcluster.io/dark-web/victim/d8965ebc638d8433|New World Diagnostics>  (PH)\n• 2026-09-28  interlock  →  <https://threatcluster.io/dark-web/victim/5491aae79305a0f7|The Center for Kidney Care>  (US)\n• 2026-09-28  safepay  →  <https://threatcluster.io/dark-web/victim/142e2f42a92073b2|bio-strath.com>  (CH)\n• 2026-09-28  panzer  →  <https://threatcluster.io/dark-web/victim/35a3656a6b7ed5ff|SMCare>  (--)\n• 2026-09-26  thegentlemen  →  <https://threatcluster.io/dark-web/victim/08178a531633ff94|ANP Health>  (BR)\n• 2026-09-25  metaencryptor  →  <https://threatcluster.io/dark-web/victim/f2b116f8b7ff0f0c|Platinum Healthcare Staffing>  (US)\n• 2026-09-25  everest  →  <https://threatcluster.io/dark-web/victim/611d3567b69c4ccb|Morula IVF>  (ZA)\n• 2026-09-25  wallstreet  →  <https://threatcluster.io/dark-web/victim/d155e77beca536c4|Breast Implant Center of Hawaii>  (US)\n• 2026-09-25  lockbit5  →  <https://threatcluster.io/dark-web/victim/fb3570c7f749402c|taspenlife.com>  (KZ)\n• 2026-09-25  incransom  →  <https://threatcluster.io/dark-web/victim/d1ba2b0c039b2d62|pharma5.ma>  (MA)\n• 2026-09-24  pear  →  <https://threatcluster.io/dark-web/victim/5258e768e55fc0ac|Westside GI>  (US)\n• 2026-09-24  pear  →  <https://threatcluster.io/dark-web/victim/289639c13808c3d0|Indroj Medical Group Inc.>  (US)\n• 2026-09-24  incransom  →  <https://threatcluster.io/dark-web/victim/24f992c5887d6cb5|welgenone.com>  (US)\n• 2026-09-24  zawoo  →  <https://threatcluster.io/dark-web/victim/c07f06565c5fb9f3|www.francare.com>  (FR)\n• 2026-09-24  dragonforce  →  <https://threatcluster.io/dark-web/victim/e4c093b3ad61bb46|Arizona Vascular Medical Equipment, Inc>  (US)\n• 2026-09-23  booba project  →  <https://threatcluster.io/dark-web/victim/bbfa80af274a4c4b|Smart Eye Care>  (--)\n• 2026-09-22  shinyhunters  →  <https://threatcluster.io/dark-web/victim/fa93743f6499bc63|Fresenius Medical Care>  (DE)\n• 2026-09-22  titan  →  <https://threatcluster.io/dark-web/victim/c0d3e4d5158b5dac|Grupo Hospifar S.R.L.>  (AR)\n• 2026-09-22  titan  →  <https://threatcluster.io/dark-web/victim/f8a683a8d1118949|Sherman Chan, DDS, Inc.>  (--)\n_Most active groups this window: clop 23, thegentlemen 20, qilin 16, incransom 10, safepay 9_\n_Most hit sectors this window: Manufacturing 32, Not Found 28, Professional Services 28, Technology 23, Healthcare 22_\nSource: https://threatcluster.io/dark-web/victims\n[threatcluster] credits used this run: 2",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Alerting",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/sector-ransomware-watch.py\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "Without a Slack webhook set, the script prints the message it would send. Sector names are the ones the API returns. A wrong name prints the valid list.",
+        "commands": "python3 sector-ransomware-watch.py --sector Healthcare",
+        "image": {
+          "src": "/images/build/sector-ransomware-watch/run.webp",
+          "w": 1186,
+          "h": 497,
+          "alt": "A terminal running the script for the Healthcare sector and printing a Slack-formatted list of leak-site victims with the date, group, name and country",
+          "caption": "Run on 29 September 2026. 22 healthcare organisations were listed on leak sites in the 7 days before. Each line links to the listing's page."
+        }
+      },
+      {
+        "title": "Read up on a group",
+        "text": "The message ends with the week's most active groups. Each has a page with its history, its leak-site addresses and the coverage it appears in.",
+        "image": {
+          "src": "/images/build/sector-ransomware-watch/web.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster page for the Qilin ransomware group showing its status, tracked victims, a written summary and its leak-site addresses",
+          "caption": "The page for Qilin, one of the groups in the run above."
+        }
+      },
+      {
+        "title": "Send it to Slack every morning",
+        "text": "Create an incoming webhook in Slack, set it in the environment, and schedule the script. A listing is the group's claim, so keep the word \"listed\" if you forward it.",
+        "commands": "export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/your/webhook/here\npython3 sector-ransomware-watch.py --sector Healthcare --days 1\n\n# crontab -e, every day at 08:00\n0 8 * * * THREATCLUSTER_API_KEY=... SLACK_WEBHOOK_URL=... /usr/bin/python3 /opt/tc/sector-ransomware-watch.py --sector Healthcare --days 1"
+      }
+    ]
+  },
+  {
+    "slug": "siem-ioc-enrichment",
+    "title": "SIEM indicator enrichment",
+    "one_liner": "What does ThreatCluster know about this indicator?",
+    "what_you_get": "For each IOC (domain, IPv4 or MD5/SHA1/SHA256 hash) it finds the matching entity, then prints the incident context: the clusters it appears in (title, score, link), the actors / malware / tools seen alongside it, and the other indicators from the top cluster, so an analyst can pivot straight from a SIEM alert.",
+    "endpoints": [
+      "/entities/search",
+      "/entities/{type}/{value}",
+      "/threats/{slug}/iocs"
+    ],
+    "credits_per_run": 6,
+    "free_tier_ok": true,
+    "python_file": "siem-ioc-enrichment.py",
+    "shell_file": null,
+    "sample_output": "== aar.gandhibludtric.com\n   type domain; 1 cluster(s), 1 article(s); page https://threatcluster.io/entities/domain/aar.gandhibludtric.com\n   Clusters:\n      82.2  -        Critical Citrix NetScaler Zero-Day Vulnerabilities Exploited\n            https://threatcluster.io/cluster/critical-citrix-netscaler-zero-day-exploitation-confirmed-4d8f6ff9\n   apt_group:        Earth Estries, GhostEmperor, Salt Typhoon, Unc2286\n   malware:          Deed RAT, Snappybee\n   tool:             SoftEther VPN\n   attack_type:      Malware\n   platform:         Cisco Devices, Citrix NetScaler Gateway\n   Related indicators (validated, from the top cluster):\n     (none beyond the queried indicator)\n\n== 172.94.9.194\n   type ipv4; 1 cluster(s), 1 article(s); page https://threatcluster.io/entities/ipv4/172.94.9.194\n   Clusters:\n      65.2  -        Multiple Mythic C2 Interfaces Exposed on Port 7443\n            https://threatcluster.io/cluster/multiple-mythic-c2-interfaces-exposed-on-port-7443-ac68d525\n   Related indicators (validated, from the top cluster):\n     ipv4     154.198.49.31                                high\n     ipv4     159.198.75.180                               high\n     ipv4     189.141.53.203                               high\n     ipv4     193.201.185.90                               high\n     ipv4     23.148.228.253                               high\n     ipv4     95.158.131.141                               high\n\n== 9cb68f986043a576e19d32184c583b7d8f571c7219d8dc0065dced1c13f077ef\n   type sha256; 1 cluster(s), 3 article(s); page https://threatcluster.io/entities/sha256/9cb68f986043a576e19d32184c583b7d8f571c7219d8dc0065dced1c13f077ef\n   Clusters:\n      63.9  -        NeedyMantis Malware Framework Targeting Telecommunications and Government Entities\n            https://threatcluster.io/cluster/needymantis-malware-discovered-in-targeted-operations-ee4e32b2\n   malware:          NeedyMantis\n   tool:             Impacket, TightVNC, Curl\n   campaign:         Daemon Tools Supply Chain Compromise, Daemon Tools Campaign\n   attack_type:      Malware, Supply Chain Attack\n   platform:         Windows, Microsoft Defender Antivirus, Microsoft Office, Poedit, VIM\n   Related indicators (validated, from the top cluster):\n     domain   corp.tripswithengine.com                     high\n     sha256   c82520eb03c084226be4eafbff46f56dca0aa8804a2a7f23a085a96afe71ef77 high\n…",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Enrichment",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/siem-ioc-enrichment.py\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "Pass any mix of domains, IPv4 addresses and file hashes. For each one the script prints the incidents it appears in, the actors and malware named alongside it, and the other validated indicators from the same incident.",
+        "commands": "python3 siem-ioc-enrichment.py aar.gandhibludtric.com 172.94.9.194 \\\n    9cb68f986043a576e19d32184c583b7d8f571c7219d8dc0065dced1c13f077ef",
+        "image": {
+          "src": "/images/build/siem-ioc-enrichment/run.webp",
+          "w": 1060,
+          "h": 706,
+          "alt": "A terminal enriching a domain and an IP address: each shows its incident with a threat score and link, the threat actors and malware named with it, and related validated indicators",
+          "caption": "Run on 29 September 2026. The domain ties to an incident naming Salt Typhoon. The IP address brings six related addresses with it."
+        }
+      },
+      {
+        "title": "Open the incident",
+        "text": "Each indicator links to its incident, which has the summary, the source articles and the full entity list.",
+        "image": {
+          "src": "/images/build/siem-ioc-enrichment/web.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster incident page for exposed Mythic C2 interfaces, with a summary, a threat score of 65 and 26 extracted entities",
+          "caption": "The incident behind the IP address in the run above."
+        }
+      },
+      {
+        "title": "Call it from your SIEM",
+        "text": "Most SIEMs can run a script on an alert and attach its output. Pass the indicator from the alert as the argument. Each indicator costs up to 3 credits.",
+        "commands": "python3 siem-ioc-enrichment.py \"$ALERT_INDICATOR\" > enrichment.txt"
+      }
+    ]
+  },
+  {
+    "slug": "trending-actors",
+    "title": "Trending threat actors",
+    "one_liner": "Which threat actors, ransomware crews and malware families are rising this week?",
+    "what_you_get": "Prints the trending APT groups, ransomware groups and malware families of the last 7 days: how many clusters mention them, the change versus the previous window, whether they are new to the corpus, and the ThreatCluster entity page for each.",
+    "endpoints": [
+      "/entities/trending"
+    ],
+    "credits_per_run": 1,
+    "free_tier_ok": true,
+    "python_file": "trending-actors.py",
+    "shell_file": "trending-actors.sh",
+    "sample_output": "== apt_group (last 7d) ==\n   entity                       mentions   change  page\n   ShinyHunters                       21   +2000%  https://threatcluster.io/entities/apt-group/ShinyHunters\n   Lazarus Group                      10    +100%  https://threatcluster.io/entities/apt-group/Lazarus%20Group\n   Salt Typhoon                        6     +20%  https://threatcluster.io/entities/apt-group/Salt%20Typhoon\n   Apt28                               2    +100%  https://threatcluster.io/entities/apt-group/Apt28\n   Unc3886                             6      NEW  https://threatcluster.io/entities/apt-group/Unc3886\n   Wizard Spider                       5      NEW  https://threatcluster.io/entities/apt-group/Wizard%20Spider\n   Water Hydra                         3      NEW  https://threatcluster.io/entities/apt-group/Water%20Hydra\n   SideCopy                            3      NEW  https://threatcluster.io/entities/apt-group/SideCopy\n   Unc6240                             2      NEW  https://threatcluster.io/entities/apt-group/Unc6240\n   Storm-2992                          2      NEW  https://threatcluster.io/entities/apt-group/Storm-2992\n\n== ransomware_group (last 7d) ==\n   entity                       mentions   change  page\n   Clop                               28    +300%  https://threatcluster.io/entities/ransomware-group/Clop\n   Cl0p                               10    +233%  https://threatcluster.io/entities/ransomware-group/Cl0p\n   Ryuk                               10    +150%  https://threatcluster.io/entities/ransomware-group/Ryuk\n   SilentRansomGroup                   5    +400%  https://threatcluster.io/entities/ransomware-group/SilentRansomGroup\n   Pear                                5    +400%  https://threatcluster.io/entities/ransomware-group/Pear\n   Krybit                              3     +50%  https://threatcluster.io/entities/ransomware-group/Krybit\n   Medusa                              2    +100%  https://threatcluster.io/entities/ransomware-group/Medusa\n   Booba Project                       6      NEW  https://threatcluster.io/entities/ransomware-group/Booba%20Project\n   Orova                               3      NEW  https://threatcluster.io/entities/ransomware-group/Orova\n   MedusaLocker                        2      NEW  https://threatcluster.io/entities/ransomware-group/MedusaLocker\n\n== malware (last 7d) ==\n   entity                       mentions   change  page\n   Closedquorum                       10    +150%  https://threatcluster.io/entities/malware/Closedquorum\n   Pegasus                             9    +125%  https://threatcluster.io/entities/malware/Pegasus\n   TraderTraitor                       6    +200%  https://threatcluster.io/entities/malware/TraderTraitor\n   SecTopRAT                           5    +400%  https://threatcluster.io/entities/malware/SecTopRAT\n   BigDiskBuster                       4    +300%  https://threatcluster.io/entities/malware/BigDiskBuster\n   Predator                            5     +67%  https://threatcluster.io/entities/malware/Predator\n   Emotet                              4    +100%  https://threatcluster.io/entities/malware/Emotet\n   Trickbot                            4     +33%  https://threatcluster.io/entities/malware/Trickbot\n   Mini Shai-Hulud                     2    +100%  https://threatcluster.io/entities/malware/Mini%20Shai-Hulud\n   Stuxnet                             2    +100%  https://threatcluster.io/entities/malware/Stuxnet\n\n[threatcluster] credits used this run: 1",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Reporting",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/trending-actors.py\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "No arguments. The script prints the most-mentioned threat actors, ransomware groups and malware of the last 7 days, with the change on the week before.",
+        "commands": "python3 trending-actors.py",
+        "image": {
+          "src": "/images/build/trending-actors/run.webp",
+          "w": 1123,
+          "h": 590,
+          "alt": "A terminal running the script and printing a table of threat actors with mention counts, percentage change and links, led by ShinyHunters",
+          "caption": "Run on 29 September 2026. ShinyHunters led with 21 mentions."
+        }
+      },
+      {
+        "title": "Open a profile",
+        "text": "Each name links to its profile: an overview, objectives, the techniques it uses and recent coverage.",
+        "image": {
+          "src": "/images/build/trending-actors/web.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster profile for ShinyHunters with an overview, 160 occurrences, first and last seen dates and its objectives",
+          "caption": "The profile for the top row of the run above."
+        }
+      },
+      {
+        "title": "Pick the types you track",
+        "text": "Pass the entity types you want. The run costs one credit.",
+        "commands": "python3 trending-actors.py --types apt_group malware cve"
+      }
+    ]
+  },
+  {
+    "slug": "vendor-in-the-news",
+    "title": "Vendor in the news",
+    "one_liner": "Which of my vendors/products are in incident reporting this week?",
+    "what_you_get": "For each vendor or product name you give it, pulls the highest-scoring threat clusters of the last 7 days whose title, summary or keywords mention that name, keeps those at or above a threat-score threshold, and prints one line per hit with a link to the ThreatCluster cluster page.",
+    "endpoints": [
+      "/threats"
+    ],
+    "credits_per_run": 5,
+    "free_tier_ok": true,
+    "python_file": "vendor-in-the-news.py",
+    "shell_file": "vendor-in-the-news.sh",
+    "sample_output": "Microsoft: 11 cluster(s) >= 60 in the last 7 days\n   76.5  medium   AI Agent Breaches Australian Medicare Portal, Microsoft Patches SharePoint Vulnerability\n         https://threatcluster.io/cluster/ai-agent-breaches-australian-medicare-portal-microsoft-patch-08657247\n   74.6  medium   Microsoft's Record Patch Tuesday Addresses 167 CVEs Including Zero-Days\n         https://threatcluster.io/cluster/microsofts-record-patch-tuesday-addresses-167-cves-including-94b61f6e\n   74.0  medium   Active Exploitation of SharePoint and MikroTik Vulnerabilities Confirmed\n         https://threatcluster.io/cluster/active-exploitation-of-sharepoint-and-mikrotik-vulnerabiliti-7767f025\n   72.9  medium   Critical Remote Code Execution Vulnerabilities in SENAITE and SharePoint\n         https://threatcluster.io/cluster/critical-remote-code-execution-vulnerabilities-in-senaite-an-82e7b9a7\n   72.6  medium   ShinyHunters Escalate Oracle PeopleSoft Exploitation Amid Microsoft Mega-Patch\n         https://threatcluster.io/cluster/shinyhunters-escalate-oracle-peoplesoft-exploitation-amid-mi-1d5cd23e\n   71.8  medium   Storm-3168 and Storm-2570: Evolving Ransomware Tactics in Cloud Environments\n         https://threatcluster.io/cluster/storm-3168-and-storm-2570-evolving-ransomware-tactics-in-clo-3a83504e\n   71.8  medium   Microsoft and Partners Disrupt EvilTokens AI-Powered Phishing Service\n         https://threatcluster.io/cluster/microsoft-dismantles-eviltokens-ai-phishing-service-two-arre-34b13b0e\n   71.0  medium   TeamFiltration Campaign Targets Microsoft 365 Accounts in Chile\n         https://threatcluster.io/cluster/teamfiltration-campaign-targets-microsoft-365-accounts-in-ch-a3e7ee2d\n   70.5  medium   Attackers Compile Cryptominer on Victim Endpoint via Samsung MagicINFO Exploit\n         https://threatcluster.io/cluster/attackers-compile-cryptominer-on-victim-endpoint-via-samsung-fd4fda06\n   63.9  medium   NeedyMantis Malware Framework Targeting Telecommunications and Government Entities\n         https://threatcluster.io/cluster/needymantis-malware-discovered-in-targeted-operations-ee4e32b2\n   60.6  medium   Nvidia Launches Open Agent Safety Platform to Contain Rogue AI Agents\n         https://threatcluster.io/cluster/nvidia-launches-open-agent-safety-platform-to-address-ai-age-d2abebb6\nCisco: 2 cluster(s) >= 60 in the last 7 days\n   80.0  medium   Critical Zero-Day Exploits Target Citrix and Other Major Platforms\n         https://threatcluster.io/cluster/critical-zero-day-exploits-target-citrix-and-other-major-pla-8a8e4260\n   69.5  medium   Qilin Ransomware Claims New Australian Victims Amid Ongoing Exploitation\n         https://threatcluster.io/cluster/qilin-ransomware-claims-new-australian-victims-amid-ongoing--6ec4fb69\nFortinet: 0 cluster(s) >= 60 in the last 7 days\nIvanti: 0 cluster(s) >= 60 in the last 7 days\nCitrix: 7 cluster(s) >= 60 in the last 7 days\n   82.2  medium   Critical Citrix NetScaler Zero-Day Vulnerabilities Exploited\n         https://threatcluster.io/cluster/critical-citrix-netscaler-zero-day-exploitation-confirmed-4d8f6ff9\n   80.8  medium   Critical Zero-Day Vulnerabilities in Citrix NetScaler Under Active Exploitation\n         https://threatcluster.io/cluster/active-exploitation-of-citrix-netscaler-zero-day-vulnerabili-bada67d1\n   80.0  medium   Critical Zero-Day Exploits in Citrix NetScaler Confirmed by CISA\n         https://threatcluster.io/cluster/critical-zero-day-exploits-in-citrix-netscaler-confirmed-by--5b100c3f\n   78.0  medium   Critical RCE Vulnerability in Citrix NetScaler Exploited via DTLS Memory Overflow\n         https://threatcluster.io/cluster/critical-rce-vulnerability-in-citrix-netscaler-exploited-via-132a1fb0\n…",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Alerting",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/vendor-in-the-news.py\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "Pass the vendors and products you run. For each, the script lists the incidents from the last 7 days that score 60 or more.",
+        "commands": "python3 vendor-in-the-news.py Microsoft Cisco Fortinet Ivanti Citrix",
+        "image": {
+          "src": "/images/build/vendor-in-the-news/run.webp",
+          "w": 1051,
+          "h": 590,
+          "alt": "A terminal running the script for five vendors and printing, for Microsoft, a list of incidents with threat score, urgency, title and link",
+          "caption": "Run on 29 September 2026. 20 incidents across the five names: Microsoft 11, Citrix 7, Cisco 2, Fortinet and Ivanti none."
+        }
+      },
+      {
+        "title": "Open an incident",
+        "text": "Each line links to the incident, which has the summary and every article that covered it.",
+        "image": {
+          "src": "/images/build/vendor-in-the-news/web.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster incident page for Microsoft's Patch Tuesday, with key points, a threat score of 74.6 and 31 extracted entities",
+          "caption": "One of the Microsoft incidents from the run above."
+        }
+      },
+      {
+        "title": "Raise the bar",
+        "text": "Set a higher score to see only the serious ones. Each vendor name costs one credit.",
+        "commands": "python3 vendor-in-the-news.py --min-score 70 \"Palo Alto\" SonicWall"
+      }
+    ]
+  },
+  {
+    "slug": "weekly-exec-brief",
+    "title": "Weekly executive brief",
+    "one_liner": "The week's top 10 threat clusters as a Markdown brief.",
+    "what_you_get": "Pulls the ten highest-scoring threat clusters of the last 7 days and renders a Markdown brief: rank, title, score and urgency, a one-sentence summary, entity chips (actors, malware, CVEs, platforms...) and a link to each cluster. Saved to brief.md and printed.",
+    "endpoints": [
+      "/threats"
+    ],
+    "credits_per_run": 1,
+    "free_tier_ok": true,
+    "python_file": "weekly-exec-brief.py",
+    "shell_file": null,
+    "sample_output": "# ThreatCluster weekly executive brief: week ending 2026-09-29\n\nTop 10 threat clusters of the last 7 days, ranked by ThreatCluster threat score.\n\n## 1. Critical Zero-Day Exploits Target F5 and Check Point Products\n**Score 83** · medium urgency · 4 article(s) · latest activity 2026-09-26\n\nF5 Networks released emergency hotfixes for a critical zero-day vulnerability, CVE-2026-94127, in its BIG-IP Access Policy Manager on September 22, 2026, after confirming active exploitation.\n\n`cve: CVE-2026-85102` `cve: CVE-2026-93616` `cve: CVE-2026-93952` `cve: CVE-2026-94127`\n[Read the cluster](https://threatcluster.io/cluster/critical-zero-day-exploits-target-f5-and-check-point-product-87a87199)\n\n## 2. Critical Zero-Day Vulnerability in F5 BIG-IP APM Exploited for Remote Code Execution\n**Score 82** · medium urgency · 33 article(s) · latest activity 2026-09-22\n\nF5 Networks has reported a critical vulnerability in its BIG-IP Access Policy Manager (APM), tracked as CVE-2026-94127, which is being actively exploited in the wild.\n\n`campaign: BlueMoon Patch-Gap` `cve: CVE-2025-53521` `platform: Azure` `company: F5 Networks` `country: Qatar` `cve: CVE-2026-58138`\n[Read the cluster](https://threatcluster.io/cluster/critical-rce-vulnerability-in-f5-big-ip-apm-exploited-4660d2ee)\n\n## 3. Critical Citrix NetScaler Zero-Day Vulnerabilities Exploited\n**Score 82** · medium urgency · 45 article(s) · latest activity 2026-09-28\n\nCitrix disclosed two critical zero-day vulnerabilities, CVE-2026-88771 and CVE-2026-88772, affecting NetScaler ADC and Gateway systems, which are being actively exploited.\n\n`apt_group: Earth Estries` `ransomware_group: Clop` `malware: Deed RAT` `campaign: Citrix Bleed One` `cve: CVE-2023-4966` `platform: Cisco Devices`\n[Read the cluster](https://threatcluster.io/cluster/critical-citrix-netscaler-zero-day-exploitation-confirmed-4d8f6ff9)\n\n## 4. Critical Zero-Day Vulnerabilities in Citrix NetScaler Under Active Exploitation\n**Score 81** · medium urgency · 100 article(s) · latest activity 2026-09-26\n\nOn September 26, 2026, security firm watchTowr reported two unpatched zero-day vulnerabilities in Citrix NetScaler ADC and Gateway appliances, allowing remote code execution (RCE) and actively exploited in the wild.\n\n`apt_group: Unc6240` `malware: Sideeye` `cve: CVE-2019-19781` `platform: Citrix NetScaler` `company: Citrix` `country: Israel`\n[Read the cluster](https://threatcluster.io/cluster/active-exploitation-of-citrix-netscaler-zero-day-vulnerabili-bada67d1)\n\n## 5. Massive Network of AI Proxy Servers Used for Malicious Activities Uncovered\n**Score 81** · medium urgency · 5 article(s) · latest activity 2026-09-23\n\n…",
+    "validated_at": "2026-09-29T15:20:00Z",
+    "theme": "Reporting",
+    "notes": "Run against the live API on 2026-09-29; the walkthrough screenshots are captures of that run.",
+    "walkthrough": [
+      {
+        "title": "Get a key",
+        "text": "Sign in, open Settings, then API & Feeds, and select Generate API key. The key is shown once, so copy it. Every account has one and the free key covers this recipe.",
+        "image": {
+          "src": "/images/build/shared/get-key.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The ThreatCluster API page with the Get a free key button and the quick start, which begins with creating a key",
+          "caption": "The API page. The key itself is created in Settings, under API & Feeds."
+        }
+      },
+      {
+        "title": "Download the script and set the key",
+        "text": "The script is one file with one dependency. It reads the key from the environment, so the key never goes into the file.",
+        "commands": "curl -sO https://raw.githubusercontent.com/Jam0k/Cyber-Threat-Intelligence-API/main/examples/recipes/weekly-exec-brief.py\npip install requests\nexport THREATCLUSTER_API_KEY=tc_live_your_key_here"
+      },
+      {
+        "title": "Run it",
+        "text": "The script writes brief.md to the current folder and prints it. It is the ten highest-scoring incidents of the last 7 days, each with a score, a two-sentence summary and a link.",
+        "commands": "python3 weekly-exec-brief.py",
+        "image": {
+          "src": "/images/build/weekly-exec-brief/run.webp",
+          "w": 1280,
+          "h": 325,
+          "alt": "A terminal running the script, which reports it wrote brief.md and prints the start of the brief: a title and the first incident with its score and summary",
+          "caption": "Run on 29 September 2026. The top incident that week was the F5 and Check Point zero-days, scored 83."
+        }
+      },
+      {
+        "title": "Read the brief",
+        "text": "The file is plain Markdown, so it renders in anything that reads Markdown: a wiki page, an email client, a pull request.",
+        "image": {
+          "src": "/images/build/weekly-exec-brief/web.webp",
+          "w": 1280,
+          "h": 820,
+          "alt": "The brief rendered as a document, with a title, three numbered incidents, their scores and urgency, short summaries, entity tags and links",
+          "caption": "brief.md from the run above, rendered as HTML."
+        }
+      },
+      {
+        "title": "Send it every Monday",
+        "text": "Write the file where your wiki or mailer picks it up. The run costs one credit.",
+        "commands": "# crontab -e, Mondays at 07:00\n0 7 * * 1 THREATCLUSTER_API_KEY=... /usr/bin/python3 /opt/tc/weekly-exec-brief.py --out /srv/wiki/security/brief.md"
+      }
+    ]
+  }
 ]

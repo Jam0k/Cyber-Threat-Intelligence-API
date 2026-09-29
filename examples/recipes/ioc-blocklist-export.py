@@ -66,8 +66,9 @@ def cluster_url(cluster):
 
 def report_credits():
     # Stderr, so it never pollutes piped output (brief.md, blocklists, JSON).
-    remaining = _credits["remaining"] if _credits["remaining"] is not None else "n/a"
-    sys.stderr.write("[threatcluster] credits used this run: %d, remaining today: %s\n" % (_credits["used"], remaining))
+    # Keys without a daily cap send no remaining-credits header.
+    left = ", remaining today: %s" % _credits["remaining"] if _credits["remaining"] is not None else ""
+    sys.stderr.write("[threatcluster] credits used this run: %d%s\n" % (_credits["used"], left))
 
 
 def main():
