@@ -23,7 +23,7 @@ It's also the issue tracker for the API — bugs, field questions, endpoint requ
 
 ## Quickstart
 
-1. **Sign up** (free) at https://threatcluster.io
+1. **Sign up** (free) at https://threatcluster.io/get-started
 2. **Mint a key**: Settings → API & Feeds → Generate API key. It starts `tc_live_`, is shown once, and carries the scopes of your plan.
    Every cluster, entity, CVE and leak-site page on the site has an **API** button that shows the exact request for that record.
 3. **Call it**:
@@ -214,6 +214,7 @@ bash examples/bash/quickstart.sh
 * **OpenAPI generators** — `openapi-generator-cli generate -i openapi/openapi.json -g <lang>` gives you a typed client.
 * **Integration guides** — Splunk, Sentinel, Elastic, Claude, OpenAI, Cursor, Bash, curl, VS Code, Windows Terminal: https://threatcluster.io/integrations
 * **No key at all** — [public feeds](https://threatcluster.io/feeds): RSS, MISP manifest, IOC blocklist (TLP:CLEAR).
+  Browse the validated indicators behind the blocklist at [threatcluster.io/iocs](https://threatcluster.io/iocs).
   Snapshots live in [Jam0k/Public-Feeds-IOCs](https://github.com/Jam0k/Public-Feeds-IOCs); leak-site listings in
   [Jam0k/Ransomware-Intel](https://github.com/Jam0k/Ransomware-Intel). The site's own JSON endpoints are shaped like a
   free key for anonymous callers, so the API is the way to get full records and history.
