@@ -2647,6 +2647,283 @@
         "title": "DarkwebStatsResponse",
         "type": "object"
       },
+      "DigestIssue": {
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "edition": {
+            "title": "Edition",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry"
+          },
+          "industry_slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry Slug"
+          },
+          "leak_sites": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DigestLeakSites"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "moving": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Moving",
+            "type": "array"
+          },
+          "next": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next"
+          },
+          "previous": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/DigestSection"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "edition",
+          "date",
+          "subject",
+          "sections",
+          "moving"
+        ],
+        "title": "DigestIssue",
+        "type": "object"
+      },
+      "DigestIssueList": {
+        "properties": {
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/DigestIssueListItem"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "issues",
+          "total"
+        ],
+        "title": "DigestIssueList",
+        "type": "object"
+      },
+      "DigestIssueListItem": {
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "edition": {
+            "title": "Edition",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry"
+          },
+          "story_count": {
+            "title": "Story Count",
+            "type": "integer"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "edition",
+          "date",
+          "subject",
+          "story_count"
+        ],
+        "title": "DigestIssueListItem",
+        "type": "object"
+      },
+      "DigestLeakGroup": {
+        "properties": {
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "DigestLeakGroup",
+        "type": "object"
+      },
+      "DigestLeakSites": {
+        "properties": {
+          "group_total": {
+            "default": 0,
+            "title": "Group Total",
+            "type": "integer"
+          },
+          "groups": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/DigestLeakGroup"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "hours": {
+            "default": 24,
+            "title": "Hours",
+            "type": "integer"
+          },
+          "victims": {
+            "default": 0,
+            "title": "Victims",
+            "type": "integer"
+          }
+        },
+        "title": "DigestLeakSites",
+        "type": "object"
+      },
+      "DigestSection": {
+        "properties": {
+          "stories": {
+            "items": {
+              "$ref": "#/components/schemas/DigestStory"
+            },
+            "title": "Stories",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "stories"
+        ],
+        "title": "DigestSection",
+        "type": "object"
+      },
+      "DigestStory": {
+        "properties": {
+          "category": {
+            "default": "",
+            "title": "Category",
+            "type": "string"
+          },
+          "entities": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Entities",
+            "type": "array"
+          },
+          "score": {
+            "default": 0,
+            "title": "Score",
+            "type": "integer"
+          },
+          "sources": {
+            "default": 0,
+            "title": "Sources",
+            "type": "integer"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "default": "",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "DigestStory",
+        "type": "object"
+      },
       "DomainIn": {
         "properties": {
           "domain": {
