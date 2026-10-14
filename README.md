@@ -159,7 +159,7 @@ Full parameter and response schemas: [`openapi/openapi.json`](openapi/openapi.js
 | **Free** | **100 / day** | 30 / min | `threats:read` `iocs:read` `entities:read` `vulns:read` `darkweb:read` |
 | Researcher ($19.99) | 1,000 / day | 120 / min | + `feeds:read` `feeds:write` `alerts:read` `alerts:write` `ai:read` |
 | Analyst | 1,000 / day | 240 / min | same as Researcher |
-| Business / MSSP ($399) | no daily budget | 600 / min, per-key overrides | all scopes (+ `inventory:*`, `mssp:*`, `compliance:read`) |
+| Business (from $199, per seat) | no daily budget | 600 / min, per-key overrides | all scopes (+ `inventory:*`, `mssp:*`, `compliance:read`) |
 
 **What a request costs.** Most calls are 1 credit. `/search` is 5; STIX bundles, the IOC feed and
 export, dark-web keyword hits and trends are 3; a fully enriched leak-site victim record is 10;
@@ -220,6 +220,17 @@ bash examples/bash/quickstart.sh
   free key for anonymous callers, so the API is the way to get full records and history.
 
 ---
+
+## Guides and reference on threatcluster.io
+
+- [Free threat intelligence API](https://threatcluster.io/about/free-api): what the free key includes and how to get one
+- [API reference](https://threatcluster.io/about/api-reference): every endpoint by area: [threats](https://threatcluster.io/about/api-reference/threats), [IOCs](https://threatcluster.io/about/api-reference/iocs), [entities](https://threatcluster.io/about/api-reference/entities), [vulnerabilities](https://threatcluster.io/about/api-reference/vulnerabilities), [dark web](https://threatcluster.io/about/api-reference/darkweb)
+- [IOC API](https://threatcluster.io/about/ioc-api), [CVE API](https://threatcluster.io/about/cve-api), [dark web API](https://threatcluster.io/about/dark-web-api), [threat actor API](https://threatcluster.io/about/threat-actor-api)
+- [Free threat intelligence feeds](https://threatcluster.io/free-threat-intelligence-feeds): the public IOC, MISP and RSS feeds, no key needed
+- [Open datasets](https://threatcluster.io/datasets): the same data on Hugging Face and Kaggle
+- [LLM recency benchmark](https://threatcluster.io/about/llm-recency-benchmark): why a model needs a live feed for anything after its cutoff
+- [Recipes](https://threatcluster.io/build): ten validated scripts on the free tier
+- [Getting started](https://threatcluster.io/docs/getting-started) and the [glossary](https://threatcluster.io/glossary)
 
 ## OpenAPI snapshot
 
