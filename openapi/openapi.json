@@ -2989,6 +2989,17 @@
             ],
             "title": "Entity Type"
           },
+          "entity_type_relaxed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type Relaxed"
+          },
           "limit": {
             "anyOf": [
               {
@@ -2999,6 +3010,17 @@
               }
             ],
             "title": "Limit"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
           },
           "offset": {
             "anyOf": [
@@ -3169,6 +3191,18 @@
           "entity": {
             "$ref": "#/components/schemas/EntityInfo"
           },
+          "leak_site": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Leak Site"
+          },
           "overview": {
             "anyOf": [
               {
@@ -3315,6 +3349,50 @@
           "entity_value": {
             "title": "Entity Value",
             "type": "string"
+          },
+          "first_seen": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Seen"
+          },
+          "last_seen": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "victim_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Victim Count"
           }
         },
         "required": [
@@ -5273,6 +5351,18 @@
             "title": "Clusters",
             "type": "array"
           },
+          "corrected_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when nothing matched the query and the results are for this near name instead",
+            "title": "Corrected To"
+          },
           "darkweb": {
             "items": {
               "$ref": "#/components/schemas/SearchDarkwebHit"
@@ -5292,6 +5382,20 @@
             "description": "Window applied, when one was (free keys: always 7)",
             "title": "Days"
           },
+          "did_you_mean": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Did You Mean"
+          },
           "entities": {
             "items": {
               "$ref": "#/components/schemas/SearchEntityHit"
@@ -5303,6 +5407,18 @@
             "default": false,
             "title": "Include Articles",
             "type": "boolean"
+          },
+          "indicator": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Indicator"
           },
           "limit": {
             "title": "Limit",
@@ -5319,9 +5435,35 @@
             ],
             "title": "Lookback Days"
           },
+          "matched_stage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "'words' when the phrase matched nothing and the results come from its significant words",
+            "title": "Matched Stage"
+          },
           "query": {
             "title": "Query",
             "type": "string"
+          },
+          "terms_searched": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terms Searched"
           },
           "tier": {
             "anyOf": [
