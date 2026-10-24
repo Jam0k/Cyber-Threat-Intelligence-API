@@ -5646,6 +5646,17 @@
             ],
             "title": "Date Range Latest"
           },
+          "early_signal": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Early Signal"
+          },
           "entities": {
             "anyOf": [
               {
@@ -6026,6 +6037,17 @@
               }
             ],
             "title": "Date Range Latest"
+          },
+          "early_signal": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Early Signal"
           },
           "entities": {
             "anyOf": [
@@ -8886,6 +8908,79 @@
         ]
       }
     },
+    "/api/public/v1/early-warning": {
+      "get": {
+        "description": "Early-warning clusters: stories that currently rest on ONE trusted source\n(a researcher disclosure, a vendor advisory, a CERT notice, a Hacker News\nwarning) and would otherwise wait for a second publisher before getting a\npage. `early_signal` is true while that is still the case; the cluster\nstays in this list after corroboration, since it started here.\n\nSame shape and parameters as /threats, newest first. Costs the same as a\n/threats call.",
+        "operationId": "public_get_early_warning_api_public_v1_early_warning_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "time_filter",
+            "required": false,
+            "schema": {
+              "default": "7d",
+              "title": "Time Filter",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "title": "Since",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreatsListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Early warning: single-source disclosures before the press covers them",
+        "tags": [
+          "threats"
+        ]
+      }
+    },
     "/api/public/v1/entities/company/{name}/darkweb-profile": {
       "get": {
         "operationId": "public_company_darkweb_profile_api_public_v1_entities_company__name__darkweb_profile_get",
@@ -10825,6 +10920,16 @@
             "schema": {
               "title": "Since",
               "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "early_signal",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Early Signal",
+              "type": "integer"
             }
           }
         ],
