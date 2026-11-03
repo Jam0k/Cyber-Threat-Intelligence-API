@@ -5587,6 +5587,29 @@
             ],
             "title": "Articles"
           },
+          "breaking_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breaking At"
+          },
+          "breaking_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breaking Reason"
+          },
           "cluster_id": {
             "title": "Cluster Id",
             "type": "string"
@@ -5978,6 +6001,29 @@
               }
             ],
             "title": "Articles"
+          },
+          "breaking_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breaking At"
+          },
+          "breaking_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breaking Reason"
           },
           "cluster_id": {
             "title": "Cluster Id",
@@ -8128,6 +8174,79 @@
         "summary": "Ask AI across the whole corpus",
         "tags": [
           "ai"
+        ]
+      }
+    },
+    "/api/public/v1/breaking": {
+      "get": {
+        "description": "Breaking clusters: stories that five or more independent sources picked\nup within three hours of the first report (ten within six), carrying a\nthreat entity and passing an event check (cluster/breaking.py). Stamped\nonce, at detection, a median of six hours after the earliest article;\n`breaking_at` is that moment and `breaking_reason` says why. Newest\nstamp first. Same shape and cost as a /threats call.",
+        "operationId": "public_get_breaking_api_public_v1_breaking_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "time_filter",
+            "required": false,
+            "schema": {
+              "default": "7d",
+              "title": "Time Filter",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "title": "Since",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreatsListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Breaking: stories independent sources piled onto within hours",
+        "tags": [
+          "threats"
         ]
       }
     },
