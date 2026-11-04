@@ -7006,7 +7006,7 @@
                 "type": "null"
               }
             ],
-            "description": "ransomware.live screenshot (external)",
+            "description": "Screenshot of the listing, when we hold one",
             "title": "Screenshot Url"
           },
           "sector": {
@@ -7331,7 +7331,7 @@
                 "type": "null"
               }
             ],
-            "description": "ransomware.live screenshot (not ours)",
+            "description": "Screenshot of the listing, when we hold one",
             "title": "Screenshot Url"
           },
           "sector": {
@@ -8214,6 +8214,15 @@
           },
           {
             "in": "query",
+            "name": "ingested_since",
+            "required": false,
+            "schema": {
+              "title": "Ingested Since",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
             "name": "since",
             "required": false,
             "schema": {
@@ -8774,7 +8783,7 @@
     },
     "/api/public/v1/darkweb/ransomware/victims": {
       "get": {
-        "description": "Get ransomware victims.\n\nQuery parameters:\n- days: Filter to victims from last N days (default: 30, max: 90)\n- group: Filter by ransomware group name (optional)\n- country: Filter by country code (optional)\n- sector: Filter by victim sector/industry (optional). Use the values from\n  the /darkweb/ransomware/victims/facets endpoint. Turns this into a\n  per-client sector view for platform reports.\n- limit: Maximum results (default: 100, max: 500)\n- since: ISO-8601 timestamp; only listings first observed after it. Pass the\n  newest `discovered` you saw last run to poll incrementally.\n\nReturns list of ransomware victims with group, date, and country info.",
+        "description": "Get ransomware victims.\n\nQuery parameters:\n- days: Filter to victims from last N days (default: 30, max: 90)\n- group: Filter by ransomware group name (optional)\n- country: Filter by country code (optional)\n- sector: Filter by victim sector/industry (optional). Use the values from\n  the /darkweb/ransomware/victims/facets endpoint. Turns this into a\n  per-client sector view for platform reports.\n- limit: Maximum results (default: 100, max: 500)\n- ingested_since: ISO-8601 timestamp; rows that arrived or changed in our store after it, whatever their story date. Use this for a cursor set to the poll time.\n- since: ISO-8601 timestamp; only listings first observed after it. Pass the\n  newest `discovered` you saw last run to poll incrementally.\n\nReturns list of ransomware victims with group, date, and country info.",
         "operationId": "public_get_ransomware_victims_api_public_v1_darkweb_ransomware_victims_get",
         "parameters": [
           {
@@ -8822,6 +8831,15 @@
               "default": 100,
               "title": "Limit",
               "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ingested_since",
+            "required": false,
+            "schema": {
+              "title": "Ingested Since",
+              "type": "string"
             }
           },
           {
@@ -9059,6 +9077,15 @@
             "schema": {
               "default": "7d",
               "title": "Time Filter",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ingested_since",
+            "required": false,
+            "schema": {
+              "title": "Ingested Since",
               "type": "string"
             }
           },
@@ -10106,7 +10133,7 @@
     },
     "/api/public/v1/iocs/feed": {
       "get": {
-        "description": "Live IOC feed for automated polling by SIEMs, firewalls, and TIPs.\n\nReturns data inline (no download) with caching headers for efficient polling.\n\nQuery parameters:\n- types: IOC types (all, ip, domain, hash, email) - default: all\n- format: txt, csv, json, stix - default: txt\n- confidence: confirmed, high, medium, low, false_positive, all - default: confirmed\n- hours: Time window in hours (default 720 = 30 days)\n- enrich: (json only) attach the clusters + sources each IOC was seen in (up to 5 each)\n- threat_score: (requires enrich) include each cluster's threat-score breakdown\n- related_entities: (requires enrich) attach co-occurring attribution entities per IOC",
+        "description": "Live IOC feed for automated polling by SIEMs, firewalls, and TIPs.\n\nReturns data inline (no download) with caching headers for efficient polling.\n\nQuery parameters:\n- types: IOC types (all, ip, domain, hash, email) - default: all\n- format: txt, csv, json, stix - default: txt\n- confidence: confirmed, high, medium, low, false_positive, all - default: confirmed\n- hours: Time window in hours (default 720 = 30 days)\n- since: ISO-8601 timestamp; the window starts there instead (SIEM pollers). JSON rows carry first_seen/last_seen.\n- enrich: (json only) attach the clusters + sources each IOC was seen in (up to 5 each)\n- threat_score: (requires enrich) include each cluster's threat-score breakdown\n- related_entities: (requires enrich) attach co-occurring attribution entities per IOC",
         "operationId": "public_ioc_feed_api_public_v1_iocs_feed_get",
         "parameters": [
           {
@@ -10147,6 +10174,15 @@
               "default": 720,
               "title": "Hours",
               "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "title": "Since",
+              "type": "string"
             }
           },
           {
@@ -10201,6 +10237,66 @@
           }
         },
         "summary": "Live IOC feed for SIEM polling",
+        "tags": [
+          "iocs"
+        ]
+      }
+    },
+    "/api/public/v1/iocs/lookup": {
+      "get": {
+        "description": "Given an IOC value (IP, domain, hash, email, wallet), return the clusters\nthat mention it, newest first. The reputation command behind the SOAR\npacks (3 Nov 2026). Costs the default credit.\n\nQuery parameters:\n- value: IOC value to look up (required, min 3 chars). Case-insensitive.\n- entity_type: optional filter (ipv4, ipv6, domain, md5, sha1, sha256, email, btc, eth, xmr)\n- limit: max clusters to return (default 25, max 100)",
+        "operationId": "public_ioc_lookup_api_public_v1_iocs_lookup_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "value",
+            "required": true,
+            "schema": {
+              "title": "Value",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "entity_type",
+            "required": false,
+            "schema": {
+              "title": "Entity Type",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reverse-lookup one indicator: the clusters that mention it",
         "tags": [
           "iocs"
         ]
@@ -10980,7 +11076,7 @@
     },
     "/api/public/v1/threats": {
       "get": {
-        "description": "Get threat clusters.\n\nQuery parameters:\n- limit: Max results (default: 50, max: 100)\n- offset: Pagination offset\n- time_filter: 1h, 24h, 7d, 30d (default: 7d)\n- sort_by: trending, new (default: trending)\n- keyword: Optional keyword filter\n- since: ISO-8601 timestamp; return only clusters with reporting newer than\n  this. Intended for pollers: ask for a window that comfortably covers your\n  interval, pass the newest timestamp you saw last run, and you are billed\n  for one call instead of re-reading the whole window.\n\nReturns list of threat clusters with entities.",
+        "description": "Get threat clusters.\n\nQuery parameters:\n- limit: Max results (default: 50, max: 100)\n- offset: Pagination offset\n- time_filter: 1h, 24h, 7d, 30d (default: 7d)\n- sort_by: trending, new (default: trending)\n- keyword: Optional keyword filter\n- ingested_since: ISO-8601 timestamp; rows that arrived or changed in our store after it, whatever their story date. Use this for a cursor set to the poll time.\n- since: ISO-8601 timestamp; return only clusters with reporting newer than\n  this. Intended for pollers: ask for a window that comfortably covers your\n  interval, pass the newest timestamp you saw last run, and you are billed\n  for one call instead of re-reading the whole window.\n\nReturns list of threat clusters with entities.",
         "operationId": "public_get_threats_api_public_v1_threats_get",
         "parameters": [
           {
@@ -11029,6 +11125,15 @@
             "required": false,
             "schema": {
               "title": "Keyword",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ingested_since",
+            "required": false,
+            "schema": {
+              "title": "Ingested Since",
               "type": "string"
             }
           },
@@ -11332,7 +11437,7 @@
     },
     "/api/public/v1/vulnerabilities": {
       "get": {
-        "description": "Get CVE/vulnerability feed.\n\nQuery parameters:\n- days: CVEs from last N days (default: 30, max: 730). Ignored if published_after is set.\n- published_after / published_before: ISO-8601 date bounds (absolute range; alternative to days).\n  `published_after` is also the incremental-polling parameter for this endpoint: pass the newest\n  `published_date` you saw last run instead of re-reading the whole window.\n- severity: Filter by severity (CRITICAL, HIGH, MEDIUM, LOW) - comma-separated\n- kev_only: Only CISA KEV entries (default: false)\n- has_exploit: Only CVEs with known exploits (default: false)\n- vendor: Filter by affected vendor (matches affected_vendors)\n- product: Filter by affected product (matches affected_products)\n- page: Page number (default: 1)\n- limit: Results per page (default: 50, max: 100)\n\nReturns paginated CVE list with CVSS scores and exploit status.",
+        "description": "Get CVE/vulnerability feed.\n\nQuery parameters:\n- days: CVEs from last N days (default: 30, max: 730). Ignored if published_after is set.\n- ingested_since: ISO-8601 timestamp; CVEs we first stored after it, whatever their publish date. Use this for a cursor set to the poll time.\n- published_after / published_before: ISO-8601 date bounds (absolute range; alternative to days).\n  `published_after` is also the incremental-polling parameter for this endpoint: pass the newest\n  `published_date` you saw last run instead of re-reading the whole window.\n- severity: Filter by severity (CRITICAL, HIGH, MEDIUM, LOW) - comma-separated\n- kev_only: Only CISA KEV entries (default: false)\n- has_exploit: Only CVEs with known exploits (default: false)\n- vendor: Filter by affected vendor (matches affected_vendors)\n- product: Filter by affected product (matches affected_products)\n- page: Page number (default: 1)\n- limit: Results per page (default: 50, max: 100)\n\nReturns paginated CVE list with CVSS scores and exploit status.",
         "operationId": "public_get_vulnerabilities_api_public_v1_vulnerabilities_get",
         "parameters": [
           {
@@ -11407,6 +11512,15 @@
             "required": false,
             "schema": {
               "title": "Published Before",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ingested_since",
+            "required": false,
+            "schema": {
+              "title": "Ingested Since",
               "type": "string"
             }
           },
