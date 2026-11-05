@@ -10059,9 +10059,29 @@
         ]
       }
     },
+    "/api/public/v1/iocs/categories": {
+      "get": {
+        "description": "Every IOC category, with its description, 30-day counts by indicator type\nand feed links. Use a slug as the `category` filter on /iocs/feed and\n/iocs/export. Free: costs no credits.",
+        "operationId": "public_ioc_category_list_api_public_v1_iocs_categories_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "IOC categories with live counts and feed links",
+        "tags": [
+          "iocs"
+        ]
+      }
+    },
     "/api/public/v1/iocs/export": {
       "get": {
-        "description": "Export all IOCs across clusters, with confidence filtering.\n\nQuery parameters:\n- types: IOC types to include (ip, domain, hash, email, all) - default: all\n- format: Output format (txt, csv, json) - default: txt\n- confidence: Filter level - \"all\", \"high\", \"medium\", \"low\", \"confirmed\" (excludes false positives), \"false_positive\" - default: confirmed\n- hours: Time window in hours (default 720 = 30 days)\n\nReturns IOCs in requested format.",
+        "description": "Export all IOCs across clusters, with confidence filtering.\n\nQuery parameters:\n- types: IOC types to include (ip, domain, hash, email, all) - default: all\n- format: Output format (txt, csv, json) - default: txt\n- confidence: Filter level - \"all\", \"high\", \"medium\", \"low\", \"confirmed\" (excludes false positives), \"false_positive\" - default: confirmed\n- hours: Time window in hours (default 720 = 30 days)\n- category: comma-separated IOC categories, such as phishing,c2. List them at /iocs/categories.\n\nReturns IOCs in requested format.",
         "operationId": "public_export_bulk_iocs_api_public_v1_iocs_export_get",
         "parameters": [
           {
@@ -10103,6 +10123,15 @@
               "title": "Hours",
               "type": "integer"
             }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "title": "Category",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -10133,7 +10162,7 @@
     },
     "/api/public/v1/iocs/feed": {
       "get": {
-        "description": "Live IOC feed for automated polling by SIEMs, firewalls, and TIPs.\n\nReturns data inline (no download) with caching headers for efficient polling.\n\nQuery parameters:\n- types: IOC types (all, ip, domain, hash, email) - default: all\n- format: txt, csv, json, stix - default: txt\n- confidence: confirmed, high, medium, low, false_positive, all - default: confirmed\n- hours: Time window in hours (default 720 = 30 days)\n- since: ISO-8601 timestamp; the window starts there instead (SIEM pollers). JSON rows carry first_seen/last_seen.\n- enrich: (json only) attach the clusters + sources each IOC was seen in (up to 5 each)\n- threat_score: (requires enrich) include each cluster's threat-score breakdown\n- related_entities: (requires enrich) attach co-occurring attribution entities per IOC",
+        "description": "Live IOC feed for automated polling by SIEMs, firewalls, and TIPs.\n\nReturns data inline (no download) with caching headers for efficient polling.\n\nQuery parameters:\n- types: IOC types (all, ip, domain, hash, email) - default: all\n- format: txt, csv, json, stix - default: txt\n- confidence: confirmed, high, medium, low, false_positive, all - default: confirmed\n- hours: Time window in hours (default 720 = 30 days)\n- since: ISO-8601 timestamp; the window starts there instead (SIEM pollers). JSON rows carry first_seen/last_seen.\n- enrich: (json only) attach the clusters + sources each IOC was seen in (up to 5 each)\n- threat_score: (requires enrich) include each cluster's threat-score breakdown\n- related_entities: (requires enrich) attach co-occurring attribution entities per IOC\n- category: comma-separated IOC categories, such as phishing,c2. List them at /iocs/categories.",
         "operationId": "public_ioc_feed_api_public_v1_iocs_feed_get",
         "parameters": [
           {
@@ -10213,6 +10242,15 @@
               "default": false,
               "title": "Related Entities",
               "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "title": "Category",
+              "type": "string"
             }
           }
         ],
