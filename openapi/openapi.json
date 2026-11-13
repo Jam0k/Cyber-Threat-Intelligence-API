@@ -516,6 +516,366 @@
         "title": "AskThreatRequest",
         "type": "object"
       },
+      "AssetHardware": {
+        "properties": {
+          "model": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. \"FortiGate 60F\".",
+            "title": "Model"
+          },
+          "vendor": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Matters most for appliances, e.g. \"Fortinet\".",
+            "title": "Vendor"
+          }
+        },
+        "title": "AssetHardware",
+        "type": "object"
+      },
+      "AssetImportRequest": {
+        "description": "Body for PUT /api/public/v1/assets \u2014 a FULL snapshot for one scope.\n\nSnapshot semantics: the submitted set replaces the previous one, so the\ncall is idempotent and safe to retry. Keep an offline asset in the\nsnapshot until you consider it retired. Max 500 assets per scope.",
+        "example": {
+          "assets": [
+            {
+              "criticality": 4,
+              "device_type": "network_appliance",
+              "hardware": {
+                "model": "FortiGate 60F",
+                "vendor": "Fortinet"
+              },
+              "internet_facing": true,
+              "name": "edge-fw-01",
+              "os": {
+                "name": "FortiOS",
+                "version": "7.2.8"
+              },
+              "role": "firewall",
+              "software": [],
+              "source": "manual"
+            },
+            {
+              "criticality": 4,
+              "device_type": "server",
+              "name": "dc-01",
+              "os": {
+                "name": "Windows Server 2019",
+                "version": "10.0.17763"
+              },
+              "role": "domain controller",
+              "software": [
+                {
+                  "product": "Backup & Replication",
+                  "vendor": "Veeam",
+                  "version": "12.1.2"
+                }
+              ]
+            }
+          ],
+          "mssp_customer_id": 4
+        },
+        "properties": {
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/AssetRecord"
+            },
+            "maxItems": 500,
+            "minItems": 1,
+            "title": "Assets",
+            "type": "array"
+          },
+          "mssp_customer_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Deprecated here \u2014 pass mssp_customer_id as a QUERY parameter instead (required to match for customer-bound keys; the body field is a fallback for unbound keys). Omit both for your own account's scope.",
+            "title": "Mssp Customer Id"
+          }
+        },
+        "required": [
+          "assets"
+        ],
+        "title": "AssetImportRequest",
+        "type": "object"
+      },
+      "AssetOS": {
+        "properties": {
+          "cpe": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cpe"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. \"Windows Server 2019\", \"FortiOS\".",
+            "title": "Name"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "title": "AssetOS",
+        "type": "object"
+      },
+      "AssetRecord": {
+        "description": "One asset (host, appliance, cloud instance). Only `name` is required \u2014\na rough list still validates; every extra field improves matching.\nField names follow the OCSF device object where one exists.",
+        "properties": {
+          "asset_ref": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Your stable ID for the asset (RMM device ID, scanner UUID). Generated from `name` if omitted; used to replace the asset on the next snapshot.",
+            "title": "Asset Ref"
+          },
+          "criticality": {
+            "anyOf": [
+              {
+                "maximum": 4.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "1 (low) to 4 (crown jewel).",
+            "title": "Criticality"
+          },
+          "device_type": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "server, desktop, laptop, mobile, virtual, network_appliance, iot, other.",
+            "title": "Device Type"
+          },
+          "hardware": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssetHardware"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "internet_facing": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The single biggest prioritisation driver.",
+            "title": "Internet Facing"
+          },
+          "name": {
+            "description": "Hostname or a label such as \"Main office firewall\".",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "os": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssetOS"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "role": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "domain controller, firewall, vpn gateway, mail, web, file, backup, hypervisor, workstation\u2026",
+            "title": "Role"
+          },
+          "software": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AssetSoftware"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Software"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "maxLength": 20,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "agent",
+            "description": "manual, siem, rmm, scanner or agent.",
+            "title": "Source"
+          },
+          "source_product": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "e.g. ninjaone, tenable_vm, defender_xdr.",
+            "title": "Source Product"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "AssetRecord",
+        "type": "object"
+      },
+      "AssetSoftware": {
+        "description": "One installed software item on an asset.",
+        "properties": {
+          "cpe": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "CPE 2.3 formatted string when the source supplies one (preferred identity key).",
+            "title": "Cpe"
+          },
+          "product": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Product name, e.g. \"FortiOS\". Required unless `cpe` is given.",
+            "title": "Product"
+          },
+          "purl": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Package URL for Linux packages / libraries with no CPE.",
+            "title": "Purl"
+          },
+          "vendor": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Vendor as the source reports it, e.g. \"Fortinet Inc\" \u2014 normalised server-side.",
+            "title": "Vendor"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Version string. Without it, CVE matching stays at product level.",
+            "title": "Version"
+          }
+        },
+        "title": "AssetSoftware",
+        "type": "object"
+      },
       "BlockIn": {
         "properties": {
           "reason": {
@@ -8174,6 +8534,156 @@
         "summary": "Ask AI across the whole corpus",
         "tags": [
           "ai"
+        ]
+      }
+    },
+    "/api/public/v1/assets": {
+      "delete": {
+        "description": "Remove the scope's asset snapshot, every imported tracked entity and\nthe auto-managed \"My Assets\" feed. Hand-added entities are untouched.",
+        "operationId": "public_assets_clear_api_public_v1_assets_delete",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Clear a scope's imported assets",
+        "tags": [
+          "assets"
+        ]
+      },
+      "get": {
+        "description": "The current asset snapshot for your scope (or one managed customer),\neach software item annotated with the entity it resolved to and the\nmatch confidence.",
+        "operationId": "public_assets_get_api_public_v1_assets_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read the stored asset snapshot for a scope",
+        "tags": [
+          "assets"
+        ]
+      },
+      "put": {
+        "description": "Submit the FULL current asset set for one scope (your account, or one\nmanaged customer). Vendors, products and OSes are resolved to ThreatCluster\nentities and written to that scope's tracked-entity profile, which drives\nthe feed, alerts and technology matching; an auto-managed \"My Assets\"\ncustom feed (with its own RSS URL) mirrors the result. Snapshot semantics:\nthe submitted set replaces the previous import; hand-added entities are\nnever touched. Returns resolution counts and the unmatched raw strings.\n\nScoping: pass `mssp_customer_id` as a QUERY parameter (a customer-bound\nkey is refused without the matching value \u2014 the binding is enforced\nbefore this handler runs). Omit it entirely for your personal scope.",
+        "operationId": "public_assets_import_api_public_v1_assets_put",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Submit an asset snapshot (replaces the previous one)",
+        "tags": [
+          "assets"
         ]
       }
     },
