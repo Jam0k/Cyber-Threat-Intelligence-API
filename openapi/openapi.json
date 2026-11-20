@@ -907,6 +907,11 @@
       },
       "Body_create_checkout_session_api_subscription_checkout_post": {
         "properties": {
+          "interval": {
+            "default": "month",
+            "title": "Interval",
+            "type": "string"
+          },
           "promotion_code": {
             "title": "Promotion Code",
             "type": "string"
@@ -9293,7 +9298,7 @@
     },
     "/api/public/v1/darkweb/ransomware/victims": {
       "get": {
-        "description": "Get ransomware victims.\n\nQuery parameters:\n- days: Filter to victims from last N days (default: 30, max: 90)\n- group: Filter by ransomware group name (optional)\n- country: Filter by country code (optional)\n- sector: Filter by victim sector/industry (optional). Use the values from\n  the /darkweb/ransomware/victims/facets endpoint. Turns this into a\n  per-client sector view for platform reports.\n- limit: Maximum results (default: 100, max: 500)\n- ingested_since: ISO-8601 timestamp; rows that arrived or changed in our store after it, whatever their story date. Use this for a cursor set to the poll time.\n- since: ISO-8601 timestamp; only listings first observed after it. Pass the\n  newest `discovered` you saw last run to poll incrementally.\n\nReturns list of ransomware victims with group, date, and country info.",
+        "description": "Get ransomware victims.\n\nQuery parameters:\n- days: Filter to victims from last N days (default: 30). Capped by the plan: Free 7, Starter 90, Growth and Business the full archive.\n- group: Filter by ransomware group name (optional)\n- country: Filter by country code (optional)\n- sector: Filter by victim sector/industry (optional). Use the values from\n  the /darkweb/ransomware/victims/facets endpoint. Turns this into a\n  per-client sector view for platform reports.\n- limit: Maximum results (default: 100, max: 500)\n- ingested_since: ISO-8601 timestamp; rows that arrived or changed in our store after it, whatever their story date. Use this for a cursor set to the poll time.\n- since: ISO-8601 timestamp; only listings first observed after it. Pass the\n  newest `discovered` you saw last run to poll incrementally.\n\nReturns list of ransomware victims with group, date, and country info.",
         "operationId": "public_get_ransomware_victims_api_public_v1_darkweb_ransomware_victims_get",
         "parameters": [
           {
@@ -9385,6 +9390,119 @@
           }
         },
         "summary": "List ransomware victims",
+        "tags": [
+          "darkweb"
+        ]
+      }
+    },
+    "/api/public/v1/darkweb/ransomware/victims/export": {
+      "get": {
+        "description": "Export ransomware leak-site victims in bulk. Growth and Business.\n\nQuery parameters:\n- format: `csv` (default) or `jsonl` (one JSON object per line).\n- since: ISO-8601; listings discovered at or after it.\n- until: ISO-8601; listings discovered before it.\n- ingested_since: ISO-8601; rows that reached our store after it (a poll cursor).\n- group: ransomware group, case-insensitive substring (as /victims).\n- country: two-letter country code.\n- sector: victim sector, case-insensitive substring. Values: /victims/facets.\n- limit: rows per file, default 10,000, max 50,000.\n\nColumns: id, name, group, discovered, ingested_at, country, sector,\nwebsite, domains (`;`-separated in CSV, a list in JSONL), victim_tld,\npublication_status, data_size, url.\n\nRows are oldest first. When a file stops at `limit`, the\n`X-Export-Next-Since` header is the `since` for the next file.\n\nCost: 5 credits plus 1 per 100 rows in the file (a 10,000-row file is\n105 credits). An empty file costs nothing. If the file needs more than\nyour remaining credits it is refused with 429 and nothing is charged.",
+        "operationId": "public_export_ransomware_victims_api_public_v1_darkweb_ransomware_victims_export_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "csv",
+              "title": "Format",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "title": "Since",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "until",
+            "required": false,
+            "schema": {
+              "title": "Until",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ingested_since",
+            "required": false,
+            "schema": {
+              "title": "Ingested Since",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "group",
+            "required": false,
+            "schema": {
+              "title": "Group",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "country",
+            "required": false,
+            "schema": {
+              "title": "Country",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sector",
+            "required": false,
+            "schema": {
+              "title": "Sector",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10000,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "The victims as a streamed file, oldest first."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Bulk export of ransomware victims (CSV or JSONL)",
         "tags": [
           "darkweb"
         ]
