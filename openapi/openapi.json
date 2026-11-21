@@ -7148,6 +7148,18 @@
             ],
             "title": "Is Sea Hit"
           },
+          "last_scraped_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ISO 8601 UTC: the latest time ThreatCluster fetched the leak post (successful or not).",
+            "title": "Last Scraped At"
+          },
           "legal_form": {
             "anyOf": [
               {
@@ -7417,6 +7429,21 @@
               }
             ],
             "title": "Site Screenshot Url"
+          },
+          "timeline": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/VictimTimelineEvent"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Dated events for this listing, oldest first, with any deadline the group printed as the last, upcoming entry. Built only from stored timestamps.",
+            "title": "Timeline"
           },
           "victim_description": {
             "anyOf": [
@@ -7726,6 +7753,58 @@
           "id"
         ],
         "title": "VictimListItem",
+        "type": "object"
+      },
+      "VictimTimelineEvent": {
+        "additionalProperties": true,
+        "description": "One dated event in a leak-site listing's history. Built only from\nstored timestamps; nothing is inferred. Claims are the group's.",
+        "properties": {
+          "at": {
+            "description": "ISO 8601 UTC instant. When precision is 'day' the source printed a date only and this is midnight UTC of that date.",
+            "title": "At",
+            "type": "string"
+          },
+          "detail": {
+            "default": "",
+            "description": "Context for the event, e.g. the claims as of our last read or the countdown text as printed.",
+            "title": "Detail",
+            "type": "string"
+          },
+          "event_type": {
+            "description": "Derived from stored timestamps: posted | first_recorded | first_read | screenshot_captured | images_archived | last_read | last_seen | delisted | countdown_deadline | publication_date. Observed changes between two of our reads: data_size_changed | file_count_changed | status_changed | countdown_set | countdown_changed | countdown_cleared | relisted | screenshot_changed | mirror_down | mirror_up (a mirror of the group's leak site).",
+            "title": "Event Type",
+            "type": "string"
+          },
+          "precision": {
+            "default": "time",
+            "description": "'time' or 'day'",
+            "title": "Precision",
+            "type": "string"
+          },
+          "source": {
+            "description": "Where the date came from: 'leak site' (printed by the group), 'leak-site monitoring' (when the listing was first recorded) or 'ThreatCluster crawl' (our own collector).",
+            "title": "Source",
+            "type": "string"
+          },
+          "title": {
+            "description": "Short sentence, e.g. \"Aurora's countdown deadline\". The group is the subject of every claim.",
+            "title": "Title",
+            "type": "string"
+          },
+          "upcoming": {
+            "default": false,
+            "description": "True for a deadline (countdown_deadline, publication_date) still in the future at response time.",
+            "title": "Upcoming",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "at",
+          "event_type",
+          "title",
+          "source"
+        ],
+        "title": "VictimTimelineEvent",
         "type": "object"
       },
       "WebhookCreate": {
@@ -9255,7 +9334,7 @@
     },
     "/api/public/v1/darkweb/ransomware/victim/{victim_id}": {
       "get": {
-        "description": "Full enriched victim payload: base record + LLM-extracted fields\n(headquarters, revenue, data_size, publication_status, negotiation\nstate), mirrored entities, blurred+captioned leak images, and the\nfull-page site screenshot captured via our own Tor pipeline.\n\nPath parameters:\n- victim_id: Victim ID (16-char hex, returned by /ransomware/victims)\n\nReturns 404 if not found.",
+        "description": "Full enriched victim payload: base record + LLM-extracted fields\n(headquarters, revenue, data_size, publication_status, negotiation\nstate), mirrored entities, blurred+captioned leak images, the\nfull-page site screenshot captured via our own Tor pipeline, and\n`timeline`: the listing's dated events, oldest first, each with\n{at, event_type, precision, title, detail, source, upcoming}.\n\nPath parameters:\n- victim_id: Victim ID (16-char hex, returned by /ransomware/victims)\n\nReturns 404 if not found.",
         "operationId": "public_get_ransomware_victim_detail_api_public_v1_darkweb_ransomware_victim__victim_id__get",
         "parameters": [
           {
@@ -10709,7 +10788,7 @@
     },
     "/api/public/v1/iocs/export": {
       "get": {
-        "description": "Export all IOCs across clusters, with confidence filtering.\n\nQuery parameters:\n- types: IOC types to include (ip, domain, hash, email, all) - default: all\n- format: Output format (txt, csv, json) - default: txt\n- confidence: Filter level - \"all\", \"high\", \"medium\", \"low\", \"confirmed\" (excludes false positives), \"false_positive\" - default: confirmed\n- hours: Time window in hours (default 720 = 30 days)\n- category: comma-separated IOC categories, such as phishing,c2. List them at /iocs/categories.\n\nReturns IOCs in requested format.",
+        "description": "Export all IOCs across clusters, with confidence filtering.\n\nQuery parameters:\n- types: IOC types to include (ip, domain, hash, email, all) - default: all\n- format: Output format (txt, csv, json) - default: txt\n- confidence: \"confirmed\" (high+medium), \"high\", \"medium\", \"all\" (= confirmed), \"false_positive\" - default: confirmed.\n  Low-confidence and unvalidated IOCs are website-only and never exported.\n- hours: Time window in hours (default 720 = 30 days)\n- category: comma-separated IOC categories, such as phishing,c2. List them at /iocs/categories.\n\nReturns IOCs in requested format.",
         "operationId": "public_export_bulk_iocs_api_public_v1_iocs_export_get",
         "parameters": [
           {
@@ -10790,7 +10869,7 @@
     },
     "/api/public/v1/iocs/feed": {
       "get": {
-        "description": "Live IOC feed for automated polling by SIEMs, firewalls, and TIPs.\n\nReturns data inline (no download) with caching headers for efficient polling.\n\nQuery parameters:\n- types: IOC types (all, ip, domain, hash, email) - default: all\n- format: txt, csv, json, stix - default: txt\n- confidence: confirmed, high, medium, low, false_positive, all - default: confirmed\n- hours: Time window in hours (default 720 = 30 days)\n- since: ISO-8601 timestamp; the window starts there instead (SIEM pollers). JSON rows carry first_seen/last_seen.\n- enrich: (json only) attach the clusters + sources each IOC was seen in (up to 5 each)\n- threat_score: (requires enrich) include each cluster's threat-score breakdown\n- related_entities: (requires enrich) attach co-occurring attribution entities per IOC\n- category: comma-separated IOC categories, such as phishing,c2. List them at /iocs/categories.",
+        "description": "Live IOC feed for automated polling by SIEMs, firewalls, and TIPs.\n\nReturns data inline (no download) with caching headers for efficient polling.\n\nQuery parameters:\n- types: IOC types (all, ip, domain, hash, email) - default: all\n- format: txt, csv, json, stix - default: txt\n- confidence: confirmed (high+medium), high, medium, all (= confirmed), false_positive - default: confirmed.\n  Low-confidence and unvalidated IOCs are website-only and never exported.\n- hours: Time window in hours (default 720 = 30 days)\n- since: ISO-8601 timestamp; the window starts there instead (SIEM pollers). JSON rows carry first_seen/last_seen.\n- enrich: (json only) attach the clusters + sources each IOC was seen in (up to 5 each)\n- threat_score: (requires enrich) include each cluster's threat-score breakdown\n- related_entities: (requires enrich) attach co-occurring attribution entities per IOC\n- category: comma-separated IOC categories, such as phishing,c2. List them at /iocs/categories.",
         "operationId": "public_ioc_feed_api_public_v1_iocs_feed_get",
         "parameters": [
           {
