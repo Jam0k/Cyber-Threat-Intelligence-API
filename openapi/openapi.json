@@ -1077,233 +1077,6 @@
         "title": "CIExchangeBody",
         "type": "object"
       },
-      "CVEAlertRuleCreate": {
-        "description": "Validation model for CVE alert-rule creation.",
-        "properties": {
-          "cvss_max": {
-            "anyOf": [
-              {
-                "maximum": 10.0,
-                "minimum": 0.0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cvss Max"
-          },
-          "cvss_min": {
-            "anyOf": [
-              {
-                "maximum": 10.0,
-                "minimum": 0.0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cvss Min"
-          },
-          "cwe_ids": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "maxItems": 50,
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cwe Ids"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "maxLength": 500,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "epss_min": {
-            "anyOf": [
-              {
-                "maximum": 1.0,
-                "minimum": 0.0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Epss Min"
-          },
-          "epss_percentile_min": {
-            "anyOf": [
-              {
-                "maximum": 1.0,
-                "minimum": 0.0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Epss Percentile Min"
-          },
-          "is_active": {
-            "default": true,
-            "title": "Is Active",
-            "type": "boolean"
-          },
-          "keywords": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "maxItems": 20,
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Keywords"
-          },
-          "match_logic": {
-            "default": "AND",
-            "enum": [
-              "AND",
-              "OR"
-            ],
-            "title": "Match Logic",
-            "type": "string"
-          },
-          "name": {
-            "maxLength": 100,
-            "minLength": 1,
-            "title": "Name",
-            "type": "string"
-          },
-          "notify_email": {
-            "default": false,
-            "title": "Notify Email",
-            "type": "boolean"
-          },
-          "notify_webhook": {
-            "default": true,
-            "title": "Notify Webhook",
-            "type": "boolean"
-          },
-          "products": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "maxItems": 50,
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Products"
-          },
-          "ransomware_use": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "maxItems": 5,
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ransomware Use"
-          },
-          "require_exploit": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Require Exploit"
-          },
-          "require_kev": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Require Kev"
-          },
-          "severity": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "maxItems": 4,
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Severity"
-          },
-          "vendors": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "maxItems": 50,
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Vendors"
-          },
-          "webhook_id": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Webhook Id"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "title": "CVEAlertRuleCreate",
-        "type": "object"
-      },
       "CVEAlertRuleUpdate": {
         "description": "Validation model for CVE alert-rule updates. All fields optional.",
         "properties": {
@@ -1449,6 +1222,17 @@
               }
             ],
             "title": "Notify Email"
+          },
+          "notify_inapp": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notify Inapp"
           },
           "notify_webhook": {
             "anyOf": [
@@ -1860,16 +1644,19 @@
       "CveAlertRuleCreate": {
         "description": "Body for POST /api/public/v1/cve-alerts \u2014 a personal CVE alert rule.\nFires when a CVE matches the filters (vendor/product/severity/CVSS/EPSS/KEV/exploit).",
         "example": {
-          "cvss_min": 8.0,
-          "name": "Critical Fortinet KEV",
+          "cvss_min": 7.5,
+          "name": "Windows high and critical",
+          "notify_inapp": true,
           "notify_webhook": true,
-          "require_kev": true,
+          "products": [
+            "Windows"
+          ],
           "severity": [
-            "CRITICAL",
-            "HIGH"
+            "HIGH",
+            "CRITICAL"
           ],
           "vendors": [
-            "Fortinet"
+            "Microsoft"
           ]
         },
         "properties": {
@@ -1882,7 +1669,7 @@
                 "type": "null"
               }
             ],
-            "description": "Maximum CVSS v3 base score.",
+            "description": "Highest CVSS v3 base score, 0-10.",
             "title": "Cvss Max"
           },
           "cvss_min": {
@@ -1894,7 +1681,7 @@
                 "type": "null"
               }
             ],
-            "description": "Minimum CVSS v3 base score.",
+            "description": "Lowest CVSS v3 base score, 0-10, e.g. 7.5.",
             "title": "Cvss Min"
           },
           "cwe_ids": {
@@ -1909,7 +1696,7 @@
                 "type": "null"
               }
             ],
-            "description": "CWE ids, e.g. 'CWE-79'.",
+            "description": "CWE ids, any of them, e.g. ['CWE-79', 'CWE-787'].",
             "title": "Cwe Ids"
           },
           "description": {
@@ -1921,6 +1708,7 @@
                 "type": "null"
               }
             ],
+            "description": "Optional note for your team.",
             "title": "Description"
           },
           "epss_min": {
@@ -1932,7 +1720,7 @@
                 "type": "null"
               }
             ],
-            "description": "Minimum EPSS probability (0-1).",
+            "description": "Lowest EPSS probability, 0-1. CVEs without an EPSS score yet do not match while this is set.",
             "title": "Epss Min"
           },
           "epss_percentile_min": {
@@ -1944,7 +1732,7 @@
                 "type": "null"
               }
             ],
-            "description": "Minimum EPSS percentile (0-1).",
+            "description": "Lowest EPSS percentile, 0-1 (0.95 = the top 5%). CVEs without an EPSS score yet do not match while this is set.",
             "title": "Epss Percentile Min"
           },
           "keywords": {
@@ -1959,7 +1747,7 @@
                 "type": "null"
               }
             ],
-            "description": "Free-text keyword filters on the CVE.",
+            "description": "Words or phrases, any of them, searched in the CVE id, description, vendors and products, e.g. ['vpn', 'authentication bypass'].",
             "title": "Keywords"
           },
           "match_logic": {
@@ -1972,7 +1760,7 @@
               }
             ],
             "default": "AND",
-            "description": "'AND' or 'OR' across the filters set.",
+            "description": "How the filters combine: 'AND' (every filter you set must match, the default) or 'OR' (any one).",
             "title": "Match Logic"
           },
           "mssp_customer_id": {
@@ -1984,11 +1772,11 @@
                 "type": "null"
               }
             ],
-            "description": "Scope this CVE rule to one of your managed customers (Business). Omit for a personal rule.",
+            "description": "Scope the rule to one of your managed customers (Business). Omit for your own rule.",
             "title": "Mssp Customer Id"
           },
           "name": {
-            "description": "Rule name (required).",
+            "description": "Rule name.",
             "maxLength": 100,
             "minLength": 1,
             "title": "Name",
@@ -1996,11 +1784,19 @@
           },
           "notify_email": {
             "default": false,
+            "description": "Send matches by email to the account address.",
             "title": "Notify Email",
+            "type": "boolean"
+          },
+          "notify_inapp": {
+            "default": true,
+            "description": "Show matches in the in-app bell and inbox.",
+            "title": "Notify Inapp",
             "type": "boolean"
           },
           "notify_webhook": {
             "default": true,
+            "description": "Send matches to your webhooks (all active ones, or webhook_id).",
             "title": "Notify Webhook",
             "type": "boolean"
           },
@@ -2016,7 +1812,7 @@
                 "type": "null"
               }
             ],
-            "description": "Affected product names.",
+            "description": "Product names, any of them. A family name covers its versions: 'Windows' matches windows_11_24h2 and windows_server_2025, 'FortiOS', 'PAN-OS', 'Linux Kernel'. With vendors set, 'Microsoft Windows' also works.",
             "title": "Products"
           },
           "ransomware_use": {
@@ -2031,7 +1827,7 @@
                 "type": "null"
               }
             ],
-            "description": "CISA ransomware-use flag values (e.g. ['Known']).",
+            "description": "CISA KEV ransomware flag values, e.g. ['Known'].",
             "title": "Ransomware Use"
           },
           "require_exploit": {
@@ -2043,7 +1839,7 @@
                 "type": "null"
               }
             ],
-            "description": "Only CVEs with a public exploit/PoC.",
+            "description": "true: only CVEs with a public exploit or proof of concept.",
             "title": "Require Exploit"
           },
           "require_kev": {
@@ -2055,7 +1851,7 @@
                 "type": "null"
               }
             ],
-            "description": "Only CVEs on CISA KEV.",
+            "description": "true: only CVEs on CISA's Known Exploited Vulnerabilities list.",
             "title": "Require Kev"
           },
           "severity": {
@@ -2070,7 +1866,7 @@
                 "type": "null"
               }
             ],
-            "description": "CVSS severities: CRITICAL/HIGH/MEDIUM/LOW.",
+            "description": "CVSS v3 severities, any of them: LOW, MEDIUM, HIGH, CRITICAL.",
             "title": "Severity"
           },
           "vendors": {
@@ -2085,7 +1881,7 @@
                 "type": "null"
               }
             ],
-            "description": "Affected vendor names to match.",
+            "description": "Vendor names, any of them. Written as you would say them: 'Microsoft', 'Palo Alto Networks', 'Fortinet'. Matching ignores case, spaces and punctuation; GET /cve-alerts/names lists the names found on CVEs.",
             "title": "Vendors"
           },
           "webhook_id": {
@@ -2097,7 +1893,7 @@
                 "type": "null"
               }
             ],
-            "description": "Specific webhook id (must be yours).",
+            "description": "Send to this webhook only (GET /webhooks lists yours).",
             "title": "Webhook Id"
           }
         },
@@ -2109,6 +1905,13 @@
       },
       "CveAlertRuleUpdate": {
         "description": "Body for PATCH /cve-alerts/{rule_uuid}. Only sent fields change.",
+        "example": {
+          "cvss_min": 8.0,
+          "products": [
+            "Windows",
+            "Windows Server"
+          ]
+        },
         "properties": {
           "cvss_max": {
             "anyOf": [
@@ -2119,6 +1922,7 @@
                 "type": "null"
               }
             ],
+            "description": "Highest CVSS v3 base score, 0-10.",
             "title": "Cvss Max"
           },
           "cvss_min": {
@@ -2130,6 +1934,7 @@
                 "type": "null"
               }
             ],
+            "description": "Lowest CVSS v3 base score, 0-10, e.g. 7.5.",
             "title": "Cvss Min"
           },
           "cwe_ids": {
@@ -2144,6 +1949,7 @@
                 "type": "null"
               }
             ],
+            "description": "CWE ids, any of them, e.g. ['CWE-79', 'CWE-787'].",
             "title": "Cwe Ids"
           },
           "description": {
@@ -2155,6 +1961,7 @@
                 "type": "null"
               }
             ],
+            "description": "Optional note for your team.",
             "title": "Description"
           },
           "epss_min": {
@@ -2166,6 +1973,7 @@
                 "type": "null"
               }
             ],
+            "description": "Lowest EPSS probability, 0-1. CVEs without an EPSS score yet do not match while this is set.",
             "title": "Epss Min"
           },
           "epss_percentile_min": {
@@ -2177,6 +1985,7 @@
                 "type": "null"
               }
             ],
+            "description": "Lowest EPSS percentile, 0-1 (0.95 = the top 5%). CVEs without an EPSS score yet do not match while this is set.",
             "title": "Epss Percentile Min"
           },
           "is_active": {
@@ -2188,6 +1997,7 @@
                 "type": "null"
               }
             ],
+            "description": "false pauses the rule without deleting it.",
             "title": "Is Active"
           },
           "keywords": {
@@ -2202,6 +2012,7 @@
                 "type": "null"
               }
             ],
+            "description": "Words or phrases, any of them, searched in the CVE id, description, vendors and products, e.g. ['vpn', 'authentication bypass'].",
             "title": "Keywords"
           },
           "match_logic": {
@@ -2213,6 +2024,7 @@
                 "type": "null"
               }
             ],
+            "description": "How the filters combine: 'AND' (every filter you set must match, the default) or 'OR' (any one).",
             "title": "Match Logic"
           },
           "mssp_customer_id": {
@@ -2224,6 +2036,7 @@
                 "type": "null"
               }
             ],
+            "description": "Scope the rule to one of your managed customers (Business). Omit for your own rule.",
             "title": "Mssp Customer Id"
           },
           "name": {
@@ -2237,6 +2050,7 @@
                 "type": "null"
               }
             ],
+            "description": "Rule name.",
             "title": "Name"
           },
           "notify_email": {
@@ -2248,7 +2062,20 @@
                 "type": "null"
               }
             ],
+            "description": "Send matches by email to the account address.",
             "title": "Notify Email"
+          },
+          "notify_inapp": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Show matches in the in-app bell and inbox.",
+            "title": "Notify Inapp"
           },
           "notify_webhook": {
             "anyOf": [
@@ -2259,6 +2086,7 @@
                 "type": "null"
               }
             ],
+            "description": "Send matches to your webhooks (all active ones, or webhook_id).",
             "title": "Notify Webhook"
           },
           "products": {
@@ -2273,6 +2101,7 @@
                 "type": "null"
               }
             ],
+            "description": "Product names, any of them. A family name covers its versions: 'Windows' matches windows_11_24h2 and windows_server_2025, 'FortiOS', 'PAN-OS', 'Linux Kernel'. With vendors set, 'Microsoft Windows' also works.",
             "title": "Products"
           },
           "ransomware_use": {
@@ -2287,6 +2116,7 @@
                 "type": "null"
               }
             ],
+            "description": "CISA KEV ransomware flag values, e.g. ['Known'].",
             "title": "Ransomware Use"
           },
           "require_exploit": {
@@ -2298,6 +2128,7 @@
                 "type": "null"
               }
             ],
+            "description": "true: only CVEs with a public exploit or proof of concept.",
             "title": "Require Exploit"
           },
           "require_kev": {
@@ -2309,6 +2140,7 @@
                 "type": "null"
               }
             ],
+            "description": "true: only CVEs on CISA's Known Exploited Vulnerabilities list.",
             "title": "Require Kev"
           },
           "severity": {
@@ -2323,6 +2155,7 @@
                 "type": "null"
               }
             ],
+            "description": "CVSS v3 severities, any of them: LOW, MEDIUM, HIGH, CRITICAL.",
             "title": "Severity"
           },
           "vendors": {
@@ -2337,6 +2170,7 @@
                 "type": "null"
               }
             ],
+            "description": "Vendor names, any of them. Written as you would say them: 'Microsoft', 'Palo Alto Networks', 'Fortinet'. Matching ignores case, spaces and punctuation; GET /cve-alerts/names lists the names found on CVEs.",
             "title": "Vendors"
           },
           "webhook_id": {
@@ -2348,6 +2182,7 @@
                 "type": "null"
               }
             ],
+            "description": "Send to this webhook only (GET /webhooks lists yours).",
             "title": "Webhook Id"
           }
         },
@@ -8120,7 +7955,8 @@
   "paths": {
     "/api/public/v1/alert-rules": {
       "get": {
-        "operationId": "public_list_alert_rules_api_public_v1_alert_rules_get",
+        "description": "Your rules of this kind (rule-builder rules on stories, or on CVEs).\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "list__api_public_v1_alert_rules_get",
         "parameters": [
           {
             "in": "query",
@@ -8165,8 +8001,8 @@
         ]
       },
       "post": {
-        "description": "Create a personal alert rule that fires when its conditions match a new threat\ncluster. Tier-capped conditions (5 most tiers, 50 Business). Delivery via your\nwebhook(s) and/or email. Omit `mssp_customer_id` for a personal rule, or set it\nto scope the rule to one of your managed customers (Business plan).",
-        "operationId": "public_create_alert_rule_api_public_v1_alert_rules_post",
+        "description": "Create a personal alert rule that fires when its conditions match a new threat\ncluster. Tier-capped conditions (5 most tiers, 50 Business). Delivery via your\nwebhook(s) and/or email. Omit `mssp_customer_id` for a personal rule, or set it\nto scope the rule to one of your managed customers (Business plan).\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "create_api_public_v1_alert_rules_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8205,7 +8041,8 @@
     },
     "/api/public/v1/alert-rules/{rule_uuid}": {
       "delete": {
-        "operationId": "public_delete_alert_rule_api_public_v1_alert_rules__rule_uuid__delete",
+        "description": "Delete a rule. Alerts it already sent stay in GET /alerts.\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "delete_api_public_v1_alert_rules__rule_uuid__delete",
         "parameters": [
           {
             "in": "path",
@@ -8214,22 +8051,6 @@
             "schema": {
               "title": "Rule Uuid",
               "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "mssp_customer_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Mssp Customer Id"
             }
           }
         ],
@@ -8259,7 +8080,8 @@
         ]
       },
       "get": {
-        "operationId": "public_get_alert_rule_api_public_v1_alert_rules__rule_uuid__get",
+        "description": "One rule, by its uuid (an older rule's uuid finds the rule it was moved to).\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "get_one_api_public_v1_alert_rules__rule_uuid__get",
         "parameters": [
           {
             "in": "path",
@@ -8268,22 +8090,6 @@
             "schema": {
               "title": "Rule Uuid",
               "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "mssp_customer_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Mssp Customer Id"
             }
           }
         ],
@@ -8313,7 +8119,8 @@
         ]
       },
       "patch": {
-        "operationId": "public_update_alert_rule_api_public_v1_alert_rules__rule_uuid__patch",
+        "description": "Change a rule. Only the fields sent change; for alert rules `conditions` replaces the whole set.\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "patch_api_public_v1_alert_rules__rule_uuid__patch",
         "parameters": [
           {
             "in": "path",
@@ -8419,7 +8226,8 @@
     },
     "/api/public/v1/alert-rules/{rule_uuid}/test": {
       "post": {
-        "operationId": "public_test_alert_rule_api_public_v1_alert_rules__rule_uuid__test_post",
+        "description": "What the rule matched recently. Nothing is sent.\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "test_api_public_v1_alert_rules__rule_uuid__test_post",
         "parameters": [
           {
             "in": "path",
@@ -8428,22 +8236,6 @@
             "schema": {
               "title": "Rule Uuid",
               "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "mssp_customer_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Mssp Customer Id"
             }
           }
         ],
@@ -8475,7 +8267,7 @@
     },
     "/api/public/v1/alerts": {
       "get": {
-        "description": "List alert triggers (cluster + CVE) with disposition state. The raw material\nbehind the compliance attestation.\n\nEach row's `trigger_id` + `alert_source` are what you pass to\nthat you reviewed/actioned that specific alert firing.\n\nFilters: mssp_customer_id (scope to one client), state (incl. 'open' for\nundispositioned), alert_source (cluster|cve), since (ISO timestamp on\ntriggered_at). Rows are normalised across both alert systems.",
+        "description": "List alert triggers (cluster + CVE) with disposition state. The raw material\nbehind the compliance attestation.\n\nEach row's `trigger_id` + `alert_source` are what you pass to\nthat you reviewed/actioned that specific alert firing.\n\nFilters: mssp_customer_id (scope to one client), state (incl. 'open' for\nundispositioned), alert_source (cluster|cve|rule), since (ISO timestamp on\ntriggered_at). Rows are normalised across every kind of alert rule: `rule` rows come from\nrules made in the rule builder, and `rule_source` says whether `entity_ref` is a story\n(cluster id), a CVE id or a dark-web leak-site listing.",
         "operationId": "public_list_alerts_api_public_v1_alerts_get",
         "parameters": [
           {
@@ -8865,7 +8657,8 @@
     },
     "/api/public/v1/cve-alerts": {
       "get": {
-        "operationId": "public_list_cve_alert_rules_api_public_v1_cve_alerts_get",
+        "description": "Every CVE alert rule on your account (or one managed customer with `mssp_customer_id`), active and paused.\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "list__api_public_v1_cve_alerts_get",
         "parameters": [
           {
             "in": "query",
@@ -8888,6 +8681,33 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "count": 1,
+                  "rules": [
+                    {
+                      "created_at": "2026-11-24T10:00:00+00:00",
+                      "cvss_min": 7.5,
+                      "is_active": true,
+                      "match_logic": "AND",
+                      "name": "Windows high and critical",
+                      "notify_email": false,
+                      "notify_inapp": true,
+                      "notify_webhook": true,
+                      "products": [
+                        "windows"
+                      ],
+                      "severity": [
+                        "HIGH",
+                        "CRITICAL"
+                      ],
+                      "updated_at": "2026-11-24T10:00:00+00:00",
+                      "uuid": "1fc68e2e-7f8f-415b-8dcd-8efdfed98084",
+                      "vendors": [
+                        "microsoft"
+                      ]
+                    }
+                  ]
+                },
                 "schema": {}
               }
             },
@@ -8910,8 +8730,8 @@
         ]
       },
       "post": {
-        "description": "Create a personal CVE alert rule. Fires when a CVE matches the filters\n(vendor/product/CWE/severity/CVSS/EPSS/KEV/exploit/ransomware/keywords),\ncombined by match_logic. Shares the alert-rule tier quota.",
-        "operationId": "public_create_cve_alert_rule_api_public_v1_cve_alerts_post",
+        "description": "Create a personal CVE alert rule. Fires when a CVE matches the filters\n(vendor/product/CWE/severity/CVSS/EPSS/KEV/exploit/ransomware/keywords),\ncombined by match_logic. Shares the alert-rule tier quota.\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "create_api_public_v1_cve_alerts_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -8948,9 +8768,153 @@
         ]
       }
     },
+    "/api/public/v1/cve-alerts/names": {
+      "get": {
+        "description": "Vendor or product names as they appear on CVEs from the last two years, most CVEs first, with\nhow many CVEs carry each. `field` is `vendor` or `product`; `q` is at least two characters;\n`vendor` narrows product names to that vendor. Rules match names however they are written\n(\"Palo Alto Networks\" = \"paloaltonetworks\", \"Windows\" covers every Windows version), so this is\nfor finding the right name, not its exact spelling.",
+        "operationId": "public_cve_rule_names_api_public_v1_cve_alerts_names_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "field",
+            "required": false,
+            "schema": {
+              "default": "vendor",
+              "title": "Field",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "vendor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vendor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "names": [
+                    {
+                      "cves": 80,
+                      "name": "palo alto networks"
+                    },
+                    {
+                      "cves": 1,
+                      "name": "cyberark software, a palo alto networks company"
+                    }
+                  ]
+                },
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Look up vendor and product names for CVE rules",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/cve-alerts/preview": {
+      "post": {
+        "description": "Run a CVE rule's filters against the last 30 days without saving anything. Takes the same body\nas POST /cve-alerts (`name` may be anything). `match_count` is the total; `matches` lists the\nnewest 25.",
+        "operationId": "public_preview_cve_filters_api_public_v1_cve_alerts_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CveAlertRuleCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "match_count": 123,
+                  "matches": [
+                    {
+                      "affected_products": [
+                        "windows_11_24h2",
+                        "windows_server_2025"
+                      ],
+                      "affected_vendors": [
+                        "microsoft"
+                      ],
+                      "cve_id": "CVE-2026-97013",
+                      "cvss_v3_score": 7.8,
+                      "cvss_v3_severity": "HIGH",
+                      "description": "Access of resource using incompatible type ('type confusion') in Windows Shell allows an authorized attacker to elevate privileges locally.",
+                      "epss_percentile": 0.41,
+                      "has_exploit": false,
+                      "in_kev": false,
+                      "published_date": "2026-11-12T18:15:00"
+                    }
+                  ],
+                  "preview_window_days": 30
+                },
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preview CVE filters before creating a rule (sends nothing)",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
     "/api/public/v1/cve-alerts/{rule_uuid}": {
       "delete": {
-        "operationId": "public_delete_cve_alert_rule_api_public_v1_cve_alerts__rule_uuid__delete",
+        "description": "Delete a CVE alert rule. Alerts it already sent stay in GET /alerts. To stop it for a while instead, PATCH `{\"is_active\": false}`.\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "delete_api_public_v1_cve_alerts__rule_uuid__delete",
         "parameters": [
           {
             "in": "path",
@@ -8960,28 +8924,16 @@
               "title": "Rule Uuid",
               "type": "string"
             }
-          },
-          {
-            "in": "query",
-            "name": "mssp_customer_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Mssp Customer Id"
-            }
           }
         ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "deleted": true,
+                  "rule_uuid": "1fc68e2e-7f8f-415b-8dcd-8efdfed98084"
+                },
                 "schema": {}
               }
             },
@@ -9004,7 +8956,8 @@
         ]
       },
       "get": {
-        "operationId": "public_get_cve_alert_rule_api_public_v1_cve_alerts__rule_uuid__get",
+        "description": "One CVE alert rule by the `uuid` returned when it was created (also listed by GET /cve-alerts).\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "get_one_api_public_v1_cve_alerts__rule_uuid__get",
         "parameters": [
           {
             "in": "path",
@@ -9014,28 +8967,36 @@
               "title": "Rule Uuid",
               "type": "string"
             }
-          },
-          {
-            "in": "query",
-            "name": "mssp_customer_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Mssp Customer Id"
-            }
           }
         ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "rule": {
+                    "created_at": "2026-11-24T10:00:00+00:00",
+                    "cvss_min": 7.5,
+                    "is_active": true,
+                    "match_logic": "AND",
+                    "name": "Windows high and critical",
+                    "notify_email": false,
+                    "notify_inapp": true,
+                    "notify_webhook": true,
+                    "products": [
+                      "windows"
+                    ],
+                    "severity": [
+                      "HIGH",
+                      "CRITICAL"
+                    ],
+                    "updated_at": "2026-11-24T10:00:00+00:00",
+                    "uuid": "1fc68e2e-7f8f-415b-8dcd-8efdfed98084",
+                    "vendors": [
+                      "microsoft"
+                    ]
+                  }
+                },
                 "schema": {}
               }
             },
@@ -9058,7 +9019,8 @@
         ]
       },
       "patch": {
-        "operationId": "public_update_cve_alert_rule_api_public_v1_cve_alerts__rule_uuid__patch",
+        "description": "Change a CVE alert rule. Send only the fields to change; a list you send replaces the old list. `{\"is_active\": false}` pauses the rule without deleting it; `{\"is_active\": true}` resumes it.\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "patch_api_public_v1_cve_alerts__rule_uuid__patch",
         "parameters": [
           {
             "in": "path",
@@ -9084,6 +9046,31 @@
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "rule": {
+                    "created_at": "2026-11-24T10:00:00+00:00",
+                    "cvss_min": 7.5,
+                    "is_active": true,
+                    "match_logic": "AND",
+                    "name": "Windows high and critical",
+                    "notify_email": false,
+                    "notify_inapp": true,
+                    "notify_webhook": true,
+                    "products": [
+                      "windows"
+                    ],
+                    "severity": [
+                      "HIGH",
+                      "CRITICAL"
+                    ],
+                    "updated_at": "2026-11-24T10:00:00+00:00",
+                    "uuid": "1fc68e2e-7f8f-415b-8dcd-8efdfed98084",
+                    "vendors": [
+                      "microsoft"
+                    ]
+                  },
+                  "updated": true
+                },
                 "schema": {}
               }
             },
@@ -9108,7 +9095,8 @@
     },
     "/api/public/v1/cve-alerts/{rule_uuid}/test": {
       "post": {
-        "operationId": "public_test_cve_alert_rule_api_public_v1_cve_alerts__rule_uuid__test_post",
+        "description": "Run a saved rule against the last 30 days of CVEs. Nothing is sent. `match_count` is the total; `matches` lists the newest 25. To try filters before saving, use POST /cve-alerts/preview.\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "operationId": "test_api_public_v1_cve_alerts__rule_uuid__test_post",
         "parameters": [
           {
             "in": "path",
@@ -9118,28 +9106,36 @@
               "title": "Rule Uuid",
               "type": "string"
             }
-          },
-          {
-            "in": "query",
-            "name": "mssp_customer_id",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Mssp Customer Id"
-            }
           }
         ],
         "responses": {
           "200": {
             "content": {
               "application/json": {
+                "example": {
+                  "match_count": 123,
+                  "matches": [
+                    {
+                      "affected_products": [
+                        "windows_11_24h2",
+                        "windows_server_2025"
+                      ],
+                      "affected_vendors": [
+                        "microsoft"
+                      ],
+                      "cve_id": "CVE-2026-97013",
+                      "cvss_v3_score": 7.8,
+                      "cvss_v3_severity": "HIGH",
+                      "description": "Access of resource using incompatible type ('type confusion') in Windows Shell allows an authorized attacker to elevate privileges locally.",
+                      "epss_percentile": 0.41,
+                      "has_exploit": false,
+                      "in_kev": false,
+                      "published_date": "2026-11-12T18:15:00"
+                    }
+                  ],
+                  "preview_window_days": 30,
+                  "rule_uuid": "1fc68e2e-7f8f-415b-8dcd-8efdfed98084"
+                },
                 "schema": {}
               }
             },
@@ -11667,6 +11663,431 @@
         "summary": "Set a customer feed's keywords (declarative sync)",
         "tags": [
           "mssp"
+        ]
+      }
+    },
+    "/api/public/v1/rules": {
+      "get": {
+        "description": "Your rules (or one managed customer's), each with `description`: the rule in plain English.",
+        "operationId": "public_rules_list_api_public_v1_rules_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List your rules",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "post": {
+        "description": "Create a rule: `name`, `rule` (see POST /rules/preview) and delivery: `notify_inapp`\n(default true), `notify_webhook`, `notify_email`, `webhook_id`. Counts toward your plan's\nalert-rule limit.",
+        "operationId": "public_rules_create_api_public_v1_rules_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "mssp_customer_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mssp Customer Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Our stack, Switzerland and insurance",
+                "notify_webhook": true,
+                "rule": {
+                  "match": {
+                    "items": [
+                      {
+                        "field": "company",
+                        "op": "is",
+                        "value": [
+                          "Microsoft",
+                          "Cisco",
+                          "Fortinet"
+                        ]
+                      },
+                      {
+                        "items": [
+                          {
+                            "field": "cve",
+                            "op": "that is",
+                            "value": "on KEV"
+                          },
+                          {
+                            "field": "country",
+                            "op": "is",
+                            "value": [
+                              "Switzerland"
+                            ]
+                          }
+                        ],
+                        "mode": "any"
+                      },
+                      {
+                        "items": [
+                          {
+                            "field": "keyword",
+                            "op": "contain",
+                            "value": [
+                              "acquisition",
+                              "earnings"
+                            ]
+                          }
+                        ],
+                        "mode": "none"
+                      },
+                      {
+                        "field": "score",
+                        "op": "at least",
+                        "value": 50
+                      }
+                    ],
+                    "mode": "all"
+                  },
+                  "source": "stories"
+                }
+              },
+              "schema": {
+                "additionalProperties": true,
+                "title": "Payload",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create a rule",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/rules/fields": {
+      "get": {
+        "description": "Everything a rule can test, per source (stories, cves, darkweb): each field's key, label,\nkind (entity, text, number, choice, flag), operators and, where fixed, its choices.",
+        "operationId": "public_rule_fields_api_public_v1_rules_fields_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Fields, operators and choices for rules",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/rules/preview": {
+      "post": {
+        "description": "What `rule` would have matched in the last 30 days. Nothing is saved and nothing is sent.\nA rule is `{\"source\": \"stories\"|\"cves\"|\"darkweb\", \"match\": GROUP}`; a GROUP is\n`{\"mode\": \"all\"|\"any\"|\"none\", \"items\": [...]}` holding conditions `{\"field\", \"op\", \"value\"}`\nand further groups (3 deep). GET /rules/fields lists the fields. A rule that cannot be used\nreturns 422 with the reason.",
+        "operationId": "public_rule_preview_api_public_v1_rules_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "rule": {
+                  "match": {
+                    "items": [
+                      {
+                        "field": "company",
+                        "op": "is",
+                        "value": [
+                          "Microsoft",
+                          "Cisco",
+                          "Fortinet"
+                        ]
+                      },
+                      {
+                        "items": [
+                          {
+                            "field": "cve",
+                            "op": "that is",
+                            "value": "on KEV"
+                          },
+                          {
+                            "field": "country",
+                            "op": "is",
+                            "value": [
+                              "Switzerland"
+                            ]
+                          }
+                        ],
+                        "mode": "any"
+                      },
+                      {
+                        "items": [
+                          {
+                            "field": "keyword",
+                            "op": "contain",
+                            "value": [
+                              "acquisition",
+                              "earnings"
+                            ]
+                          }
+                        ],
+                        "mode": "none"
+                      },
+                      {
+                        "field": "score",
+                        "op": "at least",
+                        "value": 50
+                      }
+                    ],
+                    "mode": "all"
+                  },
+                  "source": "stories"
+                }
+              },
+              "schema": {
+                "additionalProperties": true,
+                "title": "Payload",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "days": 30,
+                  "description": "company or vendor is Microsoft or Cisco or Fortinet and (mentions a CVE that is on KEV or country is Switzerland) and not (words in title or summary contain acquisition or earnings) and threat score at least 50",
+                  "match_count": 19,
+                  "matches": [
+                    {
+                      "id": "f4a06b7f-d154-4d3b-8274-f61cd28be186",
+                      "threat_score": 78.0,
+                      "title": "Ivanti EPMM zero-day chained for pre-auth RCE, added to KEV"
+                    }
+                  ],
+                  "source": "stories"
+                },
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preview a rule against the last 30 days (saves nothing)",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/public/v1/rules/{rule_uuid}": {
+      "delete": {
+        "description": "Delete a rule. Matches it already sent stay in GET /alerts.",
+        "operationId": "public_rules_delete_api_public_v1_rules__rule_uuid__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete a rule",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "get": {
+        "description": "One rule by its `uuid`.",
+        "operationId": "public_rules_get_api_public_v1_rules__rule_uuid__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get one rule",
+        "tags": [
+          "alerts"
+        ]
+      },
+      "patch": {
+        "description": "Change a rule: send only what changes (`name`, `rule`, `is_active`, `notify_*`, `webhook_id`).\nA `rule` you send replaces the old one. `{\"is_active\": false}` pauses it.",
+        "operationId": "public_rules_update_api_public_v1_rules__rule_uuid__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_uuid",
+            "required": true,
+            "schema": {
+              "title": "Rule Uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "is_active": false
+              },
+              "schema": {
+                "additionalProperties": true,
+                "title": "Payload",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update a rule",
+        "tags": [
+          "alerts"
         ]
       }
     },
