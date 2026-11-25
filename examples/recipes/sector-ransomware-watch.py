@@ -11,7 +11,7 @@ Endpoints
   GET /darkweb/ransomware/victims/facets   (1 credit)  sector/country/group counts
   GET /darkweb/ransomware/victims          (1 credit)  the victim rows
 
-Cost: 2 credits per run. Works on the free tier (7-day window, 25 rows per list).
+Cost: 2 credits per run. Works on the free tier (7-day window, 10 rows per list; Starter returns the full 25).
 
 Usage
   python3 sector-ransomware-watch.py --sector Healthcare
@@ -78,7 +78,7 @@ def main():
     ap.add_argument("--sector", help="sector name exactly as the facets endpoint returns it")
     ap.add_argument("--country", help="ISO-2 country code, e.g. US, GB, DE")
     ap.add_argument("--days", type=int, default=7, help="lookback in days (free tier caps at 7)")
-    ap.add_argument("--limit", type=int, default=25, help="max victims to list (free tier caps at 25)")
+    ap.add_argument("--limit", type=int, default=25, help="max victims to list (free tier caps at 10)")
     args = ap.parse_args()
 
     facets = api_get("/darkweb/ransomware/victims/facets", days=args.days).json()

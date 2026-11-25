@@ -10,7 +10,7 @@ What it does
 Endpoints
   GET /threats?keyword=<name>&time_filter=7d&sort_by=threat_score   (1 credit per vendor)
 
-Cost: 1 credit per vendor name. Works on the free tier (7-day window, 25 rows per query).
+Cost: 1 credit per vendor name. Works on the free tier (7-day window, 10 rows per query; Starter returns the full 25).
 
 Usage
   python3 vendor-in-the-news.py Microsoft Cisco Fortinet Ivanti Citrix
