@@ -8425,7 +8425,7 @@
     },
     "/api/public/v1/assets": {
       "delete": {
-        "description": "Remove the scope's asset snapshot, every imported tracked entity and\nthe auto-managed \"My Assets\" feed. Hand-added entities are untouched.",
+        "description": "Remove the scope's asset snapshot, its imported names, its two asset\nalert rules and the auto-managed \"My Assets\" feed. Your default feed is\nuntouched.",
         "operationId": "public_assets_clear_api_public_v1_assets_delete",
         "parameters": [
           {
@@ -8517,7 +8517,7 @@
         ]
       },
       "put": {
-        "description": "Submit the FULL current asset set for one scope (your account, or one\nmanaged customer). Vendors, products and OSes are resolved to ThreatCluster\nentities and written to that scope's tracked-entity profile, which drives\nthe feed, alerts and technology matching; an auto-managed \"My Assets\"\ncustom feed (with its own RSS URL) mirrors the result. Snapshot semantics:\nthe submitted set replaces the previous import; hand-added entities are\nnever touched. Returns resolution counts and the unmatched raw strings.\n\nScoping: pass `mssp_customer_id` as a QUERY parameter (a customer-bound\nkey is refused without the matching value \u2014 the binding is enforced\nbefore this handler runs). Omit it entirely for your personal scope.",
+        "description": "Submit the FULL current asset set for one scope (your account, or one\nmanaged customer). Vendors, products and OSes are resolved to ThreatCluster\nentities. The scope gets two alert rules built from the result, kept up to\ndate on every submission: \"My assets: vulnerabilities\" (CVEs for your\nproducts that are on CISA KEV, have a public exploit or are in the top 5%\nby EPSS) and \"My assets: news\" (stories about your products). They alert\nin the app until you choose other delivery, and you can tune their filters\nin the rule builder (GET /alert-rules lists them). An auto-managed\n\"My Assets\" custom feed (with its own RSS URL) mirrors the names. Your\ndefault feed is not changed. Snapshot semantics: the submitted set replaces\nthe previous import. Returns resolution counts, the rules and the unmatched\nraw strings.\n\nScoping: pass `mssp_customer_id` as a QUERY parameter (a customer-bound\nkey is refused without the matching value \u2014 the binding is enforced\nbefore this handler runs). Omit it entirely for your personal scope.",
         "operationId": "public_assets_import_api_public_v1_assets_put",
         "parameters": [
           {
