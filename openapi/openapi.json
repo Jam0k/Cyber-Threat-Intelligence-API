@@ -201,7 +201,7 @@
         },
         "properties": {
           "conditions": {
-            "description": "1+ conditions. Tier-capped (5 for most, 50 for Business).",
+            "description": "1+ conditions, up to 50 on every plan (the rule builder's limit).",
             "items": {
               "$ref": "#/components/schemas/AlertCondition"
             },
@@ -3731,7 +3731,7 @@
                 "type": "null"
               }
             ],
-            "description": "Create the feed on one of your managed customers (MSSP). Omit for a personal feed.",
+            "description": "Create the feed on one of your managed customers (Business plan). Omit for a personal feed.",
             "title": "Mssp Customer Id"
           },
           "name": {
@@ -8001,7 +8001,7 @@
         ]
       },
       "post": {
-        "description": "Create a personal alert rule that fires when its conditions match a new threat\ncluster. Tier-capped conditions (5 most tiers, 50 Business). Delivery via your\nwebhook(s) and/or email. Omit `mssp_customer_id` for a personal rule, or set it\nto scope the rule to one of your managed customers (Business plan).\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
+        "description": "Create a personal alert rule that fires when its conditions match a new threat\ncluster. Up to 50 conditions on every plan. Delivery via your\nwebhook(s) and/or email. Omit `mssp_customer_id` for a personal rule, or set it\nto scope the rule to one of your managed customers (Business plan).\n\nRules made here are stored as rule-builder rules: they also appear in GET /rules, where they can use AND / OR / NOT groups and more fields.",
         "operationId": "create_api_public_v1_alert_rules_post",
         "requestBody": {
           "content": {
@@ -8267,7 +8267,7 @@
     },
     "/api/public/v1/alerts": {
       "get": {
-        "description": "List alert triggers (cluster + CVE) with disposition state. The raw material\nbehind the compliance attestation.\n\nEach row's `trigger_id` + `alert_source` are what you pass to\nthat you reviewed/actioned that specific alert firing.\n\nFilters: mssp_customer_id (scope to one client), state (incl. 'open' for\nundispositioned), alert_source (cluster|cve|rule), since (ISO timestamp on\ntriggered_at). Rows are normalised across every kind of alert rule: `rule` rows come from\nrules made in the rule builder, and `rule_source` says whether `entity_ref` is a story\n(cluster id), a CVE id or a dark-web leak-site listing.",
+        "description": "List what your alert rules fired, newest first: one row per match, with the\nrule, what matched and when.\n\n`alert_source` is `rule` for rules made in the rule builder (every rule since\n24 Nov 2026, including those created through /alert-rules and /cve-alerts),\nwith `rule_source` saying whether `entity_ref` is a story (cluster id), a CVE\nid or a dark-web leak-site listing; `cluster` and `cve` are rows fired by the\nolder rule tables. `trigger_id` and `entity_ref` are the same identifiers the\nrule webhook sends.\n\nFilters: mssp_customer_id (scope to one client), alert_source\n(cluster|cve|rule), since (ISO timestamp on triggered_at).",
         "operationId": "public_list_alerts_api_public_v1_alerts_get",
         "parameters": [
           {
@@ -8375,7 +8375,7 @@
             "description": "Validation Error"
           }
         },
-        "summary": "List alert triggers and their dispositions",
+        "summary": "List what your alert rules fired",
         "tags": [
           "compliance"
         ]
@@ -9340,7 +9340,7 @@
     },
     "/api/public/v1/darkweb/ransomware/victim/{victim_id}": {
       "get": {
-        "description": "Full enriched victim payload: base record + LLM-extracted fields\n(headquarters, revenue, data_size, publication_status, negotiation\nstate), mirrored entities, blurred+captioned leak images, the\nfull-page site screenshot captured via our own Tor pipeline, and\n`timeline`: the listing's dated events, oldest first, each with\n{at, event_type, precision, title, detail, source, upcoming}.\n\nPath parameters:\n- victim_id: Victim ID (16-char hex, returned by /ransomware/victims)\n\nReturns 404 if not found.",
+        "description": "Full enriched victim payload: base record + LLM-extracted fields\n(headquarters, revenue, data_size, publication_status, negotiation\nstate), mirrored entities, leak images with personal details redacted and captioned, the\nfull-page site screenshot captured via our own Tor pipeline, and\n`timeline`: the listing's dated events, oldest first, each with\n{at, event_type, precision, title, detail, source, upcoming}.\n\nPath parameters:\n- victim_id: Victim ID (16-char hex, returned by /ransomware/victims)\n\nReturns 404 if not found.",
         "operationId": "public_get_ransomware_victim_detail_api_public_v1_darkweb_ransomware_victim__victim_id__get",
         "parameters": [
           {
@@ -11292,7 +11292,7 @@
     },
     "/api/public/v1/mssp/customers": {
       "get": {
-        "description": "List the managed customers under your account (Business plan). The `id` field is the\nvalue to pass as `mssp_customer_id` on the feeds, alerts, inventory and\ncompliance endpoints.",
+        "description": "List the managed customers under your account (Business plan). The `id` field is the\nvalue to pass as `mssp_customer_id` on the feeds, alerts, assets and\nalerts-fired endpoints.",
         "operationId": "public_list_mssp_customers_api_public_v1_mssp_customers_get",
         "parameters": [
           {
@@ -11358,7 +11358,7 @@
         ]
       },
       "post": {
-        "description": "Create a managed customer under your account (Business plan). Managed\ncustomers are enabled per account: the number of active customers you may\nhold is set for your account after a short call, and a 403 with\n`error: managed_customers_not_enabled` or `managed_customer_limit_reached`\n(plus `limit` and `contact_url`) tells you when to talk to us. The returned\n`id` is the `mssp_customer_id` you pass to the feeds / alerts / inventory /\ncompliance endpoints. This is the write path that lets a platform sync its\nclient roster without manual UI setup.",
+        "description": "Create a managed customer under your account (Business plan). Managed\ncustomers are enabled per account: the number of active customers you may\nhold is set for your account after a short call, and a 403 with\n`error: managed_customers_not_enabled` or `managed_customer_limit_reached`\n(plus `limit` and `contact_url`) tells you when to talk to us. The returned\n`id` is the `mssp_customer_id` you pass to the feeds / alerts / assets /\nalerts-fired endpoints. This is the write path that lets a platform sync its\nclient roster without manual UI setup.",
         "operationId": "public_create_mssp_customer_api_public_v1_mssp_customers_post",
         "requestBody": {
           "content": {
@@ -11449,7 +11449,7 @@
     },
     "/api/public/v1/mssp/customers/{customer_id}/feed": {
       "post": {
-        "description": "Create a monitoring feed scoped to one managed customer, seeded with keywords\nin a single call. Keywords cover the client's world for NEWS/CLUSTER matching \u2014\ncompany names, brands, domains, supplier names, sector terms.\n\n(Product/CPE inventory for the exposure overlay is a separate concern \u2014 push\nit via POST /api/public/v1/inventory with the same mssp_customer_id.)",
+        "description": "Create a monitoring feed scoped to one managed customer, seeded with keywords\nin a single call. Keywords cover the client's world for NEWS/CLUSTER matching \u2014\ncompany names, brands, domains, supplier names, sector terms.\n\n(A customer's products and software go in through PUT /api/public/v1/assets\nwith the same mssp_customer_id; the import builds that customer's asset alert rules.)",
         "operationId": "public_create_mssp_customer_feed_api_public_v1_mssp_customers__customer_id__feed_post",
         "parameters": [
           {
